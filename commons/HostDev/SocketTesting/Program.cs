@@ -1,4 +1,4 @@
-﻿using EasyHosting.Models;
+﻿using EasyHosting.Models.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
