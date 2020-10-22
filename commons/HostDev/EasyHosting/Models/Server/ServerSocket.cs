@@ -35,8 +35,8 @@ namespace EasyHosting.Models.Server
         private int _Port = 33564;
         public int Port { get { return _Port; } private set { _Port = value; } }
 
-        private List<ClientConnection> UnauthorizedConnections = new List<ClientConnection>();
-        private List<ClientConnection> AuthorizedConnections = new List<ClientConnection>();
+        private readonly List<ClientConnection> UnauthorizedConnections = new List<ClientConnection>();
+        private readonly List<ClientConnection> AuthorizedConnections = new List<ClientConnection>();
 
         private void HandleIncommingConnections() {
             int acceptedCount = 0;

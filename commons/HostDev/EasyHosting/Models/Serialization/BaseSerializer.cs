@@ -9,13 +9,23 @@ namespace EasyHosting.Models.Serialization
 {
 	public class BaseSerializer
 	{
-		public JObject _DataOrigin { get; private set; }
+		public JObject DataOrigin { get; private set; }
 
 		private Dictionary<string, List<string>> _Errors = null;
 		public Dictionary<string, List<string>> Errors { get { return _Errors; } private set { _Errors = value; } }
 
+		/// <summary>
+		/// Server -> User   Serializer constructor
+		/// </summary>
+		public BaseSerializer() {
+
+		}
+		/// <summary>
+		/// User -> Server   Serializer constructor
+		/// </summary>
+		/// <param name="data"></param>
 		public BaseSerializer(JObject data) {
-			_DataOrigin = data;
+			DataOrigin = data;
 
 			var fields = this.GetType().GetFields().Where(
 				prop => Attribute.IsDefined(prop, typeof(SerializerFieldAttribute), false)
@@ -38,7 +48,7 @@ namespace EasyHosting.Models.Serialization
 
 				var fieldMeta = fieldMetas.First();
 				if (!data.ContainsKey(fieldMeta.ApiName)) {
-					throw new InvalidInputDataException("Missing required ")
+					throw new InvalidInputDataException("Missing required ");
 				}
 			}
 		}
