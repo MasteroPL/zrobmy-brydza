@@ -75,7 +75,7 @@ namespace EasyHosting.Models.Serialization
 			}
 		}
 
-		protected virtual void Validate(bool throwException = true) {
+		public virtual void Validate(bool throwException = true) {
 			bool fieldValid;
 			JObject data = DataOrigin;
 
