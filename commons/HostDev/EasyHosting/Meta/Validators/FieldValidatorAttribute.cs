@@ -5,10 +5,10 @@ using System.Text;
 namespace EasyHosting.Meta.Validators
 {
 	[AttributeUsage(AttributeTargets.Field, AllowMultiple = true, Inherited = false)]
-	public abstract class FieldValidator : Attribute
+	public abstract class FieldValidatorAttribute : Attribute
 	{
 		private readonly List<ValidationError> _Errors = new List<ValidationError>();
-		protected List<ValidationError> Errors { get { return _Errors; } } 
+		public List<ValidationError> Errors { get { return _Errors; } } 
 
 		public int ErrorsCount { get { return _Errors.Count; } }
 		
@@ -26,10 +26,10 @@ namespace EasyHosting.Meta.Validators
 		/// <summary>
 		/// Rzuca wszystkie dodane błędy spakowane w pojedynczy wyjątek "ValidationException"
 		/// </summary>
-		protected void RaiseException() {
+		protected void ThrowException() {
 			throw new ValidationException(_Errors);
 		}
 
-		public abstract object Validate(object o, bool raiseException = true);
+		public abstract object Validate(object o, bool throwException = true);
 	}
 }

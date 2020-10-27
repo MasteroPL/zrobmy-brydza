@@ -37,5 +37,19 @@ namespace EasyHosting.Meta.Validators
 				{ "__GLOBAL__", errors }
 			}, null);
 		}
+
+		/// <summary>
+		/// Zwraca wszystkie przypisane błędy w jednej liście (bez podziału na pola, dla których te błędy zostały przypisane)
+		/// </summary>
+		/// <returns>Lista błędów</returns>
+		public List<ValidationError> GetErrorsList() {
+			var result = new List<ValidationError>();
+
+			foreach(KeyValuePair<string, List<ValidationError>> errors in Errors) {
+				result.AddRange(errors.Value);
+			}
+
+			return result;
+		}
 	}
 }

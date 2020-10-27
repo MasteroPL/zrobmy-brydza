@@ -5,7 +5,7 @@ using System.Text;
 namespace EasyHosting.Meta.Validators
 {
 	[AttributeUsage(AttributeTargets.Field, AllowMultiple = true, Inherited = false)]
-	class TextLengthRangeValidator : FieldValidator
+	class TextLengthRangeValidatorAttribute : FieldValidatorAttribute
 	{
 		private readonly int _MinLength;
 		public int MinValue { get { return _MaxLength; } }
@@ -16,27 +16,27 @@ namespace EasyHosting.Meta.Validators
 		private readonly bool _AllowNull;
 		public bool AllowNull { get { return _AllowNull; } }
 
-		public TextLengthRangeValidator(int minLength = -1, int maxLength = -1, bool allowNull = false) {
+		public TextLengthRangeValidatorAttribute(int minLength = -1, int maxLength = -1, bool allowNull = false) {
 			_MinLength = minLength;
 			_MaxLength = maxLength;
 			_AllowNull = allowNull;
 		}
-		public override object Validate(object o, bool raiseException = true) {
+		public override object Validate(object o, bool throwException = true) {
 			if (o == null) {
 				if (_AllowNull) {
 					return o;
 				}
 
 				AddError("VALUE_IS_NULL", "Null is not allowed for this field");
-				if (raiseException)
-					RaiseException();
+				if (throwException)
+					ThrowException();
 				return null;
 			}
 
 			if (!typeof(string).IsInstanceOfType(o)) {
 				AddError("NOT_A_STRING", "Object is not of 'string' type");
-				if (raiseException)
-					RaiseException();
+				if (throwException)
+					ThrowException();
 				return null;
 			}
 
@@ -57,8 +57,8 @@ namespace EasyHosting.Meta.Validators
 				return o;
 			}
 
-			if (raiseException)
-				RaiseException();
+			if (throwException)
+				ThrowException();
 			return null;
 		}
 	}

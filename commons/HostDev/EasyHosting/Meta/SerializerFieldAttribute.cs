@@ -17,8 +17,8 @@ namespace EasyHosting.Meta
 		private readonly object _Default = null;
 		public object Default { get { return Default; } }
 
-		private readonly FieldValidator[] _Validators = null;
-		public FieldValidator[] Validators { get { return _Validators; } }
+		private readonly FieldValidatorAttribute[] _Validators = null;
+		public FieldValidatorAttribute[] Validators { get { return _Validators; } }
 
 		public SerializerFieldAttribute(string apiName, bool required = true, object defaultValue = null) {
 			if (ApiName == "__GLOBAL__") {

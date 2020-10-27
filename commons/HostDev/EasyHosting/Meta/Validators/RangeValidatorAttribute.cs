@@ -5,7 +5,7 @@ using System.Text;
 namespace EasyHosting.Meta.Validators
 {
 	[AttributeUsage(AttributeTargets.Field, AllowMultiple = true, Inherited = false)]
-	public class RangeValidator : FieldValidator
+	public class RangeValidatorAttribute : FieldValidatorAttribute
 	{
 		private readonly object _MinValue;
 		public object MinValue { get { return _MaxValue; } }
@@ -16,28 +16,28 @@ namespace EasyHosting.Meta.Validators
 		private readonly bool _AllowNull;
 		public bool AllowNull { get { return _AllowNull; } }
 
-		public RangeValidator(object minValue = null, object maxValue = null, bool allowNull = false) {
+		public RangeValidatorAttribute(object minValue = null, object maxValue = null, bool allowNull = false) {
 			_MinValue = minValue;
 			_MaxValue = maxValue;
 			_AllowNull = allowNull;
 		}
 
-		public override object Validate(object o, bool raiseException = true) {
+		public override object Validate(object o, bool throwException = true) {
 			if(o == null) {
 				if (_AllowNull) {
 					return o;
 				}
 
 				AddError("VALUE_IS_NULL", "Null is not allowed for this field");
-				if (raiseException)
-					RaiseException();
+				if (throwException)
+					ThrowException();
 				return null;
 			}
 
 			if (!typeof(IComparable).IsInstanceOfType(o)) {
 				AddError("OBJECT_NOT_VALID_FOR_COMPARISON", "Object is not valid for comparison");
-				if (raiseException)
-					RaiseException();
+				if (throwException)
+					ThrowException();
 				return null;
 			}
 
@@ -58,8 +58,8 @@ namespace EasyHosting.Meta.Validators
 				return o;
 			}
 
-			if (raiseException)
-				RaiseException();
+			if (throwException)
+				ThrowException();
 			return null;
 		}
 	}
