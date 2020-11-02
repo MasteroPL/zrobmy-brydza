@@ -549,7 +549,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   State: 0
   Chat: Janek to menda
-  Points: 100                  60
+  Points: 100                  60                    210                  40
   Bets: 1c 1d pas 2c
   Display: {fileID: 844647623}
 --- !u!4 &427077009
