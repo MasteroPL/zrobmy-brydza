@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0976577233748c468c6d610a7b1ce4c, type: 3}
   m_Name: WaitingState
   m_EditorClassIdentifier: 
-  text: 
+  text: Oczekiwanie na graczy
