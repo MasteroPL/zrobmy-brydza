@@ -1,22 +1,32 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class GameManagerScript : MonoBehaviour
 {
     private GameState GameState = GameState.AWAITING_PLAYERS;
     private PlayerTag CurrentPlayer = PlayerTag.NOBODY;
+    [SerializeField] Text text;
+    [SerializeField] State startingState;
+    [SerializeField] State pausedState;
+    State state;
 
     // Start is called before the first frame update
     void Start()
-    {
-        
+    {   
+        state = startingState;
+        text.text = state.GetStateText();
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void setPausedState() {
+        state = pausedState;
+        text.text = state.GetStateText();
     }
 }
 
