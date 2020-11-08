@@ -52,24 +52,28 @@ namespace EasyHosting.Models.Serialization
 		/// </summary>
 		/// <param name="data"></param>
 		public BaseSerializer(JObject data) {
+			SetData(data);
+		}
+
+		public virtual void SetData(JObject data) {
 			DataOrigin = data;
 
 			var fields = this.GetType().GetFields().Where(
 				prop => Attribute.IsDefined(prop, typeof(SerializerFieldAttribute), false)
 			);
 
-			if(_Errors == null) {
+			if (_Errors == null) {
 				_Errors = new Dictionary<string, List<ValidationError>>();
 			}
 			else {
 				_Errors.Clear();
 			}
 
-			foreach(var field in fields) {
+			foreach (var field in fields) {
 				var fieldMetas = (SerializerFieldAttribute[])field.GetCustomAttributes(typeof(SerializerFieldAttribute), false);
 
 				// Only a single definition allowed
-				if(fieldMetas.Length > 1) {
+				if (fieldMetas.Length > 1) {
 					throw new ConfigurationException("Invalid configuration for SerializerField, field name: " + field.Name + "; in class: " + this.GetType().Name + "; Only accepts 1 definition of SerializerFieldAttribute");
 				}
 			}
@@ -100,11 +104,47 @@ namespace EasyHosting.Models.Serialization
 					}
 				}
 				else {
-					try {
-						field.SetValue(this, data[fieldMeta.ApiName].ToObject(field.FieldType));
-					} catch (Exception e) {
-						AddError(fieldMeta.ApiName, "INVALID_VALUE", "Could not convert provided value to type required by field.");
-						fieldValid = false;
+					var currentData = data[fieldMeta.ApiName];
+					// Przypadek zagniezdzonej tablicy serializatorow
+					if (field.FieldType.IsArray && typeof(BaseSerializer).IsAssignableFrom(field.FieldType.GetElementType())) {
+						try {
+							BaseSerializer serializer;
+							JArray arrayData = (JArray)currentData;
+
+							Type serializerType = field.FieldType.GetElementType();
+							BaseSerializer[] serializers = (BaseSerializer[])Array.CreateInstance(serializerType, arrayData.Count);
+							int index = 0;
+							foreach(var obj in arrayData) {
+								serializer = (BaseSerializer)Activator.CreateInstance(serializerType);
+								serializer.SetData((JObject)obj);
+								serializer.Validate();
+								serializers[index] = serializer;
+							}
+							field.SetValue(this, serializers);
+						} catch(Exception e) {
+							AddError(fieldMeta.ApiName, "INVALID_VALUE", "Could not convert provided value to type required by field.");
+							fieldValid = false;
+						}
+					}
+					// Przypadek zagniezdzonych serializatorów
+					else if (typeof(BaseSerializer).IsAssignableFrom(field.FieldType)) {
+						try {
+							BaseSerializer serializer = (BaseSerializer)Activator.CreateInstance(field.FieldType);
+							serializer.SetData((JObject)currentData);
+							field.SetValue(this, serializer);
+						} catch(Exception e) {
+							AddError(fieldMeta.ApiName, "INVALID_VALUE", "Could not convert provided value to type required by field.");
+							fieldValid = false;
+						}
+					}
+					// Przypadek zwykłej wartości podstawowej
+					else {
+						try {
+							field.SetValue(this, data[fieldMeta.ApiName].ToObject(field.FieldType));
+						} catch (Exception e) {
+							AddError(fieldMeta.ApiName, "INVALID_VALUE", "Could not convert provided value to type required by field.");
+							fieldValid = false;
+						}
 					}
 				}
 
@@ -126,6 +166,24 @@ namespace EasyHosting.Models.Serialization
 			if(throwException && Errors.Count > 0) {
 				ThrowException();
 			}
+		}
+	
+		public virtual JObject GetApiObject() {
+			JObject result = new JObject();
+
+			var fields = this.GetType().GetFields().Where(
+				prop => Attribute.IsDefined(prop, typeof(SerializerFieldAttribute), false)
+			);
+
+			foreach(var field in fields) {
+				var fieldMetas = (SerializerFieldAttribute[])field.GetCustomAttributes(typeof(SerializerFieldAttribute), false);
+
+				var fieldMeta = fieldMetas[0]; // In constructor it's already verified that there is only 1 attribute of type SerializerFieldAttribute assigned to 1 field
+
+				result.Add(fieldMeta.ApiName, JToken.FromObject(field.GetValue(this)));
+			}
+
+			return result;
 		}
 	}
 }
