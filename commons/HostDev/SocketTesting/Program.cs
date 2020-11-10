@@ -1,4 +1,5 @@
-﻿using EasyHosting.Models.Server;
+﻿using EasyHosting.Models.Actions;
+using EasyHosting.Models.Server;
 using EasyHosting.Models.Server.Serializers;
 using Newtonsoft.Json.Linq;
 using System;
@@ -12,16 +13,17 @@ namespace SocketTesting
 	class Program
 	{
 		public static void Debug() {
-			JObject obj = JObject.Parse("{ \"password\": \"123abc\" }");
-			var serializer = new UserAuthorizationSerializer(obj);
+			JObject obj = JObject.Parse("{ \"actions\": [ { \"name\": \"test\", \"data\": { \"sample\": \"sample\" } } ] }");
+			var serializer = new ActionsSerializer(obj);
 
 			serializer.Validate();
+			var response = serializer.GetApiObject();
 			Console.WriteLine("OK");
 		}
 
 		static void Main(string[] args) {
-			//Debug();
-			//return;
+			Debug();
+			return;
 
 			var serverSocket = new ServerSocket();
 			serverSocket.Start();
