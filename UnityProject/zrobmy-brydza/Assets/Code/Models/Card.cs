@@ -6,7 +6,9 @@ using UnityEngine;
 public class Card : MonoBehaviour
 {
     private int value;
+    private CardColor color;
     private CardState currentState = CardState.ON_HAND;
+    private int playerID = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,24 +23,24 @@ public class Card : MonoBehaviour
 
     void OnMouseDown()
     {
-        Debug.Log("Działa!!!");
-        putCard();
+        bool response = checkTurn();
+        if(response)
+        {
+            putCard();
+        }
+    }
+
+    private bool checkTurn()
+    {
+        return true;
     }
 
     private void putCard()
     {
-        if (currentState == CardState.ON_HAND){
-            currentState = CardState.ON_TABLE;
+         float newXpos = -1.84f;
+         float newYpos = 1.21f;
+         transform.position = new Vector3(newXpos, newYpos);
             
-            var deltaX = 0;
-            var newXpos = transform.position.x + deltaX;
-            
-            var deltaY = 1;
-            var newYpos = transform.position.y + deltaY;
-
-            transform.position = new Vector3(newXpos, newYpos);
-            
-        }
     }
 }
 public enum CardState
@@ -47,4 +49,12 @@ public enum CardState
     ON_HAND = 1,
     ON_TABLE = 2,
     USED = 3
+}
+
+public enum CardColor
+{
+    CLUB = 0,
+    DIAMOND = 1,
+    HEART = 2,
+    SPADE = 3
 }
