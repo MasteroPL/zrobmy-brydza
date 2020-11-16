@@ -65,6 +65,20 @@ namespace UnityBridge
                     deck.Add(rightHandCards[0]);
                     rightHandCards.RemoveAt(0);
                 }
+
+                deck = ReplaceCards(deck); // second shuffling method added
+            }
+            return deck;
+        }
+
+        private List<T> ReplaceCards(List<T> deck)
+        {
+            int numberOfCardsToReplace = randomizer.Next(7, deck.Count - 7 + 1);
+            for(int i = 0; i < numberOfCardsToReplace; i++)
+            {
+                T element = deck[0];
+                deck.RemoveAt(0);
+                deck.Add(element);
             }
             return deck;
         }
