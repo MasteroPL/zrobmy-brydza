@@ -10,7 +10,9 @@ namespace EasyHosting.Models.Actions
 {
 	public class ActionSerializer : BaseSerializer
 	{
+
 		[SerializerField(apiName: "name")]
+		[NullValidator(canBeNull: false)]
 		[TextLengthRangeValidator(minLength: 0, maxLength: 50)]
 		public string ActionName;
 
@@ -19,5 +21,12 @@ namespace EasyHosting.Models.Actions
 
 		public ActionSerializer() : base() { }
 		public ActionSerializer(JObject data) : base(data) { }
+
+		public ActionMeta GetActionMeta() {
+			return new ActionMeta {
+				Name = ActionName,
+				Data = ActionData
+			};
+		}
 	}
 }

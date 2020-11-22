@@ -82,6 +82,7 @@ namespace EasyHosting.Models.Serialization
 		public virtual void Validate(bool throwException = true) {
 			bool fieldValid;
 			JObject data = DataOrigin;
+			object fieldValue = null;
 
 			var fields = this.GetType().GetFields().Where(
 				prop => Attribute.IsDefined(prop, typeof(SerializerFieldAttribute), false)
@@ -100,7 +101,7 @@ namespace EasyHosting.Models.Serialization
 						fieldValid = false;
 					}
 					else {
-						field.SetValue(this, fieldMeta.Default);
+						fieldValue = fieldMeta.Default;
 					}
 				}
 				else {
@@ -120,7 +121,7 @@ namespace EasyHosting.Models.Serialization
 								serializer.Validate();
 								serializers[index] = serializer;
 							}
-							field.SetValue(this, serializers);
+							fieldValue = serializers;
 						} catch(Exception e) {
 							AddError(fieldMeta.ApiName, "INVALID_VALUE", "Could not convert provided value to type required by field.");
 							fieldValid = false;
@@ -131,7 +132,7 @@ namespace EasyHosting.Models.Serialization
 						try {
 							BaseSerializer serializer = (BaseSerializer)Activator.CreateInstance(field.FieldType);
 							serializer.SetData((JObject)currentData);
-							field.SetValue(this, serializer);
+							fieldValue = serializer;
 						} catch(Exception e) {
 							AddError(fieldMeta.ApiName, "INVALID_VALUE", "Could not convert provided value to type required by field.");
 							fieldValid = false;
@@ -140,7 +141,7 @@ namespace EasyHosting.Models.Serialization
 					// Przypadek zwykłej wartości podstawowej
 					else {
 						try {
-							field.SetValue(this, data[fieldMeta.ApiName].ToObject(field.FieldType));
+							fieldValue = data[fieldMeta.ApiName].ToObject(field.FieldType);
 						} catch (Exception e) {
 							AddError(fieldMeta.ApiName, "INVALID_VALUE", "Could not convert provided value to type required by field.");
 							fieldValid = false;
@@ -151,15 +152,16 @@ namespace EasyHosting.Models.Serialization
 				// Validators section
 				if (fieldValid) {
 					var fieldValidators = (FieldValidatorAttribute[])field.GetCustomAttributes(typeof(FieldValidatorAttribute), false);
-					object validatedValue = field.GetValue(this);
+					object validatedValue = fieldValue;
 					foreach (var validator in fieldValidators) {
 						validatedValue = validator.Validate(validatedValue, false); // We don't want an exception to be raised
 						if (validator.ErrorsCount > 0) {
 							AddErrors(field.Name, validator.Errors);
 							break;
 						}
-						field.SetValue(this, validatedValue);
 					}
+					if(Errors.Count == 0)
+						field.SetValue(this, validatedValue);
 				}
 			}
 

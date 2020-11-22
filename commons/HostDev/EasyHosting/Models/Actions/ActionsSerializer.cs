@@ -15,5 +15,17 @@ namespace EasyHosting.Models.Actions
 		public ActionsSerializer() : base() { }
 		public ActionsSerializer(JObject data) : base(data) { }
 
+		public ActionMeta[] GetActionsMeta() {
+			var actionsMeta = new ActionMeta[Actions.Length];
+
+			int index = 0;
+			foreach(var action in Actions) {
+				actionsMeta[index] = action.GetActionMeta();
+
+				index++;
+			}
+
+			return actionsMeta;
+		}
 	}
 }
