@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using UnityEngine;
 
 public class Card: MonoBehaviour
 {
-    public int value;
+    public CardFigure figure;
     public CardColor color;
     public CardState currentState = CardState.ON_HAND;
     public int playerID = 0;
@@ -27,7 +28,19 @@ public class Card: MonoBehaviour
         }
     }
 }
-    
+
+[Serializable]
+public class CardObject
+{
+    public CardFigure figure;
+    public CardColor color;
+    public CardObject(CardFigure figure, CardColor color)
+    {
+        this.figure = figure;
+        this.color = color;
+    }
+}
+
 public enum CardState
 {
     IN_DECK = 0,
@@ -42,4 +55,21 @@ public enum CardColor
     DIAMOND = 1,
     HEART = 2,
     SPADE = 3
+}
+
+public enum CardFigure
+{
+    TWO = 2,
+    THREE = 3,
+    FOUR = 4,
+    FIVE = 5,
+    SIX = 6,
+    SEVEN = 7,
+    EIGHT = 8,
+    NINE = 9,
+    TEN = 10,
+    JACK = 11,
+    QUEEN = 12,
+    KING = 13,
+    ACE = 14
 }
