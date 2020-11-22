@@ -3,46 +3,23 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using UnityEngine;
 
-public class Card : MonoBehaviour
+public class Card
 {
-    private int value;
-    private CardColor color;
-    private CardState currentState = CardState.ON_HAND;
-    private int playerID = 0;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public int value;
+    public CardColor color;
+    public CardState currentState = CardState.ON_HAND;
+    public int playerID = 0;
 
     void OnMouseDown()
     {
-        bool response = checkTurn();
-        if(response)
+        bool response = StaticData.GameManager.checkTurn();
+        if (response)
         {
-            putCard();
+            StaticData.GameManager.putCard(this);
         }
     }
-
-    private bool checkTurn()
-    {
-        return true;
-    }
-
-    private void putCard()
-    {
-         float newXpos = -1.84f;
-         float newYpos = 1.21f;
-         transform.position = new Vector3(newXpos, newYpos);
-            
-    }
 }
+    
 public enum CardState
 {
     IN_DECK = 0,
