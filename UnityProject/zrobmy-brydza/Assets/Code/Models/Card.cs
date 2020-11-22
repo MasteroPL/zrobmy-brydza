@@ -9,13 +9,21 @@ public class Card: MonoBehaviour
     public CardColor color;
     public CardState currentState = CardState.ON_HAND;
     public int playerID = 0;
+    [SerializeField] GameObject Game;
+    GameManagerScript GameManager;
+
+    void Start()
+    {
+        GameManager = Game.GetComponent<GameManagerScript>();
+    }
 
     void OnMouseDown()
     {
-        bool response = StaticData.GameManager.checkTurn();
+
+        bool response = GameManager.checkTurn();
         if (response)
         {
-            StaticData.GameManager.putCard(this);
+            GameManager.putCard(this);
         }
     }
 }
