@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using UnityEngine;
 
-public class Card
+public class Card: MonoBehaviour
 {
     public int value;
     public CardColor color;
