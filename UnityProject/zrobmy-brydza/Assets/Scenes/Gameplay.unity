@@ -1549,7 +1549,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -79.29999, y: -19.199982}
+  m_AnchoredPosition: {x: -79.29999, y: -19.199951}
   m_SizeDelta: {x: 62.26465, y: 27.924316}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &562714859
@@ -4663,17 +4663,17 @@ PrefabInstance:
     - target: {fileID: 9071497320220041317, guid: 7e073e7e326ef764f87f54fcf6364af5,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 36.85
+      value: 2.61
       objectReference: {fileID: 0}
     - target: {fileID: 9071497320220041317, guid: 7e073e7e326ef764f87f54fcf6364af5,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 12.75
+      value: -2.33
       objectReference: {fileID: 0}
     - target: {fileID: 9071497320220041317, guid: 7e073e7e326ef764f87f54fcf6364af5,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.10320933
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9071497320220041317, guid: 7e073e7e326ef764f87f54fcf6364af5,
         type: 3}
@@ -4886,7 +4886,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -168.18, y: -19.199982}
+  m_AnchoredPosition: {x: -168.18, y: -19.199951}
   m_SizeDelta: {x: 62.26465, y: 27.924316}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1505499922
@@ -5917,10 +5917,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 699a4bc40528705418928a27272a4d42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  value: 0
-  color: 0
+  value: 2
+  color: 1
   currentState: 1
   playerID: 0
+  Game: {fileID: 1847781506}
 --- !u!61 &1818452523
 BoxCollider2D:
   m_ObjectHideFlags: 0
