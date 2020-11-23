@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 35547167}
   - component: {fileID: 35547169}
   - component: {fileID: 35547168}
+  - component: {fileID: 35547170}
   m_Layer: 5
   m_Name: MainBackground
   m_TagString: Untagged
@@ -146,17 +147,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 35547166}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -100}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 539564383}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -3.0125, y: -0.000030518}
-  m_SizeDelta: {x: 700.97076, y: 398.00006}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &35547168
 MonoBehaviour:
@@ -195,6 +196,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 35547166}
   m_CullTransparentMesh: 0
+--- !u!114 &35547170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 35547166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AspectMode: 4
+  m_AspectRatio: 1.7612329
 --- !u!1 &166725819
 GameObject:
   m_ObjectHideFlags: 0
@@ -1462,8 +1477,8 @@ Canvas:
   m_GameObject: {fileID: 539564379}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 2
+  m_Camera: {fileID: 707763648}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -1482,8 +1497,8 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 539564379}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 90}
+  m_LocalScale: {x: 0.013888889, y: 0.013888889, z: 0.013888889}
   m_Children:
   - {fileID: 35547167}
   - {fileID: 1773859347}
@@ -1523,8 +1538,8 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0, y: 0}
+  m_SizeDelta: {x: 1280, y: 720}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &562714857
 GameObject:
   m_ObjectHideFlags: 0
@@ -2017,7 +2032,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 707763646}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -4775,7 +4790,7 @@ PrefabInstance:
     - target: {fileID: 9071497320220041317, guid: 7e073e7e326ef764f87f54fcf6364af5,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9071497320220041317, guid: 7e073e7e326ef764f87f54fcf6364af5,
         type: 3}
@@ -5414,7 +5429,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -118.46997, y: 82.3}
+  m_AnchoredPosition: {x: -118.46997, y: 82.29999}
   m_SizeDelta: {x: 224.8858, y: 65.821106}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1595034638
@@ -6005,7 +6020,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -117.71, y: 0.024793}
+  m_AnchoredPosition: {x: -117.70999, y: 0.024793}
   m_SizeDelta: {x: 242.26425, y: 397.95044}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1773859348
@@ -6063,7 +6078,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 699a4bc40528705418928a27272a4d42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  value: 2
+  figure: 2
   color: 1
   currentState: 1
   playerID: 0

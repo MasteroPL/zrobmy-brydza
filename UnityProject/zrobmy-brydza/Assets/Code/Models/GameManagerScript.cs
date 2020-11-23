@@ -54,7 +54,7 @@ public class GameManagerScript : MonoBehaviour
             {
                 c = "S";
             }
-            string cardName = "CARD_" + card.figure.ToString() + c;
+            string cardName = "CARD_" + (int)card.figure + c;
             float newXpos = -1.84f;
             float newYpos = 1.21f;
             GameObject.Find(cardName).transform.position = new Vector3(newXpos, newYpos);
