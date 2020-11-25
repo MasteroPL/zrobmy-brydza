@@ -13,7 +13,7 @@ namespace SocketTesting
 	class Program
 	{
 		public static void Debug() {
-			JObject obj = JObject.Parse("{ \"actions\": [ { \"name\": \"test\", \"data\": { \"sample\": \"sample\" } } ] }");
+			JObject obj = JObject.Parse("{ \"actions\": [ { \"name\": \"test\", \"data\": null } ] }");
 			var serializer = new ActionsSerializer(obj);
 
 			serializer.Validate();

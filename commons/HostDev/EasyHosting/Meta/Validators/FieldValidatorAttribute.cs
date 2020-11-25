@@ -10,6 +10,17 @@ namespace EasyHosting.Meta.Validators
 		private readonly List<ValidationError> _Errors = new List<ValidationError>();
 		public List<ValidationError> Errors { get { return _Errors; } } 
 
+		public string ErrorsText { 
+			get {
+				StringBuilder result = new StringBuilder();
+				foreach(var err in Errors) {
+					result.Append(err.ErrorMessage);
+					result.Append(";");
+				}
+				return result.ToString();
+			} 
+	}
+
 		public int ErrorsCount { get { return _Errors.Count; } }
 		
 		/// <summary>
@@ -22,6 +33,9 @@ namespace EasyHosting.Meta.Validators
 				ErrorCode = errorCode,
 				ErrorMessage = errorMessage
 			});
+		}
+		protected void AddErrors(IEnumerable<ValidationError> errors) {
+			_Errors.AddRange(errors);
 		}
 		/// <summary>
 		/// Rzuca wszystkie dodane błędy spakowane w pojedynczy wyjątek "ValidationException"
