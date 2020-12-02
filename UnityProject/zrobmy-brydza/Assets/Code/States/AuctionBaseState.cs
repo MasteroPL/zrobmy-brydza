@@ -8,13 +8,17 @@ public class AuctionBaseState : ScriptableObject
     private List<string> possibleContracts;
     public string currentContract { get; set; }
     public PlayerTag currentPlayer { get; set; }
+    public bool xEnabled { get; set; }
+    public bool xxEnabled { get; set; }
 
     public void init(PlayerTag firstDeclaringPlayer)
     {
+        xEnabled = false;
+        xxEnabled = false;
         currentContract = null;
         currentPlayer = firstDeclaringPlayer;
         possibleContracts = new List<string>();
-        string[] colors = { "C", "D", "H", "S", "NT" };
+        string[] colors = { "C ", "D ", "H ", "S ", "NT" };
         string[] contractHeights = { "1", "2", "3", "4", "5", "6", "7" };
         for (int j = 0; j < contractHeights.Length; j++)
         {
@@ -25,7 +29,7 @@ public class AuctionBaseState : ScriptableObject
         }
     }
 
-    public bool IsContractConsistent(string newContract)
+    public bool IsContractConsistent(string newContract) // check if player declared higher contract that actually is declared
     {
         if (currentContract == null)
             return true;
