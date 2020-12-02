@@ -9,6 +9,17 @@ using Assets.Code.UI;
 public class GameManagerScript : MonoBehaviour
 {
     //private GameState GameState = GameState.AWAITING_PLAYERS; <- is this deprecated?
+    /**
+     * My hand cards in deck coordinates on screen (according to main camera)
+     * ======================================================================
+     * Y = -2.73
+     * X = [-5.69277, -5.25, -4.80724, -4.36446, -3.92169, -3.47892, -3.03615, -2.59344, -2.150609, -1.70784, -1.26507, -0.8223, -0.37953]
+     * 
+     * Partner hand cards in deck coordinates on screen (according to main camera)
+     * ===========================================================================
+     * X = [-5.69277, -5.25, -4.80724, -4.36446, -3.92169, -3.47892, -3.03615, -2.59344, -2.150609, -1.70784, -1.26507, -0.8223, -0.37953]
+     * Y = 3.597
+     */
 
     [SerializeField] AuctionModule AuctionMod;
     private UserData userData;
