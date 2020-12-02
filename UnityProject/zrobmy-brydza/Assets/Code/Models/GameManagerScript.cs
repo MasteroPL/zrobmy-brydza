@@ -2,35 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 using Assets.Code.Models;
+using Assets.Code.UI;
+
 public class GameManagerScript : MonoBehaviour
 {
-    private GameState GameState = GameState.AWAITING_PLAYERS;
-    private PlayerTag CurrentPlayer = PlayerTag.NOBODY;
-    [SerializeField] Text text;
-    [SerializeField] State startingState;
-    [SerializeField] State pausedState;
-    State state;
+    //private GameState GameState = GameState.AWAITING_PLAYERS; <- is this deprecated?
+
+    [SerializeField] AuctionModule AuctionMod;
+    private UserData userData;
+
+    // States
+    public ScriptableObject CurrentState; // keeping current app state
+    public AuctionBaseState AuctionState;
 
     // Start is called before the first frame update
     void Start()
-    {   
-        state = startingState;
-        text.text = state.GetStateText();
-
-        ServerDialler.GetResponseFromServer();
-        ServerDialler.SendRequestToServer();
-    }
-
-    // Update is called once per frame
-    void Update()
     {
-        
-    }
-
-    public void setPausedState() {
-        state = pausedState;
-        text.text = state.GetStateText();
+        userData = new UserData();
+        CurrentState = AuctionState;
+        AuctionMod.initAuctionModule(this, userData, PlayerTag.N);
     }
 
     public void putCard(Card card)
@@ -67,7 +59,6 @@ public class GameManagerScript : MonoBehaviour
     {
         return true;
     }
-
 }
 
 public enum GameState
