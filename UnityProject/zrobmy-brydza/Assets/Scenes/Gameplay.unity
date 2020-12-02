@@ -5810,7 +5810,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &766968272
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10363,17 +10363,17 @@ PrefabInstance:
     - target: {fileID: 9071497320220041317, guid: 7e073e7e326ef764f87f54fcf6364af5,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -11.59
+      value: -3.03
       objectReference: {fileID: 0}
     - target: {fileID: 9071497320220041317, guid: 7e073e7e326ef764f87f54fcf6364af5,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.47
+      value: 1.87
       objectReference: {fileID: 0}
     - target: {fileID: 9071497320220041317, guid: 7e073e7e326ef764f87f54fcf6364af5,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.012931824
       objectReference: {fileID: 0}
     - target: {fileID: 9071497320220041317, guid: 7e073e7e326ef764f87f54fcf6364af5,
         type: 3}
@@ -10418,17 +10418,17 @@ PrefabInstance:
     - target: {fileID: 9071497320220041317, guid: 7e073e7e326ef764f87f54fcf6364af5,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.53992736
+      value: 0.2140704
       objectReference: {fileID: 0}
     - target: {fileID: 9071497320220041317, guid: 7e073e7e326ef764f87f54fcf6364af5,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.53992736
+      value: 0.2140704
       objectReference: {fileID: 0}
     - target: {fileID: 9071497320220041317, guid: 7e073e7e326ef764f87f54fcf6364af5,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.53992736
+      value: 0.2140704
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7e073e7e326ef764f87f54fcf6364af5, type: 3}
@@ -12896,7 +12896,7 @@ MonoBehaviour:
   color: 1
   currentState: 1
   playerID: 0
-  Game: {fileID: 1847781506}
+  Game: {fileID: 783291822}
 --- !u!61 &1818452523
 BoxCollider2D:
   m_ObjectHideFlags: 0

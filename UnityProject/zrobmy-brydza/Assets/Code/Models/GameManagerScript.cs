@@ -16,13 +16,22 @@ public class GameManagerScript : MonoBehaviour
     // States
     public ScriptableObject CurrentState; // keeping current app state
     public AuctionBaseState AuctionState;
+    public GameState currentState;
 
     // Start is called before the first frame update
     void Start()
     {
-        userData = new UserData();
-        CurrentState = AuctionState;
-        AuctionMod.initAuctionModule(this, userData, PlayerTag.N);
+        //Here will be method, checking if there are 4 players ready.
+        currentState = GameState.STARTING;
+        if (currentState == GameState.STARTING)
+        {
+            //Tutaj wywołujemy metodę rozdającą karty
+            currentState = GameState.BIDDING;
+            userData = new UserData();
+            CurrentState = AuctionState;
+            AuctionMod.initAuctionModule(this, userData, PlayerTag.N);
+        }
+        
     }
 
     public void putCard(Card card)
@@ -30,25 +39,48 @@ public class GameManagerScript : MonoBehaviour
         if(card.currentState == CardState.ON_HAND)
         {
             string c = "";
-            if(card.color == CardColor.CLUB)
+
+            switch (card.color)
             {
-                c = "C";
+                case CardColor.CLUB:
+                    c = "C";
+                    break;
+                case CardColor.DIAMOND:
+                    c = "D";
+                    break;
+                case CardColor.HEART:
+                    c = "H";
+                    break;
+                case CardColor.SPADE:
+                    c = "S";
+                    break;
             }
-            if (card.color == CardColor.DIAMOND)
-            {
-                c = "D";
-            }
-            if (card.color == CardColor.HEART)
-            {
-                c = "H";
-            }
-            if (card.color == CardColor.SPADE)
-            {
-                c = "S";
-            }
+
             string cardName = "CARD_" + (int)card.figure + c;
-            float newXpos = -1.84f;
-            float newYpos = 1.21f;
+
+            float newXpos = 0;
+            float newYpos = 0;
+
+            switch (card.playerID)
+            {
+                case 0:
+                    newXpos = -3.02f;
+                    newYpos = -1.03f;
+                    break;
+                case 1:
+                    newXpos = -4.19f;
+                    newYpos = 0.41f;
+                    break;
+                case 2:
+                    newXpos = -3.02f;
+                    newYpos = 1.87f;
+                    break;
+                case 3:
+                    newXpos = -1.8f;
+                    newYpos = 0.41f;
+                    break;
+            }
+            
             GameObject.Find(cardName).transform.position = new Vector3(newXpos, newYpos);
         }
         

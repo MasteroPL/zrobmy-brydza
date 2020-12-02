@@ -112,8 +112,6 @@ public class AuctionModule : MonoBehaviour
             {
                 AuctionDialog.enabled = false; // hiding dialog
             }
-            Debug.Log("xEnabled: " + AuctionState.xEnabled.ToString());
-            Debug.Log("xxEnabled: " + AuctionState.xxEnabled.ToString());
         }
     }
 
