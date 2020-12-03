@@ -36,13 +36,47 @@ public class GameManagerScript : MonoBehaviour
         currentState = GameState.STARTING;
         if (currentState == GameState.STARTING)
         {
+            List<string> myCards = AdjustGivenCards();
             //Tutaj wywołujemy metodę rozdającą karty
+            float[] myCardsX = { -5.69277f, -5.25f, -4.80724f, -4.36446f, -3.92169f, -3.47892f, -3.03615f, -2.59344f, -2.150609f, -1.70784f, -1.26507f, -0.8223f, -0.37953f };
+            for (int i = 0; i < myCards.Count; i++)
+            {
+                GameObject card = GameObject.Find("CARD_" + myCards[i]);
+                card.transform.position = new Vector3(myCardsX[i], -2.73f);
+                SpriteRenderer sr = card.GetComponent<SpriteRenderer>();
+                sr.sortingOrder = i;
+            }
+
             currentState = GameState.BIDDING;
             userData = new UserData();
             CurrentState = AuctionState;
             AuctionMod.initAuctionModule(this, userData, PlayerTag.N);
         }
         
+    }
+
+    // TODO parsing JSON
+    private List<string> AdjustGivenCards()
+    {
+        List<string> l = new List<string>();
+
+        l.Add("9C");
+        l.Add("QC");
+        l.Add("AC");
+
+        l.Add("5H");
+        l.Add("6H");
+        l.Add("9H");
+        l.Add("TH");
+
+        l.Add("KD");
+        l.Add("3D");
+        l.Add("7D");
+        l.Add("QD");
+
+        l.Add("AS");
+        l.Add("QS");
+        return l;
     }
 
     public void putCard(Card card)
@@ -67,7 +101,31 @@ public class GameManagerScript : MonoBehaviour
                     break;
             }
 
-            string cardName = "CARD_" + (int)card.figure + c;
+            string cardName = "";
+            if ((int)card.figure > 9)
+            {
+                switch ((int)card.figure)
+                {
+                    case 10: // 10
+                        cardName = "CARD_T" + c;
+                        break;
+                    case 11: // J
+                        cardName = "CARD_J" + c;
+                        break;
+                    case 12: // Q
+                        cardName = "CARD_Q" + c;
+                        break;
+                    case 13: // K
+                        cardName = "CARD_K" + c;
+                        break;
+                    case 14: // A
+                        cardName = "CARD_A" + c;
+                        break;
+                }
+            } else
+            {
+                cardName = "CARD_" + (int)card.figure + c;
+            }
 
             float newXpos = 0;
             float newYpos = 0;
