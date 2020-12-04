@@ -22,61 +22,41 @@ public class GameManagerScript : MonoBehaviour
      */
 
     [SerializeField] AuctionModule AuctionMod;
+    [SerializeField] PlayingModule PlayingMod;
     private UserData userData;
 
     // States
     public ScriptableObject CurrentState; // keeping current app state
     public AuctionBaseState AuctionState;
+    public PlayingBaseState PlayingState;
     public GameState currentState;
 
     // Start is called before the first frame update
     void Start()
     {
+        userData = new UserData();
+
+        AuctionMod.initAuctionModule(this, userData, PlayerTag.N);
+        PlayingMod.initPlayingModule(this);
+
         //Here will be method, checking if there are 4 players ready.
         currentState = GameState.STARTING;
         if (currentState == GameState.STARTING)
         {
-            List<string> myCards = AdjustGivenCards();
-            //Tutaj wywołujemy metodę rozdającą karty
+            List<string> cards = ServerDialler.GetPlayerCards(); // adjusting response data and giving player his/her cards, TODO send request to server
             float[] myCardsX = { -5.69277f, -5.25f, -4.80724f, -4.36446f, -3.92169f, -3.47892f, -3.03615f, -2.59344f, -2.150609f, -1.70784f, -1.26507f, -0.8223f, -0.37953f };
-            for (int i = 0; i < myCards.Count; i++)
+            for (int i = 0; i < cards.Count; i++)
             {
-                GameObject card = GameObject.Find("CARD_" + myCards[i]);
+                GameObject card = GameObject.Find(cards[i]);
                 card.transform.position = new Vector3(myCardsX[i], -2.73f);
+                card.GetComponent<Card>().playerID = userData.position;
                 SpriteRenderer sr = card.GetComponent<SpriteRenderer>();
                 sr.sortingOrder = i;
             }
 
             currentState = GameState.BIDDING;
-            userData = new UserData();
             CurrentState = AuctionState;
-            AuctionMod.initAuctionModule(this, userData, PlayerTag.N);
         }
-        
-    }
-
-    // TODO parsing JSON
-    private List<string> AdjustGivenCards()
-    {
-        List<string> l = new List<string>();
-
-        l.Add("9C");
-        l.Add("QC");
-        l.Add("AC");
-
-        l.Add("5H");
-        l.Add("6H");
-        l.Add("9H");
-        l.Add("TH");
-
-        l.Add("KD");
-        l.Add("3D");
-        l.Add("7D");
-        l.Add("QD");
-
-        l.Add("AS");
-        l.Add("QS");
-        return l;
     }
 
     public void putCard(Card card)
@@ -130,30 +110,52 @@ public class GameManagerScript : MonoBehaviour
             float newXpos = 0;
             float newYpos = 0;
 
-            switch (card.playerID)
+            switch (card.playerID) // to reconsider, positions are relative to player who sits
             {
-                case 0:
+                case PlayerTag.N:
                     newXpos = -3.02f;
                     newYpos = -1.03f;
                     break;
-                case 1:
+                case PlayerTag.E:
                     newXpos = -4.19f;
                     newYpos = 0.41f;
                     break;
-                case 2:
+                case PlayerTag.S:
                     newXpos = -3.02f;
                     newYpos = 1.87f;
                     break;
-                case 3:
+                case PlayerTag.W:
                     newXpos = -1.8f;
                     newYpos = 0.41f;
                     break;
             }
-            
-            GameObject.Find(cardName).transform.position = new Vector3(newXpos, newYpos);
-        }
-        
 
+            GameObject cardToPut = GameObject.Find(cardName);
+            cardToPut.transform.position = new Vector3(newXpos, newYpos);
+            SpriteRenderer cardSpriteRenderer = cardToPut.GetComponent<SpriteRenderer>();
+
+            string prevPutCardName = "";
+            switch (card.playerID)
+            {
+                case PlayerTag.N:
+                    prevPutCardName = PlayingState.currentPutCardLabelForPlayerN;
+                    break;
+                case PlayerTag.E:
+                    prevPutCardName = PlayingState.currentPutCardLabelForPlayerE;
+                    break;
+                case PlayerTag.S:
+                    prevPutCardName = PlayingState.currentPutCardLabelForPlayerS;
+                    break;
+                case PlayerTag.W:
+                    prevPutCardName = PlayingState.currentPutCardLabelForPlayerW;
+                    break;
+            }
+            if (prevPutCardName != null)
+            {
+                cardSpriteRenderer.sortingOrder = GameObject.Find(prevPutCardName).GetComponent<SpriteRenderer>().sortingOrder + 1;
+            }
+            PlayingMod.putCard(cardName, card.playerID);
+        }
     }
 
     public bool checkTurn()

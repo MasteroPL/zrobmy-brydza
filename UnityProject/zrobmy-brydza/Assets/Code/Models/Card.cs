@@ -9,7 +9,7 @@ public class Card: MonoBehaviour
     public CardFigure figure;
     public CardColor color;
     public CardState currentState = CardState.ON_HAND;
-    public int playerID = 0;
+    public PlayerTag playerID;
     [SerializeField] GameObject Game;
     GameManagerScript GameManager;
 
