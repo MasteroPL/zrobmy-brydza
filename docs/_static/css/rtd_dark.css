@@ -13,7 +13,7 @@ a:visited {
 }
 
 pre {
-	background-color: #2d2d2d; !important;
+	background-color: #2d2d2d !important;
 }
 
 .wy-nav-content {
@@ -79,3 +79,6 @@ code.literal {
 
 .highlight .m { color: inherit } /* Literal.Number */
 .highlight .nv { color: #3a7ca8 } /* Name.Variable */
+.highlight .nc { color: #3399FF; }
+.highlight .k { color: #33A333; }
+.highlight .s2 { color: #FF9933; }
