@@ -7,3 +7,4 @@ Szybki Start
 
     test1
     test2
+    test3
