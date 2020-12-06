@@ -5,7 +5,7 @@ Zróbmy Brydża! - Dokumentacja
    :maxdepth: 2
    :caption: Biblioteka EasyHosting
 
-   EasyHosting/szybki_start
+   EasyHosting/serializacja/index
 
 
 

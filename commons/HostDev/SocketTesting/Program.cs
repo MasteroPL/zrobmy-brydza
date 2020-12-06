@@ -18,7 +18,7 @@ namespace SocketTesting
 
 			serializer.Validate();
 			var response = serializer.GetApiObject();
-			Console.WriteLine("OK");
+			Console.WriteLine(response.ToString());
 		}
 
 		static void Main(string[] args) {

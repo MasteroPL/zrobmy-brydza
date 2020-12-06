@@ -179,10 +179,27 @@ namespace EasyHosting.Models.Serialization
 
 			foreach(var field in fields) {
 				var fieldMetas = (SerializerFieldAttribute[])field.GetCustomAttributes(typeof(SerializerFieldAttribute), false);
-
 				var fieldMeta = fieldMetas[0]; // In constructor it's already verified that there is only 1 attribute of type SerializerFieldAttribute assigned to 1 field
 
-				result.Add(fieldMeta.ApiName, JToken.FromObject(field.GetValue(this)));
+				if (field.FieldType.IsArray && typeof(BaseSerializer).IsAssignableFrom(field.FieldType.GetElementType())) {
+					BaseSerializer[] sourceArr = (BaseSerializer[])field.GetValue(this);
+					JObject[] targetArr = new JObject[sourceArr.Length];
+
+					for(int i = 0; i < sourceArr.Length; i++) {
+						targetArr[i] = sourceArr[i].GetApiObject();
+					}
+					result.Add(fieldMeta.ApiName, JToken.FromObject(targetArr));
+				}
+				else if (typeof(BaseSerializer).IsAssignableFrom(field.FieldType)) {
+					result.Add(fieldMeta.ApiName, ((BaseSerializer)field.GetValue(this)).GetApiObject());
+				}
+				else {
+					var val = field.GetValue(this);
+					if (val != null)
+						result.Add(fieldMeta.ApiName, JToken.FromObject(field.GetValue(this)));
+					else
+						result.Add(fieldMeta.ApiName, null);
+				}
 			}
 
 			return result;
