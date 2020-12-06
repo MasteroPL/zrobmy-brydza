@@ -184,9 +184,11 @@
 <span class="n">public</span> <span class="n">string</span> <span class="n">Password</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>Tu odbywa się definicja struktury danych, oczekiwana przez zdefiniowany serializator. Najprostsza możliwa definicja (taka jak tutaj) zawiera jedynie dwie informacje:
-* Nazwa pola w przychodzącej strukturze danych (np. <em>[SerializerField(apiName: „login”)]</em>, czyli serializator będzie oczekiwać w przychodzącej strukturze danych pola „<em>login</em>”)
-* Oczekiwany typ pola (np. „<em>string Login;</em>”, zatem oczekiwanym typem będzie „<em>string</em>”)</p>
+<p>Tu odbywa się definicja struktury danych, oczekiwana przez zdefiniowany serializator. Najprostsza możliwa definicja (taka jak tutaj) zawiera jedynie dwie informacje:</p>
+<ul class="simple">
+<li><p>Nazwa pola w przychodzącej strukturze danych (np. <em>[SerializerField(apiName: „login”)]</em>, czyli serializator będzie oczekiwać w przychodzącej strukturze danych pola „<em>login</em>”)</p></li>
+<li><p>Oczekiwany typ pola (np. „<em>string Login;</em>”, zatem oczekiwanym typem będzie „<em>string</em>”)</p></li>
+</ul>
 <p><strong>UWAGA:</strong> Typ pola może być jedynie typem prymitywnym, typem dziedziczącym z BaseSerializer lub tablicą jednego z dwóch poprzednich. Więcej o tym w późniejszych sekcjach.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">public</span> <span class="n">UserAuthorizationSerializer</span><span class="p">()</span> <span class="p">:</span> <span class="n">base</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
 <span class="n">public</span> <span class="n">UserAuthorizationSerializer</span><span class="p">(</span><span class="n">JObject</span> <span class="n">data</span><span class="p">)</span> <span class="p">:</span> <span class="n">base</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>

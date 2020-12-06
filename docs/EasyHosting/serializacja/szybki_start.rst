@@ -29,6 +29,7 @@ Rozbijmy powyższy przykład na części. ::
     public string Password;
 
 Tu odbywa się definicja struktury danych, oczekiwana przez zdefiniowany serializator. Najprostsza możliwa definicja (taka jak tutaj) zawiera jedynie dwie informacje:
+
 * Nazwa pola w przychodzącej strukturze danych (np. *[SerializerField(apiName: "login")]*, czyli serializator będzie oczekiwać w przychodzącej strukturze danych pola "*login*")
 * Oczekiwany typ pola (np. "*string Login;*", zatem oczekiwanym typem będzie "*string*")
 
