@@ -1,0 +1,12 @@
+{ 
+"authorisation": <token>,
+"actions": [
+	{
+		"name": "PUT_CARD",
+		"data": {
+			"player_id": <integer>,
+			"figure":14,
+			"color":1
+		}
+	}
+] }
