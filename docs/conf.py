@@ -69,3 +69,7 @@ html_static_path = ['_static']
 html_theme_options = {
     "collapse_navigation" : False
 }
+
+html_css_files = [
+    "css/rtd_dark.css",
+]
