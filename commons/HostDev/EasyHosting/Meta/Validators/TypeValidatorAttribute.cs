@@ -15,6 +15,10 @@ namespace EasyHosting.Meta.Validators
 		}
 
 		public override object Validate(object o, bool throwException = true) {
+			if(o == null) {
+				return null;
+			}
+
 			if (_Type.IsInstanceOfType(o)) {
 				return o;
 			}

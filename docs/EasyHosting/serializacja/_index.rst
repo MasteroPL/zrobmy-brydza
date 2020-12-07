@@ -6,3 +6,6 @@ Serializatory
 
     wprowadzenie
     szybki_start
+    walidacja
+    BaseSerializer
+    wyjatki

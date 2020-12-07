@@ -13,23 +13,12 @@ namespace EasyHosting.Meta.Validators
 		private readonly int _MaxLength;
 		public int MaxValue { get { return _MaxLength; } }
 
-		private readonly bool _AllowNull;
-		public bool AllowNull { get { return _AllowNull; } }
-
-		public TextLengthRangeValidatorAttribute(int minLength = -1, int maxLength = -1, bool allowNull = false) {
+		public TextLengthRangeValidatorAttribute(int minLength = -1, int maxLength = -1) {
 			_MinLength = minLength;
 			_MaxLength = maxLength;
-			_AllowNull = allowNull;
 		}
 		public override object Validate(object o, bool throwException = true) {
 			if (o == null) {
-				if (_AllowNull) {
-					return o;
-				}
-
-				AddError("VALUE_IS_NULL", "Null is not allowed for this field");
-				if (throwException)
-					ThrowException();
 				return null;
 			}
 

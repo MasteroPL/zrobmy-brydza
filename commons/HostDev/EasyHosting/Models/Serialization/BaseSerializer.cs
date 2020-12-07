@@ -4,32 +4,65 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace EasyHosting.Models.Serialization
 {
 	public class BaseSerializer
 	{
+		/// <summary>
+		/// Przechowuje oryginalny obiekt JSONa przekazany do serializatora
+		/// </summary>
 		public JObject DataOrigin { get; private set; }
 
-		private Dictionary<string, List<ValidationError>> _Errors = null;
-		public Dictionary<string, List<ValidationError>> Errors { get { return _Errors; } private set { _Errors = value; } }
+		private Dictionary<FieldInfo, List<ValidationError>> _Errors = null;
+		/// <summary>
+		/// Słownik błędów, które wystąpiły podczas walidacji (nazwa pola -> lista błędów dla pola)
+		/// </summary>
+		public Dictionary<FieldInfo, List<ValidationError>> Errors { get { return _Errors; } private set { _Errors = value; } }
 
-		protected void AddError(string fieldName, ValidationError error) {
-			if (!_Errors.ContainsKey(fieldName)) {
-				_Errors.Add(fieldName, new List<ValidationError>());
+		private void AddError(FieldInfo field, ValidationError error) {
+			if (!_Errors.ContainsKey(field)) {
+				_Errors.Add(field, new List<ValidationError>());
 			}
-			_Errors[fieldName].Add(error);
+			_Errors[field].Add(error);
 		}
+		protected void AddError(string fieldName, ValidationError error) {
+			if(fieldName == null) {
+				AddError((FieldInfo) null, error);
+			}
+			
+			var fieldInfo = this.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
+			if(fieldInfo == null) {
+				throw new ArgumentException("Invalid field name. Could not find specified field");
+			}
+
+			AddError(fieldInfo, error);
+		}
+		/// <summary>
+		/// Dodaje błąd do listy błędów dla wybranego pola
+		/// </summary>
+		/// <param name="fieldName">Nazwa pola</param>
+		/// <param name="errorCode">Kod błędu</param>
+		/// <param name="errorMessage">Treść błędu</param>
 		protected void AddError(string fieldName, string errorCode, string errorMessage) {
 			AddError(fieldName, new ValidationError { ErrorCode = errorCode, ErrorMessage = errorMessage });
 		}
-
-		protected void AddErrors(string fieldName, IEnumerable<ValidationError> errors) {
-			if (!_Errors.ContainsKey(fieldName)) {
-				_Errors.Add(fieldName, new List<ValidationError>());
+		private void AddErrors(FieldInfo field, IEnumerable<ValidationError> errors) {
+			foreach(var error in errors) {
+				AddError(field, error);
 			}
-			_Errors[fieldName].AddRange(errors);
+		}
+		protected void AddErrors(string fieldName, IEnumerable<ValidationError> errors) {
+			if (fieldName == null) {
+				AddErrors((FieldInfo)null, errors);
+			}
+
+			var fieldInfo = this.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
+			AddErrors(fieldInfo, errors);
 		}
 		protected void AddErrors(Dictionary<string, List<ValidationError>> errors) {
 			foreach (var keyValuePair in errors) {
@@ -41,33 +74,10 @@ namespace EasyHosting.Models.Serialization
 			throw new ValidationException(Errors);
 		}
 
-		/// <summary>
-		/// Server -> User   Serializer constructor
-		/// </summary>
-		public BaseSerializer() {
-
-		}
-		/// <summary>
-		/// User -> Server   Serializer constructor
-		/// </summary>
-		/// <param name="data"></param>
-		public BaseSerializer(JObject data) {
-			SetData(data);
-		}
-
-		public virtual void SetData(JObject data) {
-			DataOrigin = data;
-
+		private void Init() {
 			var fields = this.GetType().GetFields().Where(
 				prop => Attribute.IsDefined(prop, typeof(SerializerFieldAttribute), false)
 			);
-
-			if (_Errors == null) {
-				_Errors = new Dictionary<string, List<ValidationError>>();
-			}
-			else {
-				_Errors.Clear();
-			}
 
 			foreach (var field in fields) {
 				var fieldMetas = (SerializerFieldAttribute[])field.GetCustomAttributes(typeof(SerializerFieldAttribute), false);
@@ -76,6 +86,43 @@ namespace EasyHosting.Models.Serialization
 				if (fieldMetas.Length > 1) {
 					throw new ConfigurationException("Invalid configuration for SerializerField, field name: " + field.Name + "; in class: " + this.GetType().Name + "; Only accepts 1 definition of SerializerFieldAttribute");
 				}
+			}
+
+			if (_Errors == null) {
+				_Errors = new Dictionary<FieldInfo, List<ValidationError>>();
+			}
+			else {
+				_Errors.Clear();
+			}
+		}
+
+		/// <summary>
+		/// Server -> User   Serializer constructor
+		/// </summary>
+		public BaseSerializer() {
+			Init();
+		}
+		/// <summary>
+		/// User -> Server   Serializer constructor
+		/// </summary>
+		/// <param name="data"></param>
+		public BaseSerializer(JObject data) {
+			Init();
+			SetData(data);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="data"></param>
+		public virtual void SetData(JObject data) {
+			DataOrigin = data;
+
+			if (_Errors == null) {
+				_Errors = new Dictionary<FieldInfo, List<ValidationError>>();
+			}
+			else {
+				_Errors.Clear();
 			}
 		}
 

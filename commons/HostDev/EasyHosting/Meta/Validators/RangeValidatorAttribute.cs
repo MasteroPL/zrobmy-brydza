@@ -16,21 +16,13 @@ namespace EasyHosting.Meta.Validators
 		private readonly bool _AllowNull;
 		public bool AllowNull { get { return _AllowNull; } }
 
-		public RangeValidatorAttribute(object minValue = null, object maxValue = null, bool allowNull = false) {
+		public RangeValidatorAttribute(object minValue = null, object maxValue = null) {
 			_MinValue = minValue;
 			_MaxValue = maxValue;
-			_AllowNull = allowNull;
 		}
 
 		public override object Validate(object o, bool throwException = true) {
 			if(o == null) {
-				if (_AllowNull) {
-					return o;
-				}
-
-				AddError("VALUE_IS_NULL", "Null is not allowed for this field");
-				if (throwException)
-					ThrowException();
 				return null;
 			}
 

@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 namespace EasyHosting.Meta.Validators
 {
 	public class ValidationException : Exception
 	{
-		private Dictionary<string, List<ValidationError>> _Errors;
-		public Dictionary<string, List<ValidationError>> Errors { get { return _Errors; } }
+		private Dictionary<FieldInfo, List<ValidationError>> _Errors;
+		public Dictionary<FieldInfo, List<ValidationError>> Errors { get { return _Errors; } }
 
-		private void Init(Dictionary<string, List<ValidationError>> errors, ValidationException originException) {
+		private void Init(Dictionary<FieldInfo, List<ValidationError>> errors, ValidationException originException) {
 			if (errors == null) {
-				_Errors = new Dictionary<string, List<ValidationError>>();
+				_Errors = new Dictionary<FieldInfo, List<ValidationError>>();
 			}
 			else {
 				_Errors = errors;
@@ -29,12 +30,12 @@ namespace EasyHosting.Meta.Validators
 			}
 		}
 
-		public ValidationException(Dictionary<string, List<ValidationError>> errors = null, ValidationException originException = null) : base() {
+		public ValidationException(Dictionary<FieldInfo, List<ValidationError>> errors = null, ValidationException originException = null) : base() {
 			Init(errors, originException);
 		}
 		public ValidationException(List<ValidationError> errors) : base() {
-			Init(new Dictionary<string, List<ValidationError>>() {
-				{ "__GLOBAL__", errors }
+			Init(new Dictionary<FieldInfo, List<ValidationError>>() {
+				{ null, errors }
 			}, null);
 		}
 
@@ -45,7 +46,7 @@ namespace EasyHosting.Meta.Validators
 		public List<ValidationError> GetErrorsList() {
 			var result = new List<ValidationError>();
 
-			foreach(KeyValuePair<string, List<ValidationError>> errors in Errors) {
+			foreach(KeyValuePair<FieldInfo, List<ValidationError>> errors in Errors) {
 				result.AddRange(errors.Value);
 			}
 
