@@ -112,9 +112,9 @@ namespace EasyHosting.Models.Serialization
 		}
 
 		/// <summary>
-		/// 
+		/// Ustawia dane źródłowe dla serializatora
 		/// </summary>
-		/// <param name="data"></param>
+		/// <param name="data">Dane źródłowe dla serializatora</param>
 		public virtual void SetData(JObject data) {
 			DataOrigin = data;
 
@@ -217,6 +217,10 @@ namespace EasyHosting.Models.Serialization
 			}
 		}
 	
+		/// <summary>
+		/// Zwraca JObject o formacie zdefiniowanym jako format API (W atrybucie SerializerField argument apiName)
+		/// </summary>
+		/// <returns></returns>
 		public virtual JObject GetApiObject() {
 			JObject result = new JObject();
 
