@@ -7,6 +7,12 @@ Zróbmy Brydża! - Dokumentacja
 
    EasyHosting/serializacja/index
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Aplikacja
+
+   Aplikacja/wprowadzenie
+   Aplikacja/dropdown/index
 
 
 .. Indices and tables
