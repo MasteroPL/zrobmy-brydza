@@ -6,6 +6,7 @@ Zróbmy Brydża! - Dokumentacja
    :caption: Biblioteka EasyHosting
 
    EasyHosting/serializacja/_index
+   EasyHosting/akcje/_index
 
 .. toctree::
    :maxdepth: 2

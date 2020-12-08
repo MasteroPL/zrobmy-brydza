@@ -6,22 +6,46 @@ using System.Text;
 
 namespace EasyHosting.Models.Actions
 {
-	public class ActionsManager
+	public class ActionsManager<TSessionData>
 	{
 		public const string ERROR_CODE_NOT_FOUND = "ACTION_NOT_FOUND";
 		public const string ERROR_CODE_MANAGER_GENERIC = "GENERIC_MANAGER_ERROR";
 		public const string ERROR_CODE_INTERNAL = "INTERNAL_ACTION_ERROR";
 
-		private Dictionary<string, IAction> ActionsDictionary = new Dictionary<string, IAction>();
+		private Dictionary<string, Action<TSessionData>> ActionsDictionary = new Dictionary<string, Action<TSessionData>>();
 
-		public JObject PerformActions(JObject actionsData) {
+		public ActionsManager(Dictionary<string, Action<TSessionData>> actionsDictionary) {
+			this.ActionsDictionary = actionsDictionary;
+		}
+		public ActionsManager() { }
+
+		/// <summary>
+		/// Dodaje akcję do listy dostępnych akcji w tym managerze
+		/// </summary>
+		/// <param name="actionName">Nazwa (identyfikator) akcji</param>
+		/// <param name="action">Obiekt definiujący akcję</param>
+		public void AddAction(string actionName, Action<TSessionData> action) {
+			if (ActionsDictionary.ContainsKey(actionName)) {
+				throw new ArgumentException("This action name is already defined");
+			}
+
+			ActionsDictionary.Add(actionName, action);
+		}
+
+		public void AddActions(Dictionary<string, Action<TSessionData>> actions) {
+			foreach(var keyValuePair in actions) {
+				AddAction(keyValuePair.Key, keyValuePair.Value);
+			}
+		}
+
+		public JObject PerformActions(TSessionData sessionData, JObject actionsData) {
 			var serializer = new ActionsSerializer(actionsData);
 			var actionsMeta = serializer.GetActionsMeta();
 			
-			return PerformActions(actionsMeta);
+			return PerformActions(sessionData, actionsMeta);
 		}
 
-		public JObject PerformActions(IEnumerable<ActionMeta> actions) {
+		public JObject PerformActions(TSessionData sessionData, IEnumerable<ActionMeta> actions) {
 			var response = new ActionsSerializer();
 			response.Actions = new ActionSerializer[actions.Count()];
 			JObject jObjPtr;
@@ -29,7 +53,7 @@ namespace EasyHosting.Models.Actions
 			int index = 0;
 			foreach(var action in actions) {
 				try {
-					jObjPtr = PerformAction(action.Name, action.Data);
+					jObjPtr = PerformAction(sessionData, action.Name, action.Data);
 				} catch(ActionNotFoundException e) {
 					jObjPtr = new JObject();
 					jObjPtr.Add("error_code", ERROR_CODE_NOT_FOUND);
@@ -54,12 +78,12 @@ namespace EasyHosting.Models.Actions
 			return response.GetApiObject();
 		}
 
-		public JObject PerformAction(string actionName, JObject actionData) {
+		public JObject PerformAction(TSessionData sessionData, string actionName, JObject actionData) {
 			if (!ActionsDictionary.ContainsKey(actionName)) {
 				throw new ActionNotFoundException(actionName, "Action " + actionName + " has not been defined for this manager.");
 			}
 
-			return ActionsDictionary[actionName].PerformAction(actionData);
+			return ActionsDictionary[actionName].Invoke(sessionData, actionData);
 		}
 	}
 
