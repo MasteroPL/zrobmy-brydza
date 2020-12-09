@@ -14,6 +14,7 @@ Zróbmy Brydża! - Dokumentacja
 
    Aplikacja/wprowadzenie
    Aplikacja/dropdown/index
+   Aplikacja/Ekran_rozgrywki/index
 
 
 .. Indices and tables
