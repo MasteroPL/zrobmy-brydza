@@ -48,17 +48,52 @@ public class GameManagerScript : MonoBehaviour
         currentState = GameState.STARTING;
         if (currentState == GameState.STARTING)
         {
-            List<string> cards = ServerDialler.GetPlayerCards(); // adjusting response data and giving player his/her cards, TODO send request to server
-            float[] myCardsX = { -5.69277f, -5.25f, -4.80724f, -4.36446f, -3.92169f, -3.47892f, -3.03615f, -2.59344f, -2.150609f, -1.70784f, -1.26507f, -0.8223f, -0.37953f };
+            // position
+            //float[] myCardsX = { -5.69277f, -5.25f, -4.80724f, -4.36446f, -3.92169f, -3.47892f, -3.03615f, -2.59344f, -2.150609f, -1.70784f, -1.26507f, -0.8223f, -0.37953f };
+            // uzywam localposition
+            float[] myCardsX = { -2.37f, -1.975f, -1.58f, -1.185f, -0.79f, -0.395f, 0.0f, 0.395f, 0.79f, 1.185f, 1.58f, 1.975f, 2.37f };
+            float[] opCardsY = { 1.72f, 1.4334f, 1.1468f, 0.86f, 0.5736f, 0.287f, 0.0f, -0.2862f, -0.5728f, -0.8594f, -1.146f, -1.43f, -1.72f };
+            // nie umiem w fory po enumach wiec 4 razy to samo
+            List<string> cards = ServerDialler.GetPlayerCards(PlayerTag.N); // adjusting response data and giving player his/her cards, TODO send request to server
+            for (int i = 0; i < cards.Count; i++)
+            {
+                //System.Diagnostics.Debug.WriteLine("dupa1");
+                GameObject card = GameObject.Find(cards[i]);
+                card.transform.localPosition = new Vector3(myCardsX[i], -3.28f);
+                card.GetComponent<Card>().playerID = userData.position;
+                SpriteRenderer sr = card.GetComponent<SpriteRenderer>();
+                sr.sortingOrder = i;
+            }
+            
+            cards = ServerDialler.GetPlayerCards(PlayerTag.S); // adjusting response data and giving player his/her cards, TODO send request to server
             for (int i = 0; i < cards.Count; i++)
             {
                 GameObject card = GameObject.Find(cards[i]);
-                card.transform.position = new Vector3(myCardsX[i], -2.73f);
+                card.transform.localPosition = new Vector3(myCardsX[i], 3.07f);
                 card.GetComponent<Card>().playerID = userData.position;
                 SpriteRenderer sr = card.GetComponent<SpriteRenderer>();
                 sr.sortingOrder = i;
             }
 
+            cards = ServerDialler.GetPlayerCards(PlayerTag.W); // adjusting response data and giving player his/her cards, TODO send request to server
+            for (int i = 0; i < cards.Count; i++)
+            {
+                GameObject card = GameObject.Find(cards[i]);
+                card.transform.localPosition = new Vector3(-4.61f, opCardsY[i]);
+                card.GetComponent<Card>().playerID = userData.position;
+                SpriteRenderer sr = card.GetComponent<SpriteRenderer>();
+                sr.sortingOrder = i;
+            }
+
+            cards = ServerDialler.GetPlayerCards(PlayerTag.E); // adjusting response data and giving player his/her cards, TODO send request to server
+            for (int i = 0; i < cards.Count; i++)
+            {
+                GameObject card = GameObject.Find(cards[i]);
+                card.transform.localPosition = new Vector3(4.61f, opCardsY[i]);
+                card.GetComponent<Card>().playerID = userData.position;
+                SpriteRenderer sr = card.GetComponent<SpriteRenderer>();
+                sr.sortingOrder = i;
+            }
             currentState = GameState.BIDDING;
             CurrentState = AuctionState;
             GameObject auctionObject;
@@ -67,7 +102,7 @@ public class GameManagerScript : MonoBehaviour
             GameObject startButtonObject;
             startButtonObject = GameObject.Find("/Canvas/TableCanvas/StartButton");
             startButtonObject.SetActive(false);
-        }
+        } 
     }
 
     public void putCard(Card card)
