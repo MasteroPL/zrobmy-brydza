@@ -61,6 +61,9 @@ public class GameManagerScript : MonoBehaviour
 
             currentState = GameState.BIDDING;
             CurrentState = AuctionState;
+            GameObject auctionObject;
+            auctionObject = GameObject.Find("AuctionDialog");
+            auctionObject.setActive(true);
         }
     }
 
