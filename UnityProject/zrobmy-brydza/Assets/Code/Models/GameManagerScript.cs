@@ -34,6 +34,11 @@ public class GameManagerScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+     
+    }
+
+    public void startGame()
+    {
         userData = new UserData();
 
         AuctionMod.initAuctionModule(this, userData, PlayerTag.N);
