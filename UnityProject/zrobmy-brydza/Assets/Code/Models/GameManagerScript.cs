@@ -62,10 +62,10 @@ public class GameManagerScript : MonoBehaviour
             currentState = GameState.BIDDING;
             CurrentState = AuctionState;
             GameObject auctionObject;
-            auctionObject = GameObject.Find("AuctionDialog");
+            auctionObject = GameObject.Find("/Canvas/TableCanvas/AuctionDialog");
             auctionObject.SetActive(true);
             GameObject startButtonObject;
-            startButtonObject = GameObject.Find("StartButton");
+            startButtonObject = GameObject.Find("/Canvas/TableCanvas/StartButton");
             startButtonObject.SetActive(false);
         }
     }
