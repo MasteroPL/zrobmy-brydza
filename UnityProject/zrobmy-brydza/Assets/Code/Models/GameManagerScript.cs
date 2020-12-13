@@ -34,16 +34,16 @@ public class GameManagerScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-     
-    }
-
-    public void startGame()
-    {
         userData = new UserData();
 
         AuctionMod.initAuctionModule(this, userData, PlayerTag.N);
         PlayingMod.initPlayingModule(this);
 
+    }
+
+    public void startGame()
+    {
+    
         //Here will be method, checking if there are 4 players ready.
         currentState = GameState.STARTING;
         if (currentState == GameState.STARTING)
