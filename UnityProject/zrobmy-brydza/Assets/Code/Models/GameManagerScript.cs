@@ -64,6 +64,9 @@ public class GameManagerScript : MonoBehaviour
             GameObject auctionObject;
             auctionObject = GameObject.Find("AuctionDialog");
             auctionObject.SetActive(true);
+            GameObject startButtonObject;
+            startButtonObject = GameObject.Find("StartButton");
+            startButtonObject.SetActive(false);
         }
     }
 
