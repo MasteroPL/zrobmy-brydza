@@ -2,9 +2,8 @@
 
 namespace EasyHosting.Models.Actions
 {
-	public class ActionFinishEventArgs<TSessionData>
+	public class ActionFinishEventArgs
 	{
-		public TSessionData SessionData;
 		public BaseSerializer RequestData;
 		public BaseSerializer ResponseData;
 	}
