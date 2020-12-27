@@ -2,9 +2,8 @@
 
 namespace EasyHosting.Models.Actions
 {
-	public class ActionInvokeEventArgs<TSessionData>
+	public class ActionInvokeEventArgs
 	{
-		public TSessionData SessionData;
 		public BaseSerializer RequestData;
 	}
 }

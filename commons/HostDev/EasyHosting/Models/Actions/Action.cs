@@ -6,24 +6,24 @@ using System.Text;
 
 namespace EasyHosting.Models.Actions
 {
-	public abstract class Action<TSessionData>
+	public abstract class Action
 	{
 		/// <summary>
 		/// Wydarzenie wywoływane kiedy dowolna akcja zostanie wywołana
 		/// </summary>
-		public static event EventHandler<ActionInvokeEventArgs<TSessionData>> Invoked;
+		public static event EventHandler<ActionInvokeEventArgs> Invoked;
 		/// <summary>
 		/// Wydarzenie wywoływane kiedy ta akcja zostanie wywołana
 		/// </summary>
-		public event EventHandler<ActionInvokeEventArgs<TSessionData>> InvokedThis;
+		public event EventHandler<ActionInvokeEventArgs> InvokedThis;
 		/// <summary>
 		/// Wydarzenie wywoływane kiedy dowolna akcja się zakończy
 		/// </summary>
-		public static event EventHandler<ActionFinishEventArgs<TSessionData>> Finished;
+		public static event EventHandler<ActionFinishEventArgs> Finished;
 		/// <summary>
 		/// Wydarzenie wywoływane kiedy ta akcja się zakończy
 		/// </summary>
-		public event EventHandler<ActionFinishEventArgs<TSessionData>> FinishedThis;
+		public event EventHandler<ActionFinishEventArgs> FinishedThis;
 
 		private Type _RequestSerializerType;
 		/// <summary>
@@ -49,25 +49,23 @@ namespace EasyHosting.Models.Actions
 			this._ResponseSerializerType = responseSerializerType;
 		}
 
-		public JObject Invoke(TSessionData sessionData, JObject requestData) {
+		public JObject Invoke(JObject requestData) {
 			BaseSerializer requestSerializer = (BaseSerializer)Activator.CreateInstance(RequestSerializerType);
 			requestSerializer.SetData(requestData);
 			requestSerializer.Validate();
 
 			// Wywołanie wydarzenia
-			var argsInvk = new ActionInvokeEventArgs<TSessionData>() {
-				SessionData = sessionData,
+			var argsInvk = new ActionInvokeEventArgs() {
 				RequestData = requestSerializer
 			};
 			InvokedThis?.Invoke(this, argsInvk);
 			Invoked?.Invoke(this, argsInvk);
 
 			// Główna metoda wykonująca akcję
-			BaseSerializer responseSerializer = PerformAction(sessionData, requestSerializer);
+			BaseSerializer responseSerializer = PerformAction(requestSerializer);
 
 			// Wywołanie wydarzenia
-			var argsFnshd = new ActionFinishEventArgs<TSessionData>() {
-				SessionData = sessionData,
+			var argsFnshd = new ActionFinishEventArgs() {
 				RequestData = requestSerializer,
 				ResponseData = responseSerializer
 			};
@@ -86,6 +84,6 @@ namespace EasyHosting.Models.Actions
 			return (BaseSerializer)Activator.CreateInstance(ResponseSerializerType);
 		}
 
-		protected abstract BaseSerializer PerformAction(TSessionData sessionData, BaseSerializer requestData);
+		protected abstract BaseSerializer PerformAction(BaseSerializer requestData);
 	}
 }
