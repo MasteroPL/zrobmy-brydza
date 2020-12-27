@@ -7,9 +7,9 @@ public class PlayingModule : MonoBehaviour
     private GameManagerScript MainModule;
     [SerializeField] PlayingBaseState PlayingState;
 
-    public void initPlayingModule(GameManagerScript mainModule)
+    public void InitPlayingModule(GameManagerScript MainModule)
     {
-        MainModule = mainModule;
+        this.MainModule = MainModule;
         //PlayingState.currentPlayer = startingPlayer;
 
         PlayingState.currentPutCardLabelForPlayerN = null;

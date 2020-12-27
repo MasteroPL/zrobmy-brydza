@@ -46,7 +46,7 @@ public enum CardState
     IN_DECK = 0,
     ON_HAND = 1,
     ON_TABLE = 2,
-    USED = 3
+    DISPOSED = 3
 }
 
 public enum CardColor
