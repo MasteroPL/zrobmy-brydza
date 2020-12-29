@@ -13,50 +13,6 @@ namespace EasyHosting.Models.Server
 	public class ClientConnection
 	{
 		private JsonSerializer JsonSerializer = new JsonSerializer();
-
-		// 
-		// Meta dane połączenia
-		//
-
-		private DateTime ConnectedAt = DateTime.Now;
-		/// <summary>
-		/// Długość istnienia połączenia
-		/// </summary>
-		public TimeSpan ConnectionTime {
-			get {
-				return DateTime.Now - ConnectedAt;
-			}
-		}
-
-		private uint _BufferSize = 16384; // 16KB
-		/// <summary>
-		/// Zdefiniowany rozmiar bufora sczytującego z połączeń przychodzących
-		/// </summary>
-		public uint BufferSize { get { return _BufferSize; } protected set { _BufferSize = value; } }
-
-		private TcpClient _TcpClient = null;
-		public TcpClient TcpClient { get { return _TcpClient; } protected set { _TcpClient = value; } }
-
-		private Func<ClientConnection, JObject, JObject> _RequestHandler;
-		/// <summary>
-		/// Funkcja do której wysyłane są informacje przechwycowanego zapytania
-		/// </summary>
-		public Func<ClientConnection, JObject, JObject> RequestHandler { get { return _RequestHandler; } protected set { _RequestHandler = value; } }
-
-		private Func<ClientConnection, JObject, JObject> _AuthorizationHandler;
-		/// <summary>
-		/// Funkcja do której wysyłane są informacje autoryzacyjne (socket najpewniej wymaga autoryzacji przed udostępnieniem możliwości jakiejkolwiek komunikacji)
-		/// </summary>
-		public Func<ClientConnection, JObject, JObject> AuthorizationHandler { get { return _AuthorizationHandler; } protected set { _AuthorizationHandler = value; } }
-
-		public ConnectionState ConnectionState { get; protected set; }
-
-		public bool DataAvailable {
-			get {
-				return _TcpClient.GetStream().DataAvailable;
-			}
-		}
-
 		private BsonDataWriter _BsonWriter = null;
 		protected BsonDataWriter BsonWriter {
 			get {
@@ -92,53 +48,47 @@ namespace EasyHosting.Models.Server
 			}
 		}
 
+		private DateTime ConnectedAt = DateTime.Now;
 
-		public ClientConnection(TcpClient tcpClient, Func<ClientConnection, JObject, JObject> authorizationHandler, Func<ClientConnection, JObject, JObject> requestHandler, uint bufferSize = 16384) {
-			TcpClient = tcpClient;
-			BufferSize = bufferSize;
-			RequestHandler = requestHandler;
-			AuthorizationHandler = authorizationHandler;
+		public TimeSpan GetConnectionTime (){
+			return DateTime.Now - ConnectedAt;
 		}
 
-		protected virtual void CheckForAny(Func<ClientConnection, JObject, JObject> handler) {
-			var stream = TcpClient.GetStream();
+		private TcpClient _TcpClient = null;
+		public TcpClient TcpClient { get { return _TcpClient; } protected set { this._TcpClient = value; } }
 
-			if (stream.DataAvailable) {
-				//long incomingDataLength = stream.Length;
+		public ConnectionState ConnectionState { get; protected set; }
 
-				//if (incomingDataLength > BufferSize) {
-				//	// TODO: handle bad request - size too big exception
-				//	stream.Flush();
-				//	return;
-				//}
-
-				JObject requestData = null;
-
-				try {
-					requestData = JObject.Load(BsonReader);
-				} catch (Exception e) {
-					// TODO: handle bad request
-
-					return;
-				}
-
-
-				JObject response = handler(this, requestData);
-
-				// Serializacja odpowiedzi
-				JsonSerializer.Serialize(BsonWriter, response);
-
-				// Przesyłanie odpowiedzi
-				stream.Flush();
+		public bool DataAvailable {
+			get {
+				return _TcpClient.GetStream().DataAvailable;
 			}
 		}
 
-		public virtual void CheckForRequest() {
-			CheckForAny(this.RequestHandler);
-		}
+		public JObject GetData() {
+			try {
+				var data = JObject.Load(BsonReader);
+				return data;
+            } catch(Exception e) {
+				throw e; // temporary; TODO: change
+            }
+        }
 
-		public virtual void CheckForAuthorization() {
-			CheckForAny(this.AuthorizationHandler);
+		public void WriteData(JObject data) {
+            try {
+				JsonSerializer.Serialize(BsonWriter, data);
+            } catch(Exception e) {
+				throw e; // temporary; TODO: change
+            }
+        }
+
+		public void Flush() {
+			var stream = TcpClient.GetStream();
+			stream.Flush();
+        }
+
+		public ClientConnection(TcpClient tcpClient) {
+			this.TcpClient = tcpClient;
 		}
 	}
 }

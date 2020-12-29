@@ -25,7 +25,7 @@ namespace SocketTesting
 			Debug();
 			return;
 
-			var serverSocket = new ServerSocket();
+			var serverSocket = new BridgeServerSocket();
 			serverSocket.Start();
 		}
 	}
