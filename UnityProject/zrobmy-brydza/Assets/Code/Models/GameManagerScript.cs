@@ -29,80 +29,66 @@ public class GameManagerScript : MonoBehaviour
     public ScriptableObject CurrentState; // keeping current app state
     public AuctionBaseState AuctionState;
     public PlayingBaseState PlayingState;
-    public GameState currentState;
 
-    // Start is called before the first frame update
     void Start()
     {
         userData = new UserData();
-
-        AuctionMod.initAuctionModule(this, userData, PlayerTag.N);
-        PlayingMod.initPlayingModule(this);
-
+        AuctionMod.InitAuctionModule(this, userData, PlayerTag.N);
+        PlayingMod.InitPlayingModule(this);
     }
 
     public void startGame()
     {
-    
+        CurrentState = AuctionState;
         //Here will be method, checking if there are 4 players ready.
-        currentState = GameState.STARTING;
-        if (currentState == GameState.STARTING)
+        if (CurrentState.Equals(AuctionState))
         {
             // position
             //float[] myCardsX = { -5.69277f, -5.25f, -4.80724f, -4.36446f, -3.92169f, -3.47892f, -3.03615f, -2.59344f, -2.150609f, -1.70784f, -1.26507f, -0.8223f, -0.37953f };
             // uzywam localposition
-            float[] myCardsX = { -2.37f, -1.975f, -1.58f, -1.185f, -0.79f, -0.395f, 0.0f, 0.395f, 0.79f, 1.185f, 1.58f, 1.975f, 2.37f };
-            float[] opCardsY = { 1.72f, 1.4334f, 1.1468f, 0.86f, 0.5736f, 0.287f, 0.0f, -0.2862f, -0.5728f, -0.8594f, -1.146f, -1.43f, -1.72f };
-            // nie umiem w fory po enumach wiec 4 razy to samo
-            List<string> cards = ServerDialler.GetPlayerCards(PlayerTag.N); // adjusting response data and giving player his/her cards, TODO send request to server
-            for (int i = 0; i < cards.Count; i++)
-            {
-                //System.Diagnostics.Debug.WriteLine("dupa1");
-                GameObject card = GameObject.Find(cards[i]);
-                card.transform.localPosition = new Vector3(myCardsX[i], -3.28f);
-                card.GetComponent<Card>().playerID = userData.position;
-                SpriteRenderer sr = card.GetComponent<SpriteRenderer>();
-                sr.sortingOrder = i;
-            }
-            
-            cards = ServerDialler.GetPlayerCards(PlayerTag.S); // adjusting response data and giving player his/her cards, TODO send request to server
-            for (int i = 0; i < cards.Count; i++)
-            {
-                GameObject card = GameObject.Find(cards[i]);
-                card.transform.localPosition = new Vector3(myCardsX[i], 3.07f);
-                card.GetComponent<Card>().playerID = userData.position;
-                SpriteRenderer sr = card.GetComponent<SpriteRenderer>();
-                sr.sortingOrder = i;
-            }
 
-            cards = ServerDialler.GetPlayerCards(PlayerTag.W); // adjusting response data and giving player his/her cards, TODO send request to server
-            for (int i = 0; i < cards.Count; i++)
-            {
-                GameObject card = GameObject.Find(cards[i]);
-                card.transform.localPosition = new Vector3(-4.61f, opCardsY[i]);
-                card.GetComponent<Card>().playerID = userData.position;
-                SpriteRenderer sr = card.GetComponent<SpriteRenderer>();
-                sr.sortingOrder = i;
-            }
+            GiveCardsToPlayer(PlayerTag.N);
+            GiveCardsToPlayer(PlayerTag.S);
+            GiveCardsToPlayer(PlayerTag.W);
+            GiveCardsToPlayer(PlayerTag.E);
 
-            cards = ServerDialler.GetPlayerCards(PlayerTag.E); // adjusting response data and giving player his/her cards, TODO send request to server
-            for (int i = 0; i < cards.Count; i++)
-            {
-                GameObject card = GameObject.Find(cards[i]);
-                card.transform.localPosition = new Vector3(4.61f, opCardsY[i]);
-                card.GetComponent<Card>().playerID = userData.position;
-                SpriteRenderer sr = card.GetComponent<SpriteRenderer>();
-                sr.sortingOrder = i;
-            }
-            currentState = GameState.BIDDING;
-            CurrentState = AuctionState;
-            GameObject auctionObject;
-            auctionObject = GameObject.Find("/Canvas/TableCanvas/AuctionDialog");
+            GameObject auctionObject = GameObject.Find("/Canvas/TableCanvas/AuctionDialog");
             auctionObject.SetActive(true);
-            GameObject startButtonObject;
-            startButtonObject = GameObject.Find("/Canvas/TableCanvas/StartButton");
+            GameObject startButtonObject = GameObject.Find("/Canvas/StartButton");
             startButtonObject.SetActive(false);
         } 
+    }
+
+    // temporary method, it is here to make the code shorter
+    private void GiveCardsToPlayer(PlayerTag PlayerIdentifier)
+    {
+        float[] myCardsX = { -2.37f, -1.975f, -1.58f, -1.185f, -0.79f, -0.395f, 0.0f, 0.395f, 0.79f, 1.185f, 1.58f, 1.975f, 2.37f };
+        float[] opCardsY = { 1.72f, 1.4334f, 1.1468f, 0.86f, 0.5736f, 0.287f, 0.0f, -0.2862f, -0.5728f, -0.8594f, -1.146f, -1.43f, -1.72f };
+
+        List<string> cards = ServerDialler.GetPlayerCards(PlayerIdentifier);
+        for (int i = 0; i < cards.Count; i++)
+        {
+            GameObject card = GameObject.Find(cards[i]);
+            switch (PlayerIdentifier)
+            {
+                case PlayerTag.N:
+                    card.transform.localPosition = new Vector3(myCardsX[i], -3.28f);
+                    break;
+                case PlayerTag.S:
+                    card.transform.localPosition = new Vector3(myCardsX[i], 3.07f);
+                    break;
+                case PlayerTag.W:
+                    card.transform.localPosition = new Vector3(-4.61f, opCardsY[i]);
+                    break;
+                case PlayerTag.E:
+                    card.transform.localPosition = new Vector3(4.61f, opCardsY[i]);
+                    break;
+            }
+            
+            card.GetComponent<Card>().playerID = userData.position;
+            SpriteRenderer sr = card.GetComponent<SpriteRenderer>();
+            sr.sortingOrder = i;
+        }
     }
 
     public void putCard(Card card)

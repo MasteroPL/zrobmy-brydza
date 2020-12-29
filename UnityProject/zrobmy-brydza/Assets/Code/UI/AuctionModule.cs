@@ -10,7 +10,6 @@ public class AuctionModule : MonoBehaviour
     private GameManagerScript MainModule;
     [SerializeField] AuctionBaseState AuctionState;
     private UserData MyData;
-    private StringBuilder contractCache;
 
     // UI Serialized components
     [SerializeField] Canvas AuctionDialog;
@@ -40,56 +39,43 @@ public class AuctionModule : MonoBehaviour
     [SerializeField] Button XXButton;
     [SerializeField] Button OKButton;
 
-    // Auction declarations listing
+    // Auction declarations listing <- should be moved to other module
     [SerializeField] Text NPlayerDeclarations;
     [SerializeField] Text EPlayerDeclarations;
     [SerializeField] Text SPlayerDeclarations;
     [SerializeField] Text WPlayerDeclarations;
 
-    public void initAuctionModule(GameManagerScript mainModule, UserData userData, PlayerTag startingPlayer)
+    public void InitAuctionModule(GameManagerScript MainModule, UserData UserData, PlayerTag StartingPlayer)
     {
-        contractCache = new StringBuilder("   ");
-        MainModule = mainModule;
-        MyData = userData;
-        AuctionState.init(startingPlayer);
+        this.MainModule = MainModule;
+        MyData = UserData;
+        AuctionState.Init(StartingPlayer);
 
         // setting visibility of dialog for first render, later it'll be updated according to game state & current player
-        if (AuctionState.currentPlayer == MyData.position)
+        if (AuctionState.CurrentPlayer == MyData.position)
             AuctionDialog.enabled = true;
         else
             AuctionDialog.enabled = false;
 
         // assigning handlers to buttons
-        AuctionHeight1Button.onClick.AddListener(() => { contractCache[0] = '1'; });
-        AuctionHeight2Button.onClick.AddListener(() => { contractCache[0] = '2'; });
-        AuctionHeight3Button.onClick.AddListener(() => { contractCache[0] = '3'; });
-        AuctionHeight4Button.onClick.AddListener(() => { contractCache[0] = '4'; });
-        AuctionHeight5Button.onClick.AddListener(() => { contractCache[0] = '5'; });
-        AuctionHeight6Button.onClick.AddListener(() => { contractCache[0] = '6'; });
-        AuctionHeight7Button.onClick.AddListener(() => { contractCache[0] = '7'; });
+        AuctionHeight1Button.onClick.AddListener(() => { AuctionState.DeclareContractHeight(ContractHeight.ONE); });
+        AuctionHeight2Button.onClick.AddListener(() => { AuctionState.DeclareContractHeight(ContractHeight.TWO); });
+        AuctionHeight3Button.onClick.AddListener(() => { AuctionState.DeclareContractHeight(ContractHeight.THREE); });
+        AuctionHeight4Button.onClick.AddListener(() => { AuctionState.DeclareContractHeight(ContractHeight.FOUR); });
+        AuctionHeight5Button.onClick.AddListener(() => { AuctionState.DeclareContractHeight(ContractHeight.FIVE); });
+        AuctionHeight6Button.onClick.AddListener(() => { AuctionState.DeclareContractHeight(ContractHeight.SIX); });
+        AuctionHeight7Button.onClick.AddListener(() => { AuctionState.DeclareContractHeight(ContractHeight.SEVEN); });
 
-        ClubsSignButton.onClick.AddListener(() => { contractCache[1] = 'C'; contractCache[2] = ' '; });
-        DiamondsSignButton.onClick.AddListener(() => { contractCache[1] = 'D'; contractCache[2] = ' '; });
-        HeartsSignButton.onClick.AddListener(() => { contractCache[1] = 'H'; contractCache[2] = ' '; });
-        SpadesSignButton.onClick.AddListener(() => { contractCache[1] = 'S'; contractCache[2] = ' '; });
-        NTSignButton.onClick.AddListener(() => { contractCache[1] = 'N'; contractCache[2] = 'T'; });
+        ClubsSignButton.onClick.AddListener(() => { AuctionState.DeclareContractColor(ContractColor.C); });
+        DiamondsSignButton.onClick.AddListener(() => { AuctionState.DeclareContractColor(ContractColor.D); });
+        HeartsSignButton.onClick.AddListener(() => { AuctionState.DeclareContractColor(ContractColor.H); });
+        SpadesSignButton.onClick.AddListener(() => { AuctionState.DeclareContractColor(ContractColor.S); });
+        NTSignButton.onClick.AddListener(() => { AuctionState.DeclareContractColor(ContractColor.NT); });
 
-        XButton.onClick.AddListener(() => {
-            if (AuctionState.currentContract != null)
-            {
-                contractCache[0] = 'X';
-                contractCache[1] = ' ';
-                contractCache[2] = ' ';
-            }
-        });
+        XButton.onClick.AddListener(() => { AuctionState.DeclareX(); });
 
-        XXButton.onClick.AddListener(() => { 
-            if (AuctionState.xEnabled)
-            {
-                contractCache[0] = 'X'; contractCache[1] = 'X'; contractCache[2] = ' ';
-            }
-        });
-        OKButton.onClick.AddListener(declareNewContract);
+        XXButton.onClick.AddListener(() => { AuctionState.DeclareXX(); });
+        OKButton.onClick.AddListener(() => { AuctionState.UpdateContract(); });
     }
 
     void Start()
@@ -100,13 +86,27 @@ public class AuctionModule : MonoBehaviour
     {
         if (MainModule.CurrentState == AuctionState)
         {
-            if (AuctionState.currentPlayer == MyData.position)
+            if (AuctionState.CurrentPlayer == MyData.position)
             {
                 AuctionDialog.enabled = true;  // showing dialog
 
                 // these 2 lines below should be updated after filling contract
                 string prefix = "Licytujesz : ";
-                AuctionContractPreviewText.text = prefix + contractCache.ToString();
+                string displayedText = "";
+                if (AuctionState.ContractCache.XXEnabled)
+                {
+                    displayedText = "XX";
+                } 
+                else if (AuctionState.ContractCache.XEnabled)
+                {
+                    displayedText = "X";
+                } 
+                else
+                {
+                    displayedText = AuctionState.ContractCache.ToString();
+                }
+                AuctionContractPreviewText.text = prefix + displayedText;
+                AuctionContractPreviewText.text += AuctionState.CurrentContract != null ? "\nAktualny kontrakt: " + AuctionState.CurrentContract.ToString():"";
             }
             else
             {
@@ -115,55 +115,8 @@ public class AuctionModule : MonoBehaviour
         }
     }
 
-    void declareNewContract()
+    /*void declareNewContract()
     {
-        string contractString = contractCache.ToString();
-        if (!contractString.Contains("X")) // any contract that is not X or XX
-        {
-            if (AuctionState.currentContract == null)
-            {
-                AuctionState.currentContract = contractString;
-            }
-            else
-            {
-                bool isContractConsistent = AuctionState.IsContractConsistent(contractString);
-                if (isContractConsistent)
-                {
-                    AuctionState.currentContract = contractString;
-                    AuctionState.xEnabled = false;
-                    AuctionState.xxEnabled = false;
-                }
-                else
-                    return;
-            }
-        }
-        else
-        {
-            if (contractString.Contains("XX"))
-            {
-                if (AuctionState.xEnabled)
-                {
-                    AuctionState.xEnabled = false;
-                    AuctionState.xxEnabled = true;
-                }
-                else
-                {
-                    return;
-                }
-            }
-            else
-            {
-                if (!AuctionState.xxEnabled && !AuctionState.xEnabled)
-                {
-                    AuctionState.xEnabled = true;
-                }
-                else
-                {
-                    return;
-                }
-            }
-        }
-        
         switch (AuctionState.currentPlayer)
         {
             case PlayerTag.N:
@@ -184,5 +137,5 @@ public class AuctionModule : MonoBehaviour
         contractCache[1] = ' ';
         contractCache[2] = ' ';
         //AuctionState.currentPlayer = PlayerTag.E; // TODO setting proper player
-    }
+    }*/
 }

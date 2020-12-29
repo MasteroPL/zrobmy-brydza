@@ -1,40 +1,119 @@
-﻿using System.Collections;
+﻿using Assets.Code.Models;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "AuctionState")]
 public class AuctionBaseState : ScriptableObject
 {
-    private List<string> possibleContracts;
-    public string currentContract { get; set; }
-    public PlayerTag currentPlayer { get; set; }
-    public bool xEnabled { get; set; }
-    public bool xxEnabled { get; set; }
+    private List<Contract> PossibleContracts;
+    public Contract CurrentContract { get; set; }
+    public PlayerTag CurrentPlayer { get; set; }
+    public Contract ContractCache { get; set; }
 
-    public void init(PlayerTag firstDeclaringPlayer)
+    public void Init(PlayerTag FirstDeclaringPlayer)
     {
-        xEnabled = false;
-        xxEnabled = false;
-        currentContract = null;
-        currentPlayer = firstDeclaringPlayer;
-        possibleContracts = new List<string>();
-        string[] colors = { "C ", "D ", "H ", "S ", "NT" };
-        string[] contractHeights = { "1", "2", "3", "4", "5", "6", "7" };
-        for (int j = 0; j < contractHeights.Length; j++)
-        {
-            for (int i = 0; i < colors.Length; i++)
+        CurrentContract = null;
+        ContractCache = new Contract(ContractHeight.NONE, ContractColor.NONE);
+        CurrentPlayer = FirstDeclaringPlayer;
+        PossibleContracts = new List<Contract>();
+
+        foreach(int height in System.Enum.GetValues(typeof(ContractHeight))){
+            foreach(int color in System.Enum.GetValues(typeof(ContractColor)))
             {
-                possibleContracts.Add(contractHeights[j] + colors[i]);
+                if(height != -1 && color != -1)
+                {
+                    PossibleContracts.Add(new Contract((ContractHeight)height, (ContractColor)color));
+                    PossibleContracts.Add(new Contract((ContractHeight)height, (ContractColor)color, true));
+                    PossibleContracts.Add(new Contract((ContractHeight)height, (ContractColor)color, true, true));
+                }
             }
         }
     }
 
-    public bool IsContractConsistent(string newContract) // check if player declared higher contract that actually is declared
+    public bool DeclareX()
     {
-        if (currentContract == null)
+        if (CurrentContract == null || CurrentContract.XEnabled || CurrentContract.XXEnabled)
+        {
+            return false;
+        }
+        ContractCache.ContractHeight = CurrentContract.ContractHeight;
+        ContractCache.ContractColor = CurrentContract.ContractColor;
+        ContractCache.XEnabled = true;
+        return true;
+    }
+
+    public bool DeclareXX()
+    {
+        if (CurrentContract == null || !CurrentContract.XEnabled)
+        {
+            return false;
+        }
+        ContractCache.ContractHeight = CurrentContract.ContractHeight;
+        ContractCache.ContractColor = CurrentContract.ContractColor;
+        ContractCache.XEnabled = true;
+        ContractCache.XXEnabled = true;
+        return true;
+    }
+
+    public void DeclareContractHeight(ContractHeight ContractHeight)
+    {
+        ContractCache.ContractHeight = ContractHeight;
+        ContractCache.XEnabled = false;
+        ContractCache.XXEnabled = false;
+    }
+
+    public void DeclareContractColor(ContractColor ContractColor)
+    {
+        ContractCache.ContractColor = ContractColor;
+        ContractCache.XEnabled = false;
+        ContractCache.XXEnabled = false;
+    }
+
+    public bool UpdateContract()
+    {
+        bool isContractConsistent = IsContractConsistent(ContractCache);
+        Debug.Log(ContractCache.ToString() + " : " + isContractConsistent);
+        if (isContractConsistent)
+        {
+            CurrentContract = ContractCache;
+            ContractCache = new Contract(ContractHeight.NONE, ContractColor.NONE);
             return true;
-        int newContractIndex = possibleContracts.IndexOf(newContract);
-        int currentContractIndex = possibleContracts.IndexOf(currentContract);
+        }
+        return false;
+    }
+
+    private bool IsContractConsistent(Contract PotencialContract) // check if player declared higher contract that actually is declared
+    {
+        if (PotencialContract.ContractHeight == ContractHeight.NONE || PotencialContract.ContractColor == ContractColor.NONE)
+            return false;
+        if (CurrentContract == null)
+            return true;
+        int newContractIndex = PossibleContracts.FindIndex(item => item.Equals(PotencialContract));
+        int currentContractIndex = PossibleContracts.FindIndex(item => item.Equals(CurrentContract));
         return (newContractIndex > currentContractIndex);
     }
+}
+
+public enum ContractColor
+{
+    NONE = -1,
+    C = 0,
+    D = 1,
+    H = 2,
+    S = 3,
+    NT = 4
+}
+
+public enum ContractHeight
+{
+    NONE = -1,
+    ONE = 1,
+    TWO = 2,
+    THREE = 3,
+    FOUR = 4,
+    FIVE = 5,
+    SIX = 6,
+    SEVEN = 7
 }
