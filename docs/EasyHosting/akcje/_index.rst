@@ -6,3 +6,5 @@ Akcje
 
     wprowadzenie
     szybki_start
+    BaseAction
+    ActionsManager

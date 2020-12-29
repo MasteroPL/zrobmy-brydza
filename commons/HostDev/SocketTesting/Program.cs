@@ -22,8 +22,43 @@ namespace SocketTesting
 		}
 
 		static void Main(string[] args) {
-			Debug();
-			return;
+			var actMng = new ActionsManager(new Dictionary<string, BaseAction>() {
+				// Definicja listy akcji
+				{ "sample-action", new SampleAction() }
+			});
+
+            var actionsData = "{ \"actions\": [" +
+                "{ " +
+                    "\"name\": \"sample-action\", " +
+                    "\"data\": {" +
+                        "\"my_name\": \"John\"" +
+                    "}" +
+                "}," +
+                "{ " +
+                    "\"name\": \"sample-action\", " +
+                    "\"data\": {" +
+                        "\"my_name\": \"Jake\"" +
+                    "}" +
+                "}," +
+                "{ " +
+                    "\"name\": \"sample-action\", " +
+                    "\"data\": {" +
+                        "\"my_name\": \"Justin\"" +
+                    "}" +
+                "}" +
+            "]}";
+            Console.WriteLine(actionsData);
+            var jobj = JObject.Parse(actionsData);
+            JObject resp = actMng.PerformActions(jobj);
+            Console.WriteLine("Odpowiedź od akcji: \n" + resp.ToString());
+
+
+            //var act = new SampleAction();
+            //JObject resp = act.Invoke(JObject.Parse("{ \"my_name\": \"John\" }"));
+            //Console.WriteLine("Odpowiedź od akcji: \n" + resp.ToString());
+
+            //Debug();
+            return;
 
 			var serverSocket = new BridgeServerSocket();
 			serverSocket.Start();
