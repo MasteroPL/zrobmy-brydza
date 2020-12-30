@@ -15,7 +15,10 @@ W pierwszym kroku musimy zdefiniować określoną akcję. Jakie dane będzie prz
         
         // Walidacja danych wejściowych odbywa się w klasie bazowej,
         // tutaj możemy ją pominąć.
-        protected override BaseSerializer PerformAction(BaseSerializer requestData) {
+        //
+        // Normalnie będzie nam potrzebne połączenie klienta, ale w
+        // tym przykładzie, nie będziemy z niego korzystać
+        protected override BaseSerializer PerformAction(ClientConnection conn, BaseSerializer requestData) {
             // requestData ma typ taki, jak zdefiniujemy w konstruktorze, 
             // więc możemy zrobić proste rzutowanie 
             RequestSerializer data = (RequestSerializer)requestData;
@@ -71,7 +74,9 @@ Spróbujmy wywołać powyższą akcję
 .. code:: C#
     
     var act = new SampleAction();
-    JObject resp = act.Invoke(JObject.Parse("{ \"my_name\": \"John\" }"));
+    // ClientConnection conn dajemy jako "null", nie używamy go 
+    // w tej akcji, więc możemy go nie przekazywać
+    JObject resp = act.Invoke(null, JObject.Parse("{ \"my_name\": \"John\" }"));
     Console.WriteLine("Odpowiedź od akcji: \n" + resp.ToString());
 
 Wynik ::

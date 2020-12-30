@@ -1,5 +1,6 @@
 ﻿using EasyHosting.Models.Actions;
 using EasyHosting.Models.Serialization;
+using EasyHosting.Models.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace ServerSocket.Actions.HelloWorld {
             typeof(RequestSerializer)
         ) { }
 
-        protected override BaseSerializer PerformAction(BaseSerializer requestData) {
+        protected override BaseSerializer PerformAction(ClientConnection conn, BaseSerializer requestData) {
             // requestData ma typ taki, jak zdefiniujemy w konstruktorze,
             // więc możemy zrobić proste rzutowanie
             RequestSerializer data = (RequestSerializer)requestData;

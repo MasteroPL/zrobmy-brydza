@@ -60,11 +60,13 @@ Metody
 ======
 
 .. method::
-    public JObject Invoke(JObject requestData)
+    public JObject Invoke(ClientConnection conn, JObject requestData)
 
 Wywołuje wykonanie akcji
 
     :Parametry:
+        * conn: ClientConnection
+            Połączenie klienta, proszącego o wykonanie akcji
         * requestData: JObject
             Dane wejściowe
     
@@ -84,11 +86,13 @@ Inicjalizuje serializator odpowiedzi w oparciu o zdefiniowany w konstruktorze ty
         Zainicjalizowany serializator
 
 .. method::
-    protected abstract BaseSerializer PerformAction(BaseSerializer requestData)
+    protected abstract BaseSerializer PerformAction(ClientConnection conn, BaseSerializer requestData)
 
 Właściwa metoda wykonująca akcję. Otrzymuje na wejściu zwalidowane dane po walidacji
 
     :Parametry:
+        * conn: ClientConnection
+            Połączenie klienta, proszącego o wykonanie akcji
         * requestData: BaseSerializer
             Dane wejściowe wpisane do serializatora. Serializator przekazywany na wejściu jest typu "requestSerializerType", definiowanego w konstruktorze
     
