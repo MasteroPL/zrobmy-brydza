@@ -4,6 +4,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using Assets.Code.UI;
+using Assets.Code.Models;
 
 public class AuctionModule : MonoBehaviour
 {
