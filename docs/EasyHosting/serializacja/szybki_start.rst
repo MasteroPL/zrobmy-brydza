@@ -2,7 +2,9 @@
 Szybki start
 ############
 
-Prostym przykładem demonstrującym działanie serializatorów danych może być przykład serializatora weryfikującego strukturę danych do logowania. ::
+Prostym przykładem demonstrującym działanie serializatorów danych może być przykład serializatora weryfikującego strukturę danych do logowania.
+
+.. code:: C#
     
     public class UserAuthorizationSerializer : BaseSerializer
     {
@@ -16,11 +18,15 @@ Prostym przykładem demonstrującym działanie serializatorów danych może być
         public UserAuthorizationSerializer(JObject data) : base(data) { }
     }
 
-Rozbijmy powyższy przykład na części. ::
+Rozbijmy powyższy przykład na części.
+
+.. code:: C#
     
     public class UserAuthorizationSerializer : BaseSerializer
 
-**BaseSerializer** jest klasą bazową serializatorów, w której odbywa się mapowanie i właściwa walidacja danych. Więcej o tej klasie w oddzielnej sekcji. ::
+**BaseSerializer** jest klasą bazową serializatorów, w której odbywa się mapowanie i właściwa walidacja danych. Więcej o tej klasie w oddzielnej sekcji.
+
+.. code:: C#
     
     [SerializerField(apiName: "login")]
     public string Login;
@@ -33,7 +39,9 @@ Tu odbywa się definicja struktury danych, oczekiwana przez zdefiniowany seriali
 * Nazwa pola w przychodzącej strukturze danych (np. *[SerializerField(apiName: "login")]*, czyli serializator będzie oczekiwać w przychodzącej strukturze danych pola "*login*")
 * Oczekiwany typ pola (np. "*string Login;*", zatem oczekiwanym typem będzie "*string*")
 
-**UWAGA:** Typ pola może być jedynie typem prymitywnym, typem dziedziczącym z BaseSerializer lub tablicą jednego z dwóch poprzednich. Więcej o tym w późniejszych sekcjach. ::
+**UWAGA:** Typ pola może być jedynie typem prymitywnym, typem dziedziczącym z BaseSerializer lub tablicą jednego z dwóch poprzednich. Więcej o tym w późniejszych sekcjach.
+
+.. code:: C#
     
     public UserAuthorizationSerializer() : base() { }
     public UserAuthorizationSerializer(JObject data) : base(data) { }
@@ -48,7 +56,9 @@ Tak zdefiniowany serializator będzie oczekiwał na wejściu następującej stru
         "password": <string>
     }
 
-Sprawdźmy zatem, czy wszystko działa jak powinno: ::
+Sprawdźmy zatem, czy wszystko działa jak powinno:
+
+.. code:: C#
     
     JObject obj = JObject.Parse("{ \"login\": \"test\", \"password\": \"Qwerty123\" }");
     var serializer = new ActionsSerializer(obj);
