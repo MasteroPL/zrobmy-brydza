@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SocketTesting {
-    public class BridgeServerSocket : ServerSocket {
+    public class BridgeServerSocket : EasyHosting.Models.Server.ServerSocket {
         protected override bool AuthorizeConnection(ClientConnection conn, JObject requestData) {
             throw new NotImplementedException();
         }
