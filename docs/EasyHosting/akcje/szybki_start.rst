@@ -2,7 +2,9 @@
 Szybki Start
 ############
 
-W pierwszym kroku musimy zdefiniować określoną akcję. Jakie dane będzie przyjmować, jakie zwracać i co będzie robić. Poniżej definicja trywialnej akcji. ::
+W pierwszym kroku musimy zdefiniować określoną akcję. Jakie dane będzie przyjmować, jakie zwracać i co będzie robić. Poniżej definicja trywialnej akcji.
+
+.. code-block:: C#
     
     public class SampleAction : BaseAction {
         
@@ -35,7 +37,9 @@ W przypadku każdej akcji wymagane są dwa serializatory:
 
 Dla powyższego przykładu:
 
-**RequestSerializer** ::
+**RequestSerializer**
+
+.. code:: C#
     
     public class RequestSerializer : BaseSerializer {
         // Na wejściu będziemy oczekiwać imienia
@@ -46,7 +50,9 @@ Dla powyższego przykładu:
         public RequestSerializer(JObject data) : base(data) { }
     }
 
-**ResponseSerializer** ::
+**ResponseSerializer**
+
+.. code:: C#
     
     public class ResponseSerializer : BaseSerializer {
         // Na wyjściu damy "Hello World"
@@ -60,7 +66,9 @@ Dla powyższego przykładu:
 .. TIP::
     Więcej o serializatorach w sekcji :doc:`Serializatory <../serializacja/_index>`
 
-Spróbujmy wywołać powyższą akcję ::
+Spróbujmy wywołać powyższą akcję
+
+.. code:: C#
     
     var act = new SampleAction();
     JObject resp = act.Invoke(JObject.Parse("{ \"my_name\": \"John\" }"));

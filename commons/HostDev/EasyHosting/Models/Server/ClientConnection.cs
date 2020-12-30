@@ -12,6 +12,9 @@ namespace EasyHosting.Models.Server
 {
 	public class ClientConnection
 	{
+		private Session _Session = new Session();
+		public Session Session { get { return _Session; } protected set { _Session = value; } }
+
 		private JsonSerializer JsonSerializer = new JsonSerializer();
 		private BsonDataWriter _BsonWriter = null;
 		protected BsonDataWriter BsonWriter {

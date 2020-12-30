@@ -12,7 +12,9 @@ NullValidator
 =============
 NullValidator określa, czy wartość pola może być NULLem. Pozostałe walidatory domyślnie akceptują NULLa.
 
-Przykład użycia: ::
+Przykład użycia:
+
+.. code:: C#
     
     public class SampleSerializer : BaseSerializer
     {
@@ -25,7 +27,9 @@ RangeValidator
 ==============
 RangeValidator określa akceptowalny zakres wartości dla pola.
 
-Przykład użycia: ::
+Przykład użycia:
+
+.. code:: C#
     
     public class SampleSerializer : BaseSerializer
     {
@@ -54,7 +58,9 @@ TextLengthValidator
 ===================
 TextLengthValidator określa akceptowalną długość tekstu dla pola.
 
-Przykład użycia: ::
+Przykład użycia:
+
+.. code:: C#
     
     public class SampleSerializer : BaseSerializer
     {
@@ -83,7 +89,9 @@ Ręczna walidacja
 
 W celu zbudowania własnej walidacji pól, należy rozszerzyć metodę "Validate" klasy BaseSerializer.
 
-Przykład użycia: ::
+Przykład użycia:
+
+.. code:: C#
     
     public class SampleSerializer : BaseSerializer
     {
@@ -107,7 +115,9 @@ Przykład użycia: ::
         }
     }
 
-Jeśli chcemy zakończyć walidację od razu, jeżeli bazowa walidacja zwróciła błędy wprowadzimy do powyższego kodu niewielką zmianę: ::
+Jeśli chcemy zakończyć walidację od razu, jeżeli bazowa walidacja zwróciła błędy wprowadzimy do powyższego kodu niewielką zmianę:
+
+.. code:: C#
     
     public class SampleSerializer : BaseSerializer
     {
