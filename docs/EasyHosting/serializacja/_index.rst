@@ -1,6 +1,7 @@
 #############
 Serializatory
 #############
+
 .. toctree::
     :maxdepth: 2
 

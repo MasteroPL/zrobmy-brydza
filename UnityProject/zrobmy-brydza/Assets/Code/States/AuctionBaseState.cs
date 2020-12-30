@@ -95,25 +95,3 @@ public class AuctionBaseState : ScriptableObject
         return (newContractIndex > currentContractIndex);
     }
 }
-
-public enum ContractColor
-{
-    NONE = -1,
-    C = 0,
-    D = 1,
-    H = 2,
-    S = 3,
-    NT = 4
-}
-
-public enum ContractHeight
-{
-    NONE = -1,
-    ONE = 1,
-    TWO = 2,
-    THREE = 3,
-    FOUR = 4,
-    FIVE = 5,
-    SIX = 6,
-    SEVEN = 7
-}

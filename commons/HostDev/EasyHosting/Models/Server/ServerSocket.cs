@@ -8,8 +8,11 @@ using System.Net;
 
 namespace EasyHosting.Models.Server
 {
-    public class ServerSocket {
-        public const uint MAX_INCOMING_CONNECTIONS_PER_CYCLE = 10;
+    public abstract class ServerSocket {
+        private List<ClientConnection> UnauthorizedConnections = new List<ClientConnection>();
+        private List<ClientConnection> AuthorizedConnections = new List<ClientConnection>();
+
+        protected TimeSpan TimeForAuthorization;
 
         private bool _Initialized = false;
         /// <summary>
@@ -23,11 +26,6 @@ namespace EasyHosting.Models.Server
         /// </summary>
         public TcpListener TcpListener { get { return _TcpListener; } private set { _TcpListener = value; } }
 
-        private uint _BufferSize = 16384; // 16KB
-        /// <summary>
-        /// Zdefiniowany rozmiar bufora sczytującego z połączeń przychodzących
-        /// </summary>
-        public uint BufferSize { get { return _BufferSize; } private set { _BufferSize = value; } }
 
         private System.Net.IPAddress _IpAddress = System.Net.IPAddress.Any;
         public System.Net.IPAddress IpAddress { get { return _IpAddress; } private set { _IpAddress = value; } }
@@ -35,20 +33,16 @@ namespace EasyHosting.Models.Server
         private int _Port = 33564;
         public int Port { get { return _Port; } private set { _Port = value; } }
 
-        private readonly List<ClientConnection> UnauthorizedConnections = new List<ClientConnection>();
-        private readonly List<ClientConnection> AuthorizedConnections = new List<ClientConnection>();
+        protected readonly JObject AuthorizationSuccessfulResponse = JObject.Parse("{ \"authroization_status\": \"OK\" }");
 
         private void HandleIncommingConnections() {
             int acceptedCount = 0;
-            while (acceptedCount < MAX_INCOMING_CONNECTIONS_PER_CYCLE && TcpListener.Pending()) {
+            while (TcpListener.Pending()) {
                 TcpClient newClient = TcpListener.AcceptTcpClient();
 
                 UnauthorizedConnections.Add(
                     new ClientConnection(
-                        newClient,
-                        HandleAuthorization,
-                        HandleRequest,
-                        BufferSize
+                        newClient
                     )
                 );
                 Console.WriteLine("Accepted connection from: " + ((IPEndPoint)newClient.Client.RemoteEndPoint).Address.ToString());
@@ -56,70 +50,63 @@ namespace EasyHosting.Models.Server
             }
         }
 
-        public JObject HandleAuthorization(ClientConnection sourceConnection, JObject requestData) {
-            // TODO: ruquest handling
-
-            return JObject.Parse("{ \"status\": \"OK\" }");
-        }
-
-        public JObject HandleRequest(ClientConnection sourceConnection, JObject requestData) {
-            // TODO: request handling
-
-            return null;
-        }
-
 		private void Listen() {
             TcpListener = new TcpListener(IpAddress, Port);
             TcpListener.Start();
 
+            List<ClientConnection> toRemove = new List<ClientConnection>();
+
             while (true) {
-                foreach(var connection in AuthorizedConnections) {
-                    connection.CheckForRequest();
+                // Zautoryzowane połączenia
+                foreach (var connection in AuthorizedConnections) {
+                    if (connection.DataAvailable) {
+                        JObject data = connection.GetData();
+                        JObject response = HandleRequest(connection, data);
+                        connection.WriteData(response);
+                        connection.Flush();
+
+                        // TODO automatyczna obsługa wyjątków pod kątem zwracania nieprawidłowych odpowiedzi
+                    }
                 }
 
-                foreach(var connection in UnauthorizedConnections) {
-                    connection.CheckForAuthorization();
+                // Niezautoryzowane połączenia
+                toRemove.Clear();
+                foreach (var connection in UnauthorizedConnections){
+                    if (TimeSpan.Compare(connection.GetConnectionTime(), TimeForAuthorization) <= 0) {
+                        if (connection.DataAvailable) {
+                            JObject data = connection.GetData();
+                            if (AuthorizeConnection(connection, data)) {
+                                AuthorizedConnections.Add(connection);
+                                toRemove.Add(connection);
+
+                                // Informacja dla odbiorcy o poprawnej autoryzacji
+                                connection.WriteData(AuthorizationSuccessfulResponse);
+                                connection.Flush();
+                            }
+                        }
+                    } 
+                    else {
+                        connection.TcpClient.Close();
+                        toRemove.Add(connection);
+                    }
                 }
 
+                // Finalizacja przenoszenie połączenia po zautoryzowaniu lub zamknięciu
+                foreach (var connection in toRemove) {
+                    UnauthorizedConnections.Remove(connection);
+                }
+
+                // Nowe połączenia
                 HandleIncommingConnections();
             }
-
-            //TcpClient client = TcpListener.Pending();
-            //TcpClient client = TcpListener.AcceptTcpClient();
-
-            //NetworkStream stream = client.GetStream();
-            //StreamReader sr = new StreamReader(client.GetStream());
-            //StreamWriter sw = new StreamWriter(client.GetStream());
-
-            //try {
-            //    byte[] buffer = new byte[BufferSize];
-            //    stream.Read(buffer, 0, buffer.Length);
-            //    int recv = 0;
-
-            //    foreach (byte b in buffer) {
-            //        if (b != 0) {
-            //            recv++;
-            //        }
-            //    }
-
-            //    string request = Encoding.UTF8.GetString(buffer, 0, recv);
-
-            //    Console.WriteLine("request received");
-
-            //    sw.WriteLine("You rock!");
-            //    sw.Flush();
-            //} catch (Exception e) {
-            //    Console.WriteLine("Something went wrong.");
-            //    sw.WriteLine(e.ToString());
-            //}
         }
 
-        public ServerSocket(System.Net.IPAddress ipAddress = null, int port = 33564, uint bufferSize = 16384) {
+        public ServerSocket(System.Net.IPAddress ipAddress = null, int port = 33564, int secondsForAuthorization = 10) {
             if (ipAddress != null) {
                 IpAddress = ipAddress;
             }
             Port = port;
-            BufferSize = bufferSize;
+            TimeForAuthorization = TimeSpan.FromSeconds(secondsForAuthorization);
         }
 
         public void Start() {
@@ -129,5 +116,26 @@ namespace EasyHosting.Models.Server
         public void StartInThread() {
             throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// Metoda wywoływana po uzyskaniu pierwszego strumienia danych z 
+        /// niezautoryzowanego połączenia. Powinna zwalidować poprawność 
+        /// danych autoryzacyjnych w przychodzącym strumieniu danych
+        /// i zwrócić "true" jeśli autoryzacja przebiegła pomyslnie lub
+        /// "false" w przeciwnym przypadku
+        /// </summary>
+        /// <param name="conn">Połączenie z którego przyszły dane autoryzacyjne</param>
+        /// <returns>True - autoryzacja poprawna; False - autoryzacja odrzucona</returns>
+        protected abstract bool AuthorizeConnection(ClientConnection conn, JObject requestData);
+
+        /// <summary>
+        /// Metoda wywoływana po uzyskaniu strumienia danych ze 
+        /// zautoryzowanego połączenia. Strumień danych jest konwertowany
+        /// do obiektu JObject i przekazywany wraz z połączeniem.
+        /// </summary>
+        /// <param name="conn">Połączenie klienta</param>
+        /// <param name="requestData">Dane przychodzące od klienta</param>
+        /// <returns>Odpowiedź dla klienta w formacie JObject</returns>
+        protected abstract JObject HandleRequest(ClientConnection conn, JObject requestData);
 	}
 }

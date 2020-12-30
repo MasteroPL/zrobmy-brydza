@@ -49,8 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BridgeServerSocket.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RequestSerializer.cs" />
+    <Compile Include="ResponseSerializer.cs" />
+    <Compile Include="SampleAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

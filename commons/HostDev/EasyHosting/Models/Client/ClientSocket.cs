@@ -105,7 +105,6 @@ namespace EasyHosting.Models.Client
 			}
 
 			Console.WriteLine(response);
-			Console.ReadKey();
 
 			return response;
 		}

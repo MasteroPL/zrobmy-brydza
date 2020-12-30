@@ -167,6 +167,7 @@ namespace EasyHosting.Models.Serialization
 								serializer.SetData((JObject)obj);
 								serializer.Validate();
 								serializers[index] = serializer;
+								index++;
 							}
 							fieldValue = serializers;
 						} catch(Exception e) {
