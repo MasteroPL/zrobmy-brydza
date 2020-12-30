@@ -20,7 +20,6 @@ public class GameManagerScript : MonoBehaviour
      * X = [-5.69277, -5.25, -4.80724, -4.36446, -3.92169, -3.47892, -3.03615, -2.59344, -2.150609, -1.70784, -1.26507, -0.8223, -0.37953]
      * Y = 3.597
      */
-
     [SerializeField] GameObject hiddenCard;
     [SerializeField] AuctionModule AuctionMod;
     [SerializeField] PlayingModule PlayingMod;
@@ -48,8 +47,7 @@ public class GameManagerScript : MonoBehaviour
             //float[] myCardsX = { -5.69277f, -5.25f, -4.80724f, -4.36446f, -3.92169f, -3.47892f, -3.03615f, -2.59344f, -2.150609f, -1.70784f, -1.26507f, -0.8223f, -0.37953f };
             // uzywam localposition
 
-            List<string> cards = ServerDialler.GetPlayerCards(userData.position);
-            GiveCardsToPlayer(userData.position, cards);
+            GiveCardsToPlayer(userData.position);
             GiveHiddenCardsToPlayers(userData.position);
 
             GameObject auctionObject = GameObject.Find("/Canvas/TableCanvas/AuctionDialog");
@@ -61,7 +59,6 @@ public class GameManagerScript : MonoBehaviour
 
     private void GiveHiddenCardsToPlayers(PlayerTag MyPosition)
     {
-        GameObject TableCanvas = GameObject.Find("TableCanvas");
         float[] myCardsX = { -2.37f, -1.975f, -1.58f, -1.185f, -0.79f, -0.395f, 0.0f, 0.395f, 0.79f, 1.185f, 1.58f, 1.975f, 2.37f };
         float[] opCardsY = { 1.72f, 1.4334f, 1.1468f, 0.86f, 0.5736f, 0.287f, 0.0f, -0.2862f, -0.5728f, -0.8594f, -1.146f, -1.43f, -1.72f };
 
@@ -71,26 +68,25 @@ public class GameManagerScript : MonoBehaviour
 
             if (player != (int)MyPosition)
             {
-                for(int i = 0; i < 13; i++)
+                for (int i = 0; i < 13; i++)
                 {
                     GameObject card = Instantiate(hiddenCard);
                     switch (player)
                     {
                         case (int)PlayerTag.N:
-                            card.transform.localPosition = new Vector3(myCardsX[i] + (CardsObject.gameObject.transform.position.x), (CardsObject.gameObject.transform.position.y) + 3.28f, 90 + i * 0.01f);
+                            card.transform.localPosition = new Vector3(myCardsX[i] + (CardsObject.gameObject.transform.position.x), (CardsObject.gameObject.transform.position.y) + 3.28f, 0);
                             break;
                         case (int)PlayerTag.S:
-                            card.transform.localPosition = new Vector3(myCardsX[i] + (CardsObject.gameObject.transform.position.x), (CardsObject.gameObject.transform.position.y) + 3.07f, 90 + i * 0.01f);
+                            card.transform.localPosition = new Vector3(myCardsX[i] + (CardsObject.gameObject.transform.position.x), (CardsObject.gameObject.transform.position.y) + 3.07f, 0);
                             break;
                         case (int)PlayerTag.W:
-                            card.transform.localPosition = new Vector3(-4.61f + (CardsObject.gameObject.transform.position.x), (CardsObject.gameObject.transform.position.y) + opCardsY[i], 90 + i * 0.01f);
+                            card.transform.localPosition = new Vector3(-4.61f + (CardsObject.gameObject.transform.position.x), (CardsObject.gameObject.transform.position.y) + opCardsY[i], 0);
                             break;
                         case (int)PlayerTag.E:
-                            card.transform.localPosition = new Vector3(4.61f + (CardsObject.gameObject.transform.position.x), (CardsObject.gameObject.transform.position.y) + opCardsY[i], 90 + i * 0.01f);
+                            card.transform.localPosition = new Vector3(4.61f + (CardsObject.gameObject.transform.position.x), (CardsObject.gameObject.transform.position.y) + opCardsY[i], 0);
                             break;
                     }
-                    card.GetComponent<SpriteRenderer>().sortingOrder = 0;
-                    if(Mathf.Abs((int)MyPosition - (int)player) != 2)
+                    if (Mathf.Abs((int)MyPosition - (int)player) != 2)
                     {
                         card.transform.rotation = Quaternion.Euler(0, 0, 90f);
                     }
@@ -100,11 +96,12 @@ public class GameManagerScript : MonoBehaviour
     }
 
     // temporary method, it is here to make the code shorter
-    private void GiveCardsToPlayer(PlayerTag PlayerIdentifier, List<string> cards)
+    private void GiveCardsToPlayer(PlayerTag PlayerIdentifier)
     {
         float[] myCardsX = { -2.37f, -1.975f, -1.58f, -1.185f, -0.79f, -0.395f, 0.0f, 0.395f, 0.79f, 1.185f, 1.58f, 1.975f, 2.37f };
         float[] opCardsY = { 1.72f, 1.4334f, 1.1468f, 0.86f, 0.5736f, 0.287f, 0.0f, -0.2862f, -0.5728f, -0.8594f, -1.146f, -1.43f, -1.72f };
 
+        List<string> cards = ServerDialler.GetPlayerCards(PlayerIdentifier);
         for (int i = 0; i < cards.Count; i++)
         {
             GameObject card = GameObject.Find(cards[i]);
