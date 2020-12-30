@@ -1,6 +1,7 @@
 ﻿using System;
 using EasyHosting.Models.Actions;
 using EasyHosting.Models.Serialization;
+using EasyHosting.Models.Server;
 
 namespace SocketTesting {
     public class SampleAction : BaseAction {
@@ -12,7 +13,7 @@ namespace SocketTesting {
 
         // Walidacja danych wejściowych odbywa się w klasie bazowej,
         // tutaj możemy ją pominąć.
-        protected override BaseSerializer PerformAction(BaseSerializer requestData) {
+        protected override BaseSerializer PerformAction(ClientConnection conn, BaseSerializer requestData) {
             // requestData ma typ taki, jak zdefiniujemy w konstruktorze, 
             // więc możemy zrobić proste rzutowanei 
             RequestSerializer data = (RequestSerializer)requestData;

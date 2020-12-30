@@ -30,7 +30,7 @@ namespace ServerSocket.Models {
 
         protected override JObject HandleRequest(ClientConnection conn, JObject requestData) {
             var lobby = (Lobby)conn.Session.Get("joined-lobby");
-            var response = lobby.ActionsManager.PerformActions(requestData);
+            var response = lobby.ActionsManager.PerformActions(conn, requestData);
 
             return response;
         }

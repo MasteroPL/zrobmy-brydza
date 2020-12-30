@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using EasyHosting.Models.Server;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -88,15 +89,15 @@ namespace EasyHosting.Models.Actions
 		///		]
 		/// }
 		/// </returns>
-		public JObject PerformActions(JObject actionsData) {
+		public JObject PerformActions(ClientConnection conn, JObject actionsData) {
 			var serializer = new ActionsSerializer(actionsData);
 			serializer.Validate();
 			var actionsMeta = serializer.GetActionsMeta();
 			
-			return PerformActions(actionsMeta);
+			return PerformActions(conn, actionsMeta);
 		}
 
-		public JObject PerformActions(IEnumerable<ActionMeta> actions) {
+		public JObject PerformActions(ClientConnection conn, IEnumerable<ActionMeta> actions) {
 			var response = new ActionsSerializer();
 			response.Actions = new ActionSerializer[actions.Count()];
 			JObject jObjPtr;
@@ -104,7 +105,7 @@ namespace EasyHosting.Models.Actions
 			int index = 0;
 			foreach(var action in actions) {
 				try {
-					jObjPtr = PerformAction(action.Name, action.Data);
+					jObjPtr = PerformAction(conn, action.Name, action.Data);
 				} catch(ActionNotFoundException e) {
 					jObjPtr = new JObject();
 					jObjPtr.Add("error_code", ERROR_CODE_NOT_FOUND);
@@ -135,12 +136,12 @@ namespace EasyHosting.Models.Actions
 		/// <param name="actionName">Nazwa akcji</param>
 		/// <param name="actionData">Dane akcji</param>
 		/// <returns>Bezpośrednia odpowiedź z wywołania akcji</returns>
-		public JObject PerformAction(string actionName, JObject actionData) {
+		public JObject PerformAction(ClientConnection conn, string actionName, JObject actionData) {
 			if (!ActionsDictionary.ContainsKey(actionName)) {
 				throw new ActionNotFoundException(actionName, "Action " + actionName + " has not been defined for this manager.");
 			}
 
-			return ActionsDictionary[actionName].Invoke(actionData);
+			return ActionsDictionary[actionName].Invoke(conn, actionData);
 		}
 		/// <summary>
 		/// Wykonuje pojedynczą akcję
@@ -154,10 +155,10 @@ namespace EasyHosting.Models.Actions
 		///	}
 		/// </param>
 		/// <returns>Bezpośrednia odpowiedź z wywołania akcji</returns>
-		public JObject PerformAction(JObject actionData) {
+		public JObject PerformAction(ClientConnection conn, JObject actionData) {
 			var serializer = new ActionSerializer(actionData);
 			serializer.Validate();
-			return PerformAction(serializer.ActionName, serializer.ActionData);
+			return PerformAction(conn, serializer.ActionName, serializer.ActionData);
         }
 	}
 

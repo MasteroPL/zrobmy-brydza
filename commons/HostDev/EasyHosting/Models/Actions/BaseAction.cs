@@ -1,4 +1,5 @@
 ﻿using EasyHosting.Models.Serialization;
+using EasyHosting.Models.Server;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -60,7 +61,7 @@ namespace EasyHosting.Models.Actions
 		/// </summary>
 		/// <param name="requestData">Dane wejściowe</param>
 		/// <returns>Odpowiedź od akcji</returns>
-		public JObject Invoke(JObject requestData) {
+		public JObject Invoke(ClientConnection conn, JObject requestData) {
 			BaseSerializer requestSerializer = (BaseSerializer)Activator.CreateInstance(RequestSerializerType);
 			requestSerializer.SetData(requestData);
 			requestSerializer.Validate();
@@ -73,7 +74,7 @@ namespace EasyHosting.Models.Actions
 			Invoked?.Invoke(this, argsInvk);
 
 			// Główna metoda wykonująca akcję
-			BaseSerializer responseSerializer = PerformAction(requestSerializer);
+			BaseSerializer responseSerializer = PerformAction(conn, requestSerializer);
 
 			// Wywołanie wydarzenia
 			var argsFnshd = new ActionFinishEventArgs() {
@@ -101,6 +102,6 @@ namespace EasyHosting.Models.Actions
 		/// </summary>
 		/// <param name="requestData">Dane wejściowe wpisane do serializatora. Serializator przekazywany na wejściu jest typu "requestSerializerType", definiowanego w konstruktorze</param>
 		/// <returns>Odpowiedź w postaci serializatora</returns>
-		protected abstract BaseSerializer PerformAction(BaseSerializer requestData);
+		protected abstract BaseSerializer PerformAction(ClientConnection conn, BaseSerializer requestData);
 	}
 }

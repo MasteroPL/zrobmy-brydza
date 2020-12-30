@@ -20,7 +20,7 @@ Prosta definicja ActionsManagera dla naszej pojedynczej akcji
     });
 
     // Znalezienie akcji i wykonanie jej na podstawie wejściowego JSONa.
-    JObject resp = actMng.PerformAction(JObject.Parse("{ " +
+    JObject resp = actMng.PerformAction(null, JObject.Parse("{ " +
         "\"name\": \"sample-action\", " +
         "\"data\": {" +
             "\"my_name\": \"John\"" +
@@ -65,7 +65,7 @@ ActionsManager pozwala również na przetworzenie wielu akcji, jedna po drugiej.
             "}" +
         "}" +
     "]}");
-    JObject resp = actMng.PerformActions(jobj);
+    JObject resp = actMng.PerformActions(null, actionsData);
     Console.WriteLine("Odpowiedź od akcji: \n" + resp.ToString());
 
 Oraz wynik ::
@@ -162,11 +162,13 @@ Dodaje wiele akcji
 
 
 .. method::
-    public JObject PerformActions(JObject actionsData)
+    public JObject PerformActions(ClientConnection conn, JObject actionsData)
 
 Wykonuje akcje zdefiniowane w źródłowym JObject.
 
     :Parametry:
+        * ClientConnection conn
+            Połączenie klienta
         * actionsData: JObject
             Definicja akcji. Struktura: ::
 
@@ -204,11 +206,13 @@ Wykonuje akcje zdefiniowane w źródłowym JObject.
 
 
 .. method::
-    public JObject PerformAction(JObject actionData)
+    public JObject PerformAction(ClientConnection conn, JObject actionData)
 
 Wykonuje pojedynczą akcję
 
     :Parametry:
+        * conn: ClientConnection
+            Połączenie klienta
         * actionData: JObject
             Dane pojedycznej akcji
             Struktura: ::
@@ -227,12 +231,14 @@ Wykonuje pojedynczą akcję
     
 
 .. method::
-    public JObject PerformAction(string actionName, JObject actionData)
+    public JObject PerformAction(ClientConnection conn, string actionName, JObject actionData)
     :noindex:
 
 Wykonuje pojedynczą akcję
 
     :Parametry:
+        * conn: ClientConnection
+            Połączenie klienta
         * actionName: string
             Nazwa akcji
         * actionData: JObject
