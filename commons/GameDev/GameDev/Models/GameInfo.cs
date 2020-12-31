@@ -55,5 +55,18 @@ namespace Models
 
             return true;
         }
+
+        public bool IsEnd()
+        {
+            if (TrickList.Count == 13)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
     }
 }

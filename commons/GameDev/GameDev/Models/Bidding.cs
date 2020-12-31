@@ -22,7 +22,7 @@ namespace Models
 			this.HighestContract = null;
 		}
 
-		private PlayerTag NextPlayer(PlayerTag CurrentPlayer)
+		public PlayerTag NextPlayer(PlayerTag CurrentPlayer)
 		{
 			int ID = (int)(CurrentPlayer);
 			if (ID == 3)
@@ -37,6 +37,10 @@ namespace Models
 
 		public bool AddBid(Contract Contract, bool X = false, bool XX = false)
 		{
+			if (Contract.DeclaredBy != CurrentPlayer)
+			{
+				return false;
+			}
 
 			if (X == true)
 			{
