@@ -15,10 +15,11 @@ namespace Models
 
         public PlayerTag DeclaredBy;
 
-        public Contract(ContractHeight ContractHeight, ContractColor ContractColor, bool XEnabled = false, bool XXEnabled = false)
+        public Contract(ContractHeight ContractHeight, ContractColor ContractColor, PlayerTag DeclaredBy, bool XEnabled = false, bool XXEnabled = false)
         {
             this.ContractHeight = ContractHeight;
             this.ContractColor = ContractColor;
+            this.DeclaredBy = DeclaredBy;
             this.XEnabled = XEnabled;
             this.XXEnabled = XXEnabled;
         }
@@ -49,6 +50,25 @@ namespace Models
                 return true;
             }
             return false;
+        }
+
+        public bool IsHigher(Contract Contract)
+        {
+            if ((int)Contract.ContractHeight > (int)this.ContractHeight)
+            {
+                return true;
+            }
+            else
+            {
+                if ((int)Contract.ContractColor > (int)this.ContractColor && (int)Contract.ContractHeight == (int)this.ContractHeight)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
     }
 

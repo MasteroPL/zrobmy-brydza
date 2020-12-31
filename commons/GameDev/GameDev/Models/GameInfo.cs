@@ -6,9 +6,8 @@ namespace Models
 {
     public class GameInfo
     {
-        public PlayerTag CurrentPlayer { get; set; }
+        public PlayerTag CurrentPlayer;
         public PlayerTag Declarer;
-        public List<Player> PlayerList;
         public ContractColor ContractColor;
         public List<Trick> TrickList;
         public Trick currentTrick;
@@ -16,52 +15,12 @@ namespace Models
         public GameInfo(ContractColor ContractColor, PlayerTag Declarer)
         {
             this.CurrentPlayer = NextPlayer(Declarer);
-            this.PlayerList = new List<Player>();
             this.TrickList = new List<Trick>();
             this.currentTrick = new Trick();
             this.ContractColor = ContractColor;
             this.Declarer = Declarer;
         }
-        private void SetPlayer(PlayerTag NextPlayer)
-        {
-            CurrentPlayer = NextPlayer;
-        }
 
-        public bool AddPlayer(Player NewPlayer)
-        {
-            int Index1 = PlayerList.FindIndex((Player) => { return Player.Name == NewPlayer.Name; });
-            if (Index1 == -1)
-            {
-                int Index2 = PlayerList.FindIndex((Player) => { return Player.Tag == NewPlayer.Tag; });
-                if (Index2 == -1)
-                {
-                    PlayerList.Add(NewPlayer);
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public bool RemovePlayer(Player RPlayer)
-        {
-            int Index1 = PlayerList.FindIndex((Player) => { return Player.Name == RPlayer.Name; });
-            if (Index1 != -1)
-            {
-                PlayerList.RemoveAt(Index1);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
 
         private PlayerTag NextPlayer(PlayerTag CurrentPlayer)
         {
@@ -96,15 +55,5 @@ namespace Models
 
             return true;
         }
-    }
-
-    public enum GameState
-    {
-        AWAITING_PLAYERS = 0,
-        STARTING = 1,
-        BIDDING = 2,
-        PLAYING = 3,
-        PAUSED = 4,
-        GAME_FINISHED = 5
     }
 }
