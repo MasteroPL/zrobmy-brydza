@@ -1,4 +1,4 @@
-﻿namespace Models
+﻿namespace GameManagerLib.Models
 {
     public class Player
     {

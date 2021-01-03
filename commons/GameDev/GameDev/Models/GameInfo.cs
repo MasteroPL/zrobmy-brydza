@@ -1,8 +1,7 @@
-﻿using Models;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-namespace Models
+namespace GameManagerLib.Models
 {
     public class GameInfo
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 
 
-namespace Models
+namespace GameManagerLib.Models
 {
     public class Card
     {
