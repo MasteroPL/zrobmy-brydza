@@ -47,7 +47,7 @@ namespace Models
             {
                 TrickList.Add(currentTrick);
                 this.CurrentPlayer = currentTrick.Winner;
-                for (int i = 0; i < 13; i++)
+                for (int i = 0; i < 4; i++)
                 {
                     currentTrick.CardList[i].CurrentState = (CardState)(3);
                 }

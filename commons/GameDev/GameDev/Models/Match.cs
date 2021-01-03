@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Diagnostics;
 namespace Models
 {
     class Match
@@ -21,6 +21,8 @@ namespace Models
         public int RoundsWE = 0;
         public Match() {
             this.PlayerList = new List<Player>();
+            this.BiddingList = new List<Bidding>();
+            this.GameList = new List<GameInfo>();
             this.GameState = (GameState)(0);
             this.PointsNS = new int[2];
             this.PointsWE = new int[2];
@@ -142,8 +144,11 @@ namespace Models
             }
         }
 
-        public bool AddBid(Contract Contract, bool X = false, bool XX = false)
+        public bool AddBid(Contract Contract)
         {
+            bool X = Contract.XEnabled;
+            bool XX = Contract.XXEnabled;
+            Console.WriteLine(X);
             if ((int)this.GameState != 2)
             {
                 return false;
@@ -366,14 +371,20 @@ namespace Models
         }
         private bool PlayableCard(Card Card)
         {
-            if(Card.PlayerID != this.CurrentGame.CurrentPlayer)
+            if ((int)Card.CurrentState != 1)
             {
                 return false;
             }
-            if((int)Card.CurrentState != 1)
+            if (Card.PlayerID != this.CurrentGame.CurrentPlayer)
             {
                 return false;
             }
+            if (this.CurrentGame.currentTrick.CardList.Count == 0)
+            {
+                return true;
+            }
+            
+            
             CardColor TrickColor = this.CurrentGame.currentTrick.CardList[0].Color;
             if(Card.Color == TrickColor)
             {

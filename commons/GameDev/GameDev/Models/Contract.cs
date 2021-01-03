@@ -54,13 +54,13 @@ namespace Models
 
         public bool IsHigher(Contract Contract)
         {
-            if ((int)Contract.ContractHeight > (int)this.ContractHeight)
+            if ((int)Contract.ContractHeight < (int)this.ContractHeight)
             {
                 return true;
             }
             else
             {
-                if ((int)Contract.ContractColor > (int)this.ContractColor && (int)Contract.ContractHeight == (int)this.ContractHeight)
+                if ((int)Contract.ContractColor < (int)this.ContractColor && (int)Contract.ContractHeight == (int)this.ContractHeight)
                 {
                     return true;
                 }
