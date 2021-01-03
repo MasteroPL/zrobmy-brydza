@@ -14,12 +14,22 @@ namespace Models
 		public PlayerTag Dealer;
 		private int PassCounter = 0;
 		private bool End = false;
+		public PlayerTag Declarer;
+
+		private PlayerTag[] NS = new PlayerTag[5];
+		private PlayerTag[] WE = new PlayerTag[5];
+
 		public Bidding(PlayerTag Dealer)
 		{
 			this.Dealer = Dealer;
 			this.ContractList = new List<Contract>();
 			this.CurrentPlayer = NextPlayer(this.Dealer);
 			this.HighestContract = null;
+			for( int i = 0; i <5; i++)
+            {
+				NS[i] = (PlayerTag)(-1);
+				WE[i] = (PlayerTag)(-1);
+			}
 		}
 
 		public PlayerTag NextPlayer(PlayerTag CurrentPlayer)
@@ -77,6 +87,11 @@ namespace Models
 			if (HighestContract == null)
 			{
 				this.HighestContract = Contract;
+				if((int)Contract.ContractColor != -1)
+                {
+					SetColor(HighestContract.DeclaredBy, HighestContract.ContractColor);
+
+				}
 				this.ContractList.Add(Contract);
 				return true;
 			}
@@ -86,7 +101,17 @@ namespace Models
 				ContractList.Add(Contract);
 				this.PassCounter++;
 				if (this.PassCounter == 3)
-				{
+				{	
+					if((int)HighestContract.DeclaredBy == 0 || (int)HighestContract.DeclaredBy == 2)
+					{
+						this.Declarer = NS[(int)HighestContract.ContractColor];
+
+					}
+                    else
+                    {
+						this.Declarer = WE[(int)HighestContract.ContractColor];
+					}
+					
 					this.End = true;
 				}
 				return true;
@@ -97,6 +122,7 @@ namespace Models
 				this.HighestContract = Contract;
 				this.ContractList.Add(Contract);
 				this.PassCounter = 0;
+				SetColor(HighestContract.DeclaredBy, HighestContract.ContractColor);
 				return true;
 			}
 
@@ -128,6 +154,25 @@ namespace Models
 			}
 
 		}
+
+		private void SetColor(PlayerTag PlayerTag, ContractColor Color)
+        {	
+			if((int)PlayerTag == 0 || (int)PlayerTag == 2)
+            {
+				if((int)NS[(int)Color] == -1)
+                {
+					NS[(int)Color] = PlayerTag;
+                }
+            }
+			if ((int)PlayerTag == 1 || (int)PlayerTag == 3)
+			{
+				if ((int)WE[(int)Color] == -1)
+				{
+					WE[(int)Color] = PlayerTag;
+				}
+			}
+
+        }
 
 	}
 }

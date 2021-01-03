@@ -5,8 +5,11 @@
         public PlayerTag Tag { get; set; }
         public string Name { get; set; }
 
+        public Card[] Hand;
+
         public Player(PlayerTag Tag, string Name)
         {
+            this.Hand = new Card[13];
             this.Tag = Tag;
             this.Name = Name;
         }

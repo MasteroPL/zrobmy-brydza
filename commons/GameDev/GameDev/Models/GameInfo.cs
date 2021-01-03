@@ -37,15 +37,20 @@ namespace Models
 
         public bool NextCard(Card Card)
         {
-            if (Card.PlayerID != CurrentPlayer)
+            if (Card.PlayerID != this.CurrentPlayer)
             {
                 return false;
             }
+ 
             currentTrick.NextCard(Card, this.ContractColor);
             if (currentTrick.GetCount() == 4)
             {
                 TrickList.Add(currentTrick);
                 this.CurrentPlayer = currentTrick.Winner;
+                for (int i = 0; i < 13; i++)
+                {
+                    currentTrick.CardList[i].CurrentState = (CardState)(3);
+                }
                 currentTrick = new Trick();
             }
             else
@@ -53,6 +58,7 @@ namespace Models
                 this.CurrentPlayer = NextPlayer(this.CurrentPlayer);
             }
 
+            Card.CurrentState = (CardState)(2);
             return true;
         }
 
