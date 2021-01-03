@@ -148,7 +148,6 @@ namespace Models
         {
             bool X = Contract.XEnabled;
             bool XX = Contract.XXEnabled;
-            Console.WriteLine(X);
             if ((int)this.GameState != 2)
             {
                 return false;
