@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using GameManagerLib.Exceptions;
 namespace GameManagerLib.Models
 {
     class Match
@@ -19,6 +20,7 @@ namespace GameManagerLib.Models
         public int[] PointsWE;
         public int RoundsNS = 0;
         public int RoundsWE = 0;
+        public PointsHistory History;
         public Match() {
             this.PlayerList = new List<Player>();
             this.BiddingList = new List<Bidding>();
@@ -30,7 +32,7 @@ namespace GameManagerLib.Models
             this.PointsNS[1] = 0;
             this.PointsWE[0] = 0;
             this.PointsWE[1] = 0;
-
+            this.History = new PointsHistory();
         }
 
         public bool AddPlayer(Player NewPlayer)
@@ -52,12 +54,12 @@ namespace GameManagerLib.Models
                 }
                 else
                 {
-                    return false;
+                    throw new SeatTakenException();
                 }
             }
             else
             {
-                return false;
+                throw new DuplicatedPlayerNameException();
             }
         }
 
@@ -72,7 +74,7 @@ namespace GameManagerLib.Models
             }
             else
             {
-                return false;
+                throw new WrongPlayerException();
             }
         }
         public PlayerTag NextPlayer(PlayerTag CurrentPlayer)
@@ -99,12 +101,12 @@ namespace GameManagerLib.Models
                 }
                 else
                 {
-                    return false;
+                    throw new WrongGameStateException();
                 }
             }
             else
             {
-                return false;
+                throw new WrongGameStateException();
             }
 
         }
@@ -150,7 +152,7 @@ namespace GameManagerLib.Models
             bool XX = Contract.XXEnabled;
             if ((int)this.GameState != 2)
             {
-                return false;
+                throw new WrongGameStateException();
             }
             bool GoodBid = CurrentBidding.AddBid(Contract, X, XX);
             if (GoodBid)
@@ -167,7 +169,7 @@ namespace GameManagerLib.Models
             }
             else
             {
-                return false;
+                throw new WrongBidException();
             }
         }
 
@@ -175,11 +177,11 @@ namespace GameManagerLib.Models
         {
             if ((int)this.GameState != 3)
             {
-                return false;
+                throw new WrongGameStateException();
             }
             if (PlayableCard(Card) == false)
             {
-                return false;
+                throw new WrongCardException();
             }
             if (CurrentGame.NextCard(Card)) 
             {
@@ -192,8 +194,9 @@ namespace GameManagerLib.Models
                     StartBidding();
                     return true;
                 }
+                return true;
             }
-            return false;
+            throw new UnexpectedFunctionEndException();
         }
         public void AddPoints(GameInfo Game)
         {
@@ -228,11 +231,15 @@ namespace GameManagerLib.Models
                     {
                         this.PointsNS[1] += result * multiplier * 20;
                         this.PointsNS[0] += contractHigh * multiplier * 20;
+
+                        this.History.AddNSHistory(contractHigh * multiplier * 20, result * multiplier * 20);
                     }
                     else
                     {
                         this.PointsWE[1] += result * multiplier * 20;
                         this.PointsWE[0] += contractHigh * multiplier * 20;
+
+                        this.History.AddWEHistory(contractHigh * multiplier * 20, result * multiplier * 20);
                     }
 
 
@@ -244,11 +251,15 @@ namespace GameManagerLib.Models
                     {
                         this.PointsNS[1] += result * multiplier * 30;
                         this.PointsNS[0] += contractHigh * multiplier * 30;
+
+                        this.History.AddNSHistory(contractHigh * multiplier * 30, result * multiplier * 30);
                     }
                     else
                     {
                         this.PointsWE[1] += result * multiplier * 30;
                         this.PointsWE[0] += contractHigh * multiplier * 30;
+
+                        this.History.AddWEHistory(contractHigh * multiplier * 30, result * multiplier * 30);
                     }
                 }
 
@@ -258,11 +269,15 @@ namespace GameManagerLib.Models
                     {
                         this.PointsNS[1] += result * multiplier * 30;
                         this.PointsNS[0] += contractHigh * multiplier * 30 + 10;
+
+                        this.History.AddNSHistory(contractHigh * multiplier * 30 + 10, result * multiplier * 30);
                     }
                     else
                     {
-                        this.PointsWE[1] += result * multiplier * 20;
+                        this.PointsWE[1] += result * multiplier * 30;
                         this.PointsWE[0] += contractHigh * multiplier * 30 + 10;
+
+                        this.History.AddWEHistory(contractHigh * multiplier * 30 + 10, result * multiplier * 30);
                     }
                 }
 
@@ -271,10 +286,14 @@ namespace GameManagerLib.Models
                     if ((int)declarer == 0 || (int)declarer == 2)
                     {
                         this.PointsNS[1] += 500;
+
+                        this.History.AddNSHistory(0, 500);
                     }
                     else
                     {
                         this.PointsWE[1] += 500;
+
+                        this.History.AddWEHistory(0, 500);
                     }
                 }
                 if (contractHigh == 7)
@@ -282,10 +301,14 @@ namespace GameManagerLib.Models
                     if ((int)declarer == 0 || (int)declarer == 2)
                     {
                         this.PointsNS[1] += 750;
+
+                        this.History.AddNSHistory(0, 750);
                     }
                     else
                     {
                         this.PointsWE[1] += 750;
+
+                        this.History.AddWEHistory(0, 750);
                     }
                 }
             }
@@ -294,10 +317,14 @@ namespace GameManagerLib.Models
                 if((int)declarer == 0 || (int)declarer == 2)
                 {
                     this.PointsWE[1] += (-result) * multiplier * 50;
+
+                    this.History.AddWEHistory(0, (-result) * multiplier * 50);
                 }
                 else
                 {
                     this.PointsNS[1] += (-result) * multiplier * 50;
+
+                    this.History.AddNSHistory(0, (-result) * multiplier * 50);
                 }
             }
 
@@ -324,6 +351,7 @@ namespace GameManagerLib.Models
                     }
                     this.GameState = (GameState)(5);
                 }
+                this.History.Round();
             }
 
             if (this.PointsWE[0] >= 100)
@@ -345,7 +373,9 @@ namespace GameManagerLib.Models
                     }
                     this.GameState = (GameState)(5);
                 }
+                this.History.Round();
             }
+            
         }
 
         private bool IsTheSameTeam(PlayerTag Player1, PlayerTag Player2)
@@ -407,6 +437,34 @@ namespace GameManagerLib.Models
                 {
                     return false;
                 }
+            }
+        }
+
+        public class PointsHistory {
+            public List<String> NSHistory;
+            public List<String> WEHistory;
+
+            public PointsHistory()
+            {
+                this.NSHistory = new List<String>();
+                this.WEHistory = new List<String>();
+            }
+
+            public void AddNSHistory(int pod, int nad)
+            {
+                this.NSHistory.Add(nad.ToString() + "|" + pod.ToString());
+                this.WEHistory.Add("0|0");
+            }
+
+            public void AddWEHistory(int pod, int nad)
+            {
+                this.WEHistory.Add(nad.ToString() + "|" + pod.ToString());
+                this.NSHistory.Add("0|0");
+            }
+
+            public void Round() {
+                this.WEHistory.Add("Round");
+                this.NSHistory.Add("Round");
             }
         }
 

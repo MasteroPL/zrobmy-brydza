@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using GameManagerLib.Models;
+using GameManagerLib.Exceptions;
 namespace GameManagerLib
 {
     class Program {
@@ -38,11 +39,331 @@ namespace GameManagerLib
             match.NextCard(match.PlayerList[0].Hand[2]);
             match.NextCard(match.PlayerList[1].Hand[1]);
 
-            //żadna z 4 poniższych nie pójdzie (i dobrze)
+            match.NextCard(match.PlayerList[3].Hand[0]);
+            match.NextCard(match.PlayerList[0].Hand[3]);
+            match.NextCard(match.PlayerList[1].Hand[2]);
+            match.NextCard(match.PlayerList[2].Hand[1]);
+
+            match.NextCard(match.PlayerList[0].Hand[0]);
+            match.NextCard(match.PlayerList[1].Hand[3]);
+            match.NextCard(match.PlayerList[2].Hand[2]);
+            match.NextCard(match.PlayerList[3].Hand[1]);
+
+
+
+
+
+
+            match.NextCard(match.PlayerList[1].Hand[4]);
+            match.NextCard(match.PlayerList[2].Hand[7]);
+            match.NextCard(match.PlayerList[3].Hand[6]);
+            match.NextCard(match.PlayerList[0].Hand[5]);
+
+            match.NextCard(match.PlayerList[2].Hand[4]);
+            match.NextCard(match.PlayerList[3].Hand[7]);
+            match.NextCard(match.PlayerList[0].Hand[6]);
+            match.NextCard(match.PlayerList[1].Hand[5]);
+
+            match.NextCard(match.PlayerList[3].Hand[4]);
+            match.NextCard(match.PlayerList[0].Hand[7]);
+            match.NextCard(match.PlayerList[1].Hand[6]);
+            match.NextCard(match.PlayerList[2].Hand[5]);
+
+            match.NextCard(match.PlayerList[0].Hand[4]);
+            match.NextCard(match.PlayerList[1].Hand[7]);
+            match.NextCard(match.PlayerList[2].Hand[6]);
+            match.NextCard(match.PlayerList[3].Hand[5]);
+
+            match.NextCard(match.PlayerList[1].Hand[8]);
+            match.NextCard(match.PlayerList[2].Hand[11]);
+            match.NextCard(match.PlayerList[3].Hand[10]);
+            match.NextCard(match.PlayerList[0].Hand[9]);
+
+            match.NextCard(match.PlayerList[2].Hand[8]);
+            match.NextCard(match.PlayerList[3].Hand[11]);
+            match.NextCard(match.PlayerList[0].Hand[10]);
+            match.NextCard(match.PlayerList[1].Hand[9]);
+
+            match.NextCard(match.PlayerList[3].Hand[8]);
+            match.NextCard(match.PlayerList[0].Hand[11]);
+            match.NextCard(match.PlayerList[1].Hand[10]);
+            match.NextCard(match.PlayerList[2].Hand[9]);
+
+            match.NextCard(match.PlayerList[0].Hand[8]);
+            match.NextCard(match.PlayerList[1].Hand[11]);
+            match.NextCard(match.PlayerList[2].Hand[10]);
+            match.NextCard(match.PlayerList[3].Hand[9]);
+
+            match.NextCard(match.PlayerList[1].Hand[12]);
+            match.NextCard(match.PlayerList[2].Hand[12]);
+            match.NextCard(match.PlayerList[3].Hand[12]);
+            match.NextCard(match.PlayerList[0].Hand[12]);
+
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(1))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(2))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(3))); //pas
+            match.AddBid(new Contract((ContractHeight)(1), (ContractColor)(2), (PlayerTag)(0))); //1h
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(1))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(2))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(3))); //pas
+
+
+            Console.WriteLine(match.CurrentBidding.CurrentPlayer.ToString());
+            Console.WriteLine(match.GameState);
+
             match.NextCard(match.PlayerList[1].Hand[0]);
             match.NextCard(match.PlayerList[2].Hand[3]);
             match.NextCard(match.PlayerList[3].Hand[2]);
             match.NextCard(match.PlayerList[0].Hand[1]);
+
+            match.NextCard(match.PlayerList[2].Hand[0]);
+            match.NextCard(match.PlayerList[3].Hand[3]);
+            match.NextCard(match.PlayerList[0].Hand[2]);
+            match.NextCard(match.PlayerList[1].Hand[1]);
+
+
+            match.NextCard(match.PlayerList[3].Hand[0]);
+            match.NextCard(match.PlayerList[0].Hand[3]);
+            match.NextCard(match.PlayerList[1].Hand[2]);
+            match.NextCard(match.PlayerList[2].Hand[1]);
+
+            match.NextCard(match.PlayerList[0].Hand[0]);
+            match.NextCard(match.PlayerList[1].Hand[3]);
+            match.NextCard(match.PlayerList[2].Hand[2]);
+            match.NextCard(match.PlayerList[3].Hand[1]);
+
+
+
+
+
+
+            match.NextCard(match.PlayerList[1].Hand[4]);
+            match.NextCard(match.PlayerList[2].Hand[7]);
+            match.NextCard(match.PlayerList[3].Hand[6]);
+            match.NextCard(match.PlayerList[0].Hand[5]);
+
+            match.NextCard(match.PlayerList[2].Hand[4]);
+            match.NextCard(match.PlayerList[3].Hand[7]);
+            match.NextCard(match.PlayerList[0].Hand[6]);
+            match.NextCard(match.PlayerList[1].Hand[5]);
+
+            match.NextCard(match.PlayerList[3].Hand[4]);
+            match.NextCard(match.PlayerList[0].Hand[7]);
+            match.NextCard(match.PlayerList[1].Hand[6]);
+            match.NextCard(match.PlayerList[2].Hand[5]);
+
+            match.NextCard(match.PlayerList[0].Hand[4]);
+            match.NextCard(match.PlayerList[1].Hand[7]);
+            match.NextCard(match.PlayerList[2].Hand[6]);
+            match.NextCard(match.PlayerList[3].Hand[5]);
+
+            match.NextCard(match.PlayerList[1].Hand[8]);
+            match.NextCard(match.PlayerList[2].Hand[11]);
+            match.NextCard(match.PlayerList[3].Hand[10]);
+            match.NextCard(match.PlayerList[0].Hand[9]);
+
+            match.NextCard(match.PlayerList[2].Hand[8]);
+            match.NextCard(match.PlayerList[3].Hand[11]);
+            match.NextCard(match.PlayerList[0].Hand[10]);
+            match.NextCard(match.PlayerList[1].Hand[9]);
+
+            match.NextCard(match.PlayerList[3].Hand[8]);
+            match.NextCard(match.PlayerList[0].Hand[11]);
+            match.NextCard(match.PlayerList[1].Hand[10]);
+            match.NextCard(match.PlayerList[2].Hand[9]);
+
+            match.NextCard(match.PlayerList[0].Hand[8]);
+            match.NextCard(match.PlayerList[1].Hand[11]);
+            match.NextCard(match.PlayerList[2].Hand[10]);
+            match.NextCard(match.PlayerList[3].Hand[9]);
+
+            match.NextCard(match.PlayerList[1].Hand[12]);
+            match.NextCard(match.PlayerList[2].Hand[12]);
+            match.NextCard(match.PlayerList[3].Hand[12]);
+            match.NextCard(match.PlayerList[0].Hand[12]);
+
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(2))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(3))); //pas
+            match.AddBid(new Contract((ContractHeight)(1), (ContractColor)(2), (PlayerTag)(0))); //1h
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(1))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(2))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(3))); //pas
+
+
+            Console.WriteLine(match.CurrentBidding.CurrentPlayer.ToString());
+            Console.WriteLine(match.GameState);
+
+            match.NextCard(match.PlayerList[1].Hand[0]);
+            match.NextCard(match.PlayerList[2].Hand[3]);
+            match.NextCard(match.PlayerList[3].Hand[2]);
+            match.NextCard(match.PlayerList[0].Hand[1]);
+
+            match.NextCard(match.PlayerList[2].Hand[0]);
+            match.NextCard(match.PlayerList[3].Hand[3]);
+            match.NextCard(match.PlayerList[0].Hand[2]);
+            match.NextCard(match.PlayerList[1].Hand[1]);
+
+
+            match.NextCard(match.PlayerList[3].Hand[0]);
+            match.NextCard(match.PlayerList[0].Hand[3]);
+            match.NextCard(match.PlayerList[1].Hand[2]);
+            match.NextCard(match.PlayerList[2].Hand[1]);
+
+            match.NextCard(match.PlayerList[0].Hand[0]);
+            match.NextCard(match.PlayerList[1].Hand[3]);
+            match.NextCard(match.PlayerList[2].Hand[2]);
+            match.NextCard(match.PlayerList[3].Hand[1]);
+
+
+
+
+
+
+            match.NextCard(match.PlayerList[1].Hand[4]);
+            match.NextCard(match.PlayerList[2].Hand[7]);
+            match.NextCard(match.PlayerList[3].Hand[6]);
+            match.NextCard(match.PlayerList[0].Hand[5]);
+
+            match.NextCard(match.PlayerList[2].Hand[4]);
+            match.NextCard(match.PlayerList[3].Hand[7]);
+            match.NextCard(match.PlayerList[0].Hand[6]);
+            match.NextCard(match.PlayerList[1].Hand[5]);
+
+            match.NextCard(match.PlayerList[3].Hand[4]);
+            match.NextCard(match.PlayerList[0].Hand[7]);
+            match.NextCard(match.PlayerList[1].Hand[6]);
+            match.NextCard(match.PlayerList[2].Hand[5]);
+
+            match.NextCard(match.PlayerList[0].Hand[4]);
+            match.NextCard(match.PlayerList[1].Hand[7]);
+            match.NextCard(match.PlayerList[2].Hand[6]);
+            match.NextCard(match.PlayerList[3].Hand[5]);
+
+            match.NextCard(match.PlayerList[1].Hand[8]);
+            match.NextCard(match.PlayerList[2].Hand[11]);
+            match.NextCard(match.PlayerList[3].Hand[10]);
+            match.NextCard(match.PlayerList[0].Hand[9]);
+
+            match.NextCard(match.PlayerList[2].Hand[8]);
+            match.NextCard(match.PlayerList[3].Hand[11]);
+            match.NextCard(match.PlayerList[0].Hand[10]);
+            match.NextCard(match.PlayerList[1].Hand[9]);
+
+            match.NextCard(match.PlayerList[3].Hand[8]);
+            match.NextCard(match.PlayerList[0].Hand[11]);
+            match.NextCard(match.PlayerList[1].Hand[10]);
+            match.NextCard(match.PlayerList[2].Hand[9]);
+
+            match.NextCard(match.PlayerList[0].Hand[8]);
+            match.NextCard(match.PlayerList[1].Hand[11]);
+            match.NextCard(match.PlayerList[2].Hand[10]);
+            match.NextCard(match.PlayerList[3].Hand[9]);
+
+            match.NextCard(match.PlayerList[1].Hand[12]);
+            match.NextCard(match.PlayerList[2].Hand[12]);
+            match.NextCard(match.PlayerList[3].Hand[12]);
+            match.NextCard(match.PlayerList[0].Hand[12]);
+
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(3))); //pas
+            match.AddBid(new Contract((ContractHeight)(1), (ContractColor)(2), (PlayerTag)(0))); //1h
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(1))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(2))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(3))); //pas
+
+
+            Console.WriteLine(match.CurrentBidding.CurrentPlayer.ToString());
+            Console.WriteLine(match.GameState);
+
+            match.NextCard(match.PlayerList[1].Hand[0]);
+            match.NextCard(match.PlayerList[2].Hand[3]);
+            match.NextCard(match.PlayerList[3].Hand[2]);
+            match.NextCard(match.PlayerList[0].Hand[1]);
+
+            match.NextCard(match.PlayerList[2].Hand[0]);
+            match.NextCard(match.PlayerList[3].Hand[3]);
+            match.NextCard(match.PlayerList[0].Hand[2]);
+            match.NextCard(match.PlayerList[1].Hand[1]);
+
+
+            match.NextCard(match.PlayerList[3].Hand[0]);
+            match.NextCard(match.PlayerList[0].Hand[3]);
+            match.NextCard(match.PlayerList[1].Hand[2]);
+            match.NextCard(match.PlayerList[2].Hand[1]);
+
+            match.NextCard(match.PlayerList[0].Hand[0]);
+            match.NextCard(match.PlayerList[1].Hand[3]);
+            match.NextCard(match.PlayerList[2].Hand[2]);
+            match.NextCard(match.PlayerList[3].Hand[1]);
+
+
+
+
+
+
+            match.NextCard(match.PlayerList[1].Hand[4]);
+            match.NextCard(match.PlayerList[2].Hand[7]);
+            match.NextCard(match.PlayerList[3].Hand[6]);
+            match.NextCard(match.PlayerList[0].Hand[5]);
+
+            match.NextCard(match.PlayerList[2].Hand[4]);
+            match.NextCard(match.PlayerList[3].Hand[7]);
+            match.NextCard(match.PlayerList[0].Hand[6]);
+            match.NextCard(match.PlayerList[1].Hand[5]);
+
+            match.NextCard(match.PlayerList[3].Hand[4]);
+            match.NextCard(match.PlayerList[0].Hand[7]);
+            match.NextCard(match.PlayerList[1].Hand[6]);
+            match.NextCard(match.PlayerList[2].Hand[5]);
+
+            match.NextCard(match.PlayerList[0].Hand[4]);
+            match.NextCard(match.PlayerList[1].Hand[7]);
+            match.NextCard(match.PlayerList[2].Hand[6]);
+            match.NextCard(match.PlayerList[3].Hand[5]);
+
+            match.NextCard(match.PlayerList[1].Hand[8]);
+            match.NextCard(match.PlayerList[2].Hand[11]);
+            match.NextCard(match.PlayerList[3].Hand[10]);
+            match.NextCard(match.PlayerList[0].Hand[9]);
+
+            match.NextCard(match.PlayerList[2].Hand[8]);
+            match.NextCard(match.PlayerList[3].Hand[11]);
+            match.NextCard(match.PlayerList[0].Hand[10]);
+            match.NextCard(match.PlayerList[1].Hand[9]);
+
+            match.NextCard(match.PlayerList[3].Hand[8]);
+            match.NextCard(match.PlayerList[0].Hand[11]);
+            match.NextCard(match.PlayerList[1].Hand[10]);
+            match.NextCard(match.PlayerList[2].Hand[9]);
+
+            match.NextCard(match.PlayerList[0].Hand[8]);
+            match.NextCard(match.PlayerList[1].Hand[11]);
+            match.NextCard(match.PlayerList[2].Hand[10]);
+            match.NextCard(match.PlayerList[3].Hand[9]);
+
+            match.NextCard(match.PlayerList[1].Hand[12]);
+            match.NextCard(match.PlayerList[2].Hand[12]);
+            match.NextCard(match.PlayerList[3].Hand[12]);
+            match.NextCard(match.PlayerList[0].Hand[12]);
+
+            match.AddBid(new Contract((ContractHeight)(1), (ContractColor)(2), (PlayerTag)(0))); //1h
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(1))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(2))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(3))); //pas
+
+
+            Console.WriteLine(match.CurrentBidding.CurrentPlayer.ToString());
+            Console.WriteLine(match.GameState);
+
+            match.NextCard(match.PlayerList[1].Hand[0]);
+            match.NextCard(match.PlayerList[2].Hand[3]);
+            match.NextCard(match.PlayerList[3].Hand[2]);
+            match.NextCard(match.PlayerList[0].Hand[1]);
+
+            match.NextCard(match.PlayerList[2].Hand[0]);
+            match.NextCard(match.PlayerList[3].Hand[3]);
+            match.NextCard(match.PlayerList[0].Hand[2]);
+            match.NextCard(match.PlayerList[1].Hand[1]);
+
 
             match.NextCard(match.PlayerList[3].Hand[0]);
             match.NextCard(match.PlayerList[0].Hand[3]);
@@ -126,11 +447,6 @@ namespace GameManagerLib
             match.NextCard(match.PlayerList[0].Hand[2]);
             match.NextCard(match.PlayerList[1].Hand[1]);
 
-            //żadna z 4 poniższych nie pójdzie (i dobrze)
-            match.NextCard(match.PlayerList[1].Hand[0]);
-            match.NextCard(match.PlayerList[2].Hand[3]);
-            match.NextCard(match.PlayerList[3].Hand[2]);
-            match.NextCard(match.PlayerList[0].Hand[1]);
 
             match.NextCard(match.PlayerList[3].Hand[0]);
             match.NextCard(match.PlayerList[0].Hand[3]);
@@ -192,7 +508,6 @@ namespace GameManagerLib
             match.NextCard(match.PlayerList[3].Hand[12]);
             match.NextCard(match.PlayerList[0].Hand[12]);
 
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(1))); //pas
             match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(2))); //pas
             match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(3))); //pas
             match.AddBid(new Contract((ContractHeight)(1), (ContractColor)(2), (PlayerTag)(0))); //1h
@@ -214,11 +529,7 @@ namespace GameManagerLib
             match.NextCard(match.PlayerList[0].Hand[2]);
             match.NextCard(match.PlayerList[1].Hand[1]);
 
-            //żadna z 4 poniższych nie pójdzie (i dobrze)
-            match.NextCard(match.PlayerList[1].Hand[0]);
-            match.NextCard(match.PlayerList[2].Hand[3]);
-            match.NextCard(match.PlayerList[3].Hand[2]);
-            match.NextCard(match.PlayerList[0].Hand[1]);
+
 
             match.NextCard(match.PlayerList[3].Hand[0]);
             match.NextCard(match.PlayerList[0].Hand[3]);
@@ -280,8 +591,6 @@ namespace GameManagerLib
             match.NextCard(match.PlayerList[3].Hand[12]);
             match.NextCard(match.PlayerList[0].Hand[12]);
 
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(1))); //pas
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(2))); //pas
             match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(3))); //pas
             match.AddBid(new Contract((ContractHeight)(1), (ContractColor)(2), (PlayerTag)(0))); //1h
             match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(1))); //pas
@@ -302,11 +611,6 @@ namespace GameManagerLib
             match.NextCard(match.PlayerList[0].Hand[2]);
             match.NextCard(match.PlayerList[1].Hand[1]);
 
-            //żadna z 4 poniższych nie pójdzie (i dobrze)
-            match.NextCard(match.PlayerList[1].Hand[0]);
-            match.NextCard(match.PlayerList[2].Hand[3]);
-            match.NextCard(match.PlayerList[3].Hand[2]);
-            match.NextCard(match.PlayerList[0].Hand[1]);
 
             match.NextCard(match.PlayerList[3].Hand[0]);
             match.NextCard(match.PlayerList[0].Hand[3]);
@@ -368,359 +672,11 @@ namespace GameManagerLib
             match.NextCard(match.PlayerList[3].Hand[12]);
             match.NextCard(match.PlayerList[0].Hand[12]);
 
-            match.AddBid(new Contract((ContractHeight)(1), (ContractColor)(2), (PlayerTag)(0))); //1h
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(1))); //pas
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(2))); //pas
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(3))); //pas
-
-
-            Console.WriteLine(match.CurrentBidding.CurrentPlayer.ToString());
-            Console.WriteLine(match.GameState);
-
-            match.NextCard(match.PlayerList[1].Hand[0]);
-            match.NextCard(match.PlayerList[2].Hand[3]);
-            match.NextCard(match.PlayerList[3].Hand[2]);
-            match.NextCard(match.PlayerList[0].Hand[1]);
-
-            match.NextCard(match.PlayerList[2].Hand[0]);
-            match.NextCard(match.PlayerList[3].Hand[3]);
-            match.NextCard(match.PlayerList[0].Hand[2]);
-            match.NextCard(match.PlayerList[1].Hand[1]);
-
-            //żadna z 4 poniższych nie pójdzie (i dobrze)
-            match.NextCard(match.PlayerList[1].Hand[0]);
-            match.NextCard(match.PlayerList[2].Hand[3]);
-            match.NextCard(match.PlayerList[3].Hand[2]);
-            match.NextCard(match.PlayerList[0].Hand[1]);
-
-            match.NextCard(match.PlayerList[3].Hand[0]);
-            match.NextCard(match.PlayerList[0].Hand[3]);
-            match.NextCard(match.PlayerList[1].Hand[2]);
-            match.NextCard(match.PlayerList[2].Hand[1]);
-
-            match.NextCard(match.PlayerList[0].Hand[0]);
-            match.NextCard(match.PlayerList[1].Hand[3]);
-            match.NextCard(match.PlayerList[2].Hand[2]);
-            match.NextCard(match.PlayerList[3].Hand[1]);
-
-
-
-
-
-
-            match.NextCard(match.PlayerList[1].Hand[4]);
-            match.NextCard(match.PlayerList[2].Hand[7]);
-            match.NextCard(match.PlayerList[3].Hand[6]);
-            match.NextCard(match.PlayerList[0].Hand[5]);
-
-            match.NextCard(match.PlayerList[2].Hand[4]);
-            match.NextCard(match.PlayerList[3].Hand[7]);
-            match.NextCard(match.PlayerList[0].Hand[6]);
-            match.NextCard(match.PlayerList[1].Hand[5]);
-
-            match.NextCard(match.PlayerList[3].Hand[4]);
-            match.NextCard(match.PlayerList[0].Hand[7]);
-            match.NextCard(match.PlayerList[1].Hand[6]);
-            match.NextCard(match.PlayerList[2].Hand[5]);
-
-            match.NextCard(match.PlayerList[0].Hand[4]);
-            match.NextCard(match.PlayerList[1].Hand[7]);
-            match.NextCard(match.PlayerList[2].Hand[6]);
-            match.NextCard(match.PlayerList[3].Hand[5]);
-
-            match.NextCard(match.PlayerList[1].Hand[8]);
-            match.NextCard(match.PlayerList[2].Hand[11]);
-            match.NextCard(match.PlayerList[3].Hand[10]);
-            match.NextCard(match.PlayerList[0].Hand[9]);
-
-            match.NextCard(match.PlayerList[2].Hand[8]);
-            match.NextCard(match.PlayerList[3].Hand[11]);
-            match.NextCard(match.PlayerList[0].Hand[10]);
-            match.NextCard(match.PlayerList[1].Hand[9]);
-
-            match.NextCard(match.PlayerList[3].Hand[8]);
-            match.NextCard(match.PlayerList[0].Hand[11]);
-            match.NextCard(match.PlayerList[1].Hand[10]);
-            match.NextCard(match.PlayerList[2].Hand[9]);
-
-            match.NextCard(match.PlayerList[0].Hand[8]);
-            match.NextCard(match.PlayerList[1].Hand[11]);
-            match.NextCard(match.PlayerList[2].Hand[10]);
-            match.NextCard(match.PlayerList[3].Hand[9]);
-
-            match.NextCard(match.PlayerList[1].Hand[12]);
-            match.NextCard(match.PlayerList[2].Hand[12]);
-            match.NextCard(match.PlayerList[3].Hand[12]);
-            match.NextCard(match.PlayerList[0].Hand[12]);
-
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(1))); //pas
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(2))); //pas
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(3))); //pas
-            match.AddBid(new Contract((ContractHeight)(1), (ContractColor)(2), (PlayerTag)(0))); //1h
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(1))); //pas
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(2))); //pas
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(3))); //pas
-
-
-            Console.WriteLine(match.CurrentBidding.CurrentPlayer.ToString());
-            Console.WriteLine(match.GameState);
-
-            match.NextCard(match.PlayerList[1].Hand[0]);
-            match.NextCard(match.PlayerList[2].Hand[3]);
-            match.NextCard(match.PlayerList[3].Hand[2]);
-            match.NextCard(match.PlayerList[0].Hand[1]);
-
-            match.NextCard(match.PlayerList[2].Hand[0]);
-            match.NextCard(match.PlayerList[3].Hand[3]);
-            match.NextCard(match.PlayerList[0].Hand[2]);
-            match.NextCard(match.PlayerList[1].Hand[1]);
-
-            //żadna z 4 poniższych nie pójdzie (i dobrze)
-            match.NextCard(match.PlayerList[1].Hand[0]);
-            match.NextCard(match.PlayerList[2].Hand[3]);
-            match.NextCard(match.PlayerList[3].Hand[2]);
-            match.NextCard(match.PlayerList[0].Hand[1]);
-
-            match.NextCard(match.PlayerList[3].Hand[0]);
-            match.NextCard(match.PlayerList[0].Hand[3]);
-            match.NextCard(match.PlayerList[1].Hand[2]);
-            match.NextCard(match.PlayerList[2].Hand[1]);
-
-            match.NextCard(match.PlayerList[0].Hand[0]);
-            match.NextCard(match.PlayerList[1].Hand[3]);
-            match.NextCard(match.PlayerList[2].Hand[2]);
-            match.NextCard(match.PlayerList[3].Hand[1]);
-
-
-
-
-
-
-            match.NextCard(match.PlayerList[1].Hand[4]);
-            match.NextCard(match.PlayerList[2].Hand[7]);
-            match.NextCard(match.PlayerList[3].Hand[6]);
-            match.NextCard(match.PlayerList[0].Hand[5]);
-
-            match.NextCard(match.PlayerList[2].Hand[4]);
-            match.NextCard(match.PlayerList[3].Hand[7]);
-            match.NextCard(match.PlayerList[0].Hand[6]);
-            match.NextCard(match.PlayerList[1].Hand[5]);
-
-            match.NextCard(match.PlayerList[3].Hand[4]);
-            match.NextCard(match.PlayerList[0].Hand[7]);
-            match.NextCard(match.PlayerList[1].Hand[6]);
-            match.NextCard(match.PlayerList[2].Hand[5]);
-
-            match.NextCard(match.PlayerList[0].Hand[4]);
-            match.NextCard(match.PlayerList[1].Hand[7]);
-            match.NextCard(match.PlayerList[2].Hand[6]);
-            match.NextCard(match.PlayerList[3].Hand[5]);
-
-            match.NextCard(match.PlayerList[1].Hand[8]);
-            match.NextCard(match.PlayerList[2].Hand[11]);
-            match.NextCard(match.PlayerList[3].Hand[10]);
-            match.NextCard(match.PlayerList[0].Hand[9]);
-
-            match.NextCard(match.PlayerList[2].Hand[8]);
-            match.NextCard(match.PlayerList[3].Hand[11]);
-            match.NextCard(match.PlayerList[0].Hand[10]);
-            match.NextCard(match.PlayerList[1].Hand[9]);
-
-            match.NextCard(match.PlayerList[3].Hand[8]);
-            match.NextCard(match.PlayerList[0].Hand[11]);
-            match.NextCard(match.PlayerList[1].Hand[10]);
-            match.NextCard(match.PlayerList[2].Hand[9]);
-
-            match.NextCard(match.PlayerList[0].Hand[8]);
-            match.NextCard(match.PlayerList[1].Hand[11]);
-            match.NextCard(match.PlayerList[2].Hand[10]);
-            match.NextCard(match.PlayerList[3].Hand[9]);
-
-            match.NextCard(match.PlayerList[1].Hand[12]);
-            match.NextCard(match.PlayerList[2].Hand[12]);
-            match.NextCard(match.PlayerList[3].Hand[12]);
-            match.NextCard(match.PlayerList[0].Hand[12]);
-
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(1))); //pas
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(2))); //pas
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(3))); //pas
-            match.AddBid(new Contract((ContractHeight)(1), (ContractColor)(2), (PlayerTag)(0))); //1h
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(1))); //pas
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(2))); //pas
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(3))); //pas
-
-
-            Console.WriteLine(match.CurrentBidding.CurrentPlayer.ToString());
-            Console.WriteLine(match.GameState);
-
-            match.NextCard(match.PlayerList[1].Hand[0]);
-            match.NextCard(match.PlayerList[2].Hand[3]);
-            match.NextCard(match.PlayerList[3].Hand[2]);
-            match.NextCard(match.PlayerList[0].Hand[1]);
-
-            match.NextCard(match.PlayerList[2].Hand[0]);
-            match.NextCard(match.PlayerList[3].Hand[3]);
-            match.NextCard(match.PlayerList[0].Hand[2]);
-            match.NextCard(match.PlayerList[1].Hand[1]);
-
-            //żadna z 4 poniższych nie pójdzie (i dobrze)
-            match.NextCard(match.PlayerList[1].Hand[0]);
-            match.NextCard(match.PlayerList[2].Hand[3]);
-            match.NextCard(match.PlayerList[3].Hand[2]);
-            match.NextCard(match.PlayerList[0].Hand[1]);
-
-            match.NextCard(match.PlayerList[3].Hand[0]);
-            match.NextCard(match.PlayerList[0].Hand[3]);
-            match.NextCard(match.PlayerList[1].Hand[2]);
-            match.NextCard(match.PlayerList[2].Hand[1]);
-
-            match.NextCard(match.PlayerList[0].Hand[0]);
-            match.NextCard(match.PlayerList[1].Hand[3]);
-            match.NextCard(match.PlayerList[2].Hand[2]);
-            match.NextCard(match.PlayerList[3].Hand[1]);
-
-
-
-
-
-
-            match.NextCard(match.PlayerList[1].Hand[4]);
-            match.NextCard(match.PlayerList[2].Hand[7]);
-            match.NextCard(match.PlayerList[3].Hand[6]);
-            match.NextCard(match.PlayerList[0].Hand[5]);
-
-            match.NextCard(match.PlayerList[2].Hand[4]);
-            match.NextCard(match.PlayerList[3].Hand[7]);
-            match.NextCard(match.PlayerList[0].Hand[6]);
-            match.NextCard(match.PlayerList[1].Hand[5]);
-
-            match.NextCard(match.PlayerList[3].Hand[4]);
-            match.NextCard(match.PlayerList[0].Hand[7]);
-            match.NextCard(match.PlayerList[1].Hand[6]);
-            match.NextCard(match.PlayerList[2].Hand[5]);
-
-            match.NextCard(match.PlayerList[0].Hand[4]);
-            match.NextCard(match.PlayerList[1].Hand[7]);
-            match.NextCard(match.PlayerList[2].Hand[6]);
-            match.NextCard(match.PlayerList[3].Hand[5]);
-
-            match.NextCard(match.PlayerList[1].Hand[8]);
-            match.NextCard(match.PlayerList[2].Hand[11]);
-            match.NextCard(match.PlayerList[3].Hand[10]);
-            match.NextCard(match.PlayerList[0].Hand[9]);
-
-            match.NextCard(match.PlayerList[2].Hand[8]);
-            match.NextCard(match.PlayerList[3].Hand[11]);
-            match.NextCard(match.PlayerList[0].Hand[10]);
-            match.NextCard(match.PlayerList[1].Hand[9]);
-
-            match.NextCard(match.PlayerList[3].Hand[8]);
-            match.NextCard(match.PlayerList[0].Hand[11]);
-            match.NextCard(match.PlayerList[1].Hand[10]);
-            match.NextCard(match.PlayerList[2].Hand[9]);
-
-            match.NextCard(match.PlayerList[0].Hand[8]);
-            match.NextCard(match.PlayerList[1].Hand[11]);
-            match.NextCard(match.PlayerList[2].Hand[10]);
-            match.NextCard(match.PlayerList[3].Hand[9]);
-
-            match.NextCard(match.PlayerList[1].Hand[12]);
-            match.NextCard(match.PlayerList[2].Hand[12]);
-            match.NextCard(match.PlayerList[3].Hand[12]);
-            match.NextCard(match.PlayerList[0].Hand[12]);
-
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(1))); //pas
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(2))); //pas
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(3))); //pas
-            match.AddBid(new Contract((ContractHeight)(1), (ContractColor)(2), (PlayerTag)(0))); //1h
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(1))); //pas
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(2))); //pas
-            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(3))); //pas
-
-
-            Console.WriteLine(match.CurrentBidding.CurrentPlayer.ToString());
-            Console.WriteLine(match.GameState);
-
-            match.NextCard(match.PlayerList[1].Hand[0]);
-            match.NextCard(match.PlayerList[2].Hand[3]);
-            match.NextCard(match.PlayerList[3].Hand[2]);
-            match.NextCard(match.PlayerList[0].Hand[1]);
-
-            match.NextCard(match.PlayerList[2].Hand[0]);
-            match.NextCard(match.PlayerList[3].Hand[3]);
-            match.NextCard(match.PlayerList[0].Hand[2]);
-            match.NextCard(match.PlayerList[1].Hand[1]);
-
-            //żadna z 4 poniższych nie pójdzie (i dobrze)
-            match.NextCard(match.PlayerList[1].Hand[0]);
-            match.NextCard(match.PlayerList[2].Hand[3]);
-            match.NextCard(match.PlayerList[3].Hand[2]);
-            match.NextCard(match.PlayerList[0].Hand[1]);
-
-            match.NextCard(match.PlayerList[3].Hand[0]);
-            match.NextCard(match.PlayerList[0].Hand[3]);
-            match.NextCard(match.PlayerList[1].Hand[2]);
-            match.NextCard(match.PlayerList[2].Hand[1]);
-
-            match.NextCard(match.PlayerList[0].Hand[0]);
-            match.NextCard(match.PlayerList[1].Hand[3]);
-            match.NextCard(match.PlayerList[2].Hand[2]);
-            match.NextCard(match.PlayerList[3].Hand[1]);
-
-
-
-
-
-
-            match.NextCard(match.PlayerList[1].Hand[4]);
-            match.NextCard(match.PlayerList[2].Hand[7]);
-            match.NextCard(match.PlayerList[3].Hand[6]);
-            match.NextCard(match.PlayerList[0].Hand[5]);
-
-            match.NextCard(match.PlayerList[2].Hand[4]);
-            match.NextCard(match.PlayerList[3].Hand[7]);
-            match.NextCard(match.PlayerList[0].Hand[6]);
-            match.NextCard(match.PlayerList[1].Hand[5]);
-
-            match.NextCard(match.PlayerList[3].Hand[4]);
-            match.NextCard(match.PlayerList[0].Hand[7]);
-            match.NextCard(match.PlayerList[1].Hand[6]);
-            match.NextCard(match.PlayerList[2].Hand[5]);
-
-            match.NextCard(match.PlayerList[0].Hand[4]);
-            match.NextCard(match.PlayerList[1].Hand[7]);
-            match.NextCard(match.PlayerList[2].Hand[6]);
-            match.NextCard(match.PlayerList[3].Hand[5]);
-
-            match.NextCard(match.PlayerList[1].Hand[8]);
-            match.NextCard(match.PlayerList[2].Hand[11]);
-            match.NextCard(match.PlayerList[3].Hand[10]);
-            match.NextCard(match.PlayerList[0].Hand[9]);
-
-            match.NextCard(match.PlayerList[2].Hand[8]);
-            match.NextCard(match.PlayerList[3].Hand[11]);
-            match.NextCard(match.PlayerList[0].Hand[10]);
-            match.NextCard(match.PlayerList[1].Hand[9]);
-
-            match.NextCard(match.PlayerList[3].Hand[8]);
-            match.NextCard(match.PlayerList[0].Hand[11]);
-            match.NextCard(match.PlayerList[1].Hand[10]);
-            match.NextCard(match.PlayerList[2].Hand[9]);
-
-            match.NextCard(match.PlayerList[0].Hand[8]);
-            match.NextCard(match.PlayerList[1].Hand[11]);
-            match.NextCard(match.PlayerList[2].Hand[10]);
-            match.NextCard(match.PlayerList[3].Hand[9]);
-
-            match.NextCard(match.PlayerList[1].Hand[12]);
-            match.NextCard(match.PlayerList[2].Hand[12]);
-            match.NextCard(match.PlayerList[3].Hand[12]);
-            match.NextCard(match.PlayerList[0].Hand[12]);
-
 
             Console.WriteLine(match.GameState);
             Console.WriteLine(match.GameState);
             Console.WriteLine(match.GameState);
+
         }
     }
 }

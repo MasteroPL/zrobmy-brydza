@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using GameManagerLib.Exceptions;
 namespace GameManagerLib.Models
 {
     public class GameInfo
@@ -38,7 +39,7 @@ namespace GameManagerLib.Models
         {
             if (Card.PlayerID != this.CurrentPlayer)
             {
-                return false;
+                throw new WrongPlayerException();
             }
  
             currentTrick.NextCard(Card, this.ContractColor);

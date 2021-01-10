@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GameManagerLib.Exceptions;
 
 namespace GameManagerLib.Models
 {
@@ -49,7 +50,7 @@ namespace GameManagerLib.Models
 		{
 			if (Contract.DeclaredBy != CurrentPlayer)
 			{
-				return false;
+                throw new WrongPlayerException();
 			}
 
 			if (X == true)
@@ -57,7 +58,7 @@ namespace GameManagerLib.Models
 				PlayerTag Declarer = HighestContract.DeclaredBy;
 				if (IsTheSameTeam(Declarer, Contract.DeclaredBy) || HighestContract == null || (int)HighestContract.ContractColor == -1)
 				{
-					return false;
+					throw new WrongBidException();
 				}
 				else
 				{
@@ -73,7 +74,7 @@ namespace GameManagerLib.Models
 				PlayerTag Declarer = HighestContract.DeclaredBy;
 				if (IsTheSameTeam(Declarer, Contract.DeclaredBy) == false || HighestContract == null || (int)HighestContract.ContractColor == -1 || HighestContract.XEnabled == false)
 				{
-					return false;
+                    throw new WrongBidException();
 				}
 				else
 				{
@@ -126,7 +127,7 @@ namespace GameManagerLib.Models
 				return true;
 			}
 
-			return false;
+            throw new UnexpectedFunctionEndException();
 		}
 
 		public bool IsEnd()

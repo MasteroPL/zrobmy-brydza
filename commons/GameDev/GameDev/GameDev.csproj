@@ -43,6 +43,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\DuplicatedPlayerNameException.cs" />
+    <Compile Include="Exceptions\SeatTakenException.cs" />
+    <Compile Include="Exceptions\UnexpectedFunctionEndException.cs" />
+    <Compile Include="Exceptions\WrongBidException.cs" />
+    <Compile Include="Exceptions\WrongCardException.cs" />
+    <Compile Include="Exceptions\WrongGameStateException.cs" />
+    <Compile Include="Exceptions\WrongPlayerException.cs" />
     <Compile Include="Models\Bidding.cs" />
     <Compile Include="Models\Card.cs" />
     <Compile Include="Models\Contract.cs" />
