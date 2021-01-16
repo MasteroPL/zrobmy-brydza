@@ -10,8 +10,10 @@ namespace ServerSocket.Actions.Sit {
         public override void Validate(bool throwException = true) {
             base.Validate(throwException);
 
-            if(PlaceTag > 3 || PlaceTag < 0) {
-                AddError("PlaceTag", "INVALID_PLACE", "Niepoprawny kod miejsca. Dostępny zakres: 0-3");
+            if (Errors.Count == 0) {
+                if (PlaceTag > 3 || PlaceTag < 0) {
+                    AddError("PlaceTag", "INVALID_PLACE", "Niepoprawny kod miejsca. Dostępny zakres: 0-3");
+                }
             }
 
             if (Errors.Count > 0 && throwException) {

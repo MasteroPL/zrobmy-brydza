@@ -23,11 +23,14 @@ namespace ServerSocket.Actions.Sit {
 
             try {
                 game.AddPlayer(new Player((PlayerTag)data.PlaceTag, (string)conn.Session.Get("username")));
-            } catch(SeatTakenException e) {
+            } catch(SeatTakenException) {
                 data.AddError("PlaceTag", "SEAT_TAKEN", "Miejsce jest już zajęte");
                 data.ThrowException();
-            } catch(DuplicatedPlayerNameException e) {
+            } catch(DuplicatedPlayerNameException) {
                 data.AddError(null, "ALREADY_SEATED", "Użytkownik zajął już miejsce");
+                data.ThrowException();
+            } catch(WrongGameStateException) {
+                data.AddError(null, "WRONG_GAME_STATE", "Nieprawidłowy stan gry dla tej operacji");
                 data.ThrowException();
             }
 
