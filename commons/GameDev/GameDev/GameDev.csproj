@@ -43,25 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Exceptions\DuplicatedPlayerNameException.cs" />
-    <Compile Include="Exceptions\SeatTakenException.cs" />
-    <Compile Include="Exceptions\UnexpectedFunctionEndException.cs" />
-    <Compile Include="Exceptions\WrongBidException.cs" />
-    <Compile Include="Exceptions\WrongCardException.cs" />
-    <Compile Include="Exceptions\WrongGameStateException.cs" />
-    <Compile Include="Exceptions\WrongPlayerException.cs" />
-    <Compile Include="Models\Bidding.cs" />
-    <Compile Include="Models\Card.cs" />
-    <Compile Include="Models\Contract.cs" />
-    <Compile Include="Models\GameInfo.cs" />
-    <Compile Include="Models\Match.cs" />
-    <Compile Include="Models\Player.cs" />
-    <Compile Include="Models\Trick.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GamerLib\GamerLib.csproj">
+      <Project>{d52bfca3-229d-4781-a8fd-8bb9ec4a04d1}</Project>
+      <Name>GamerLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -7,7 +7,7 @@ using System.Diagnostics;
 using GameManagerLib.Exceptions;
 namespace GameManagerLib.Models
 {
-    class Match
+    public class Match
     {
         public List<Player> PlayerList;
         public GameState GameState;

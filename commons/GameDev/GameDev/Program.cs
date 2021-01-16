@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using GameManagerLib.Models;
 using GameManagerLib.Exceptions;
-namespace GameManagerLib
+
+namespace GameDev
 {
     class Program {
         static void Main(string[] args) {

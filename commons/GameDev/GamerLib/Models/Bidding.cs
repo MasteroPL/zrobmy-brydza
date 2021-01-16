@@ -7,7 +7,7 @@ using GameManagerLib.Exceptions;
 
 namespace GameManagerLib.Models
 {
-	class Bidding
+	public class Bidding
 	{
 		public PlayerTag CurrentPlayer;
 		public List<Contract> ContractList;
