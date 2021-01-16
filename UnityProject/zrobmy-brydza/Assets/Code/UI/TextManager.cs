@@ -25,9 +25,24 @@ public class TextManager : MonoBehaviour
         AddBid("e", "1D");
         AddBid("w", "1S");
         AddBid("n", "PAS");
-
+        
         this.AddMessage("Derp", "jak grasz cwelu");
         this.AddMessage("Herp", "sklej wary lapsie");
+        this.AddMessage("Herp", "sklej wary lapsie");
+        this.AddMessage("Herp", "sklej wary lapsie");
+        this.AddMessage("Herp", "sklej wary lapsie");
+        this.AddMessage("Herp", "sklej wary lapsie");
+        this.AddMessage("Herp", "sklej wary lapsie");
+        this.AddMessage("Herp", "sklej wary lapsie");
+        this.AddMessage("Herp", "sklej wary lapsie");
+        this.AddMessage("Herp", "sklej wary lapsie");
+        this.AddMessage("Herp", "sklej wary lapsie");
+        this.AddMessage("Herp", "sklej wary lapsie");
+        this.AddMessage("Herp", "sklej wary lapsie");
+        this.AddMessage("Herp", "sklej wary lapsie");
+        this.AddMessage("Herp", "sklej wary lapsie");
+        this.AddMessage("Derp", "jak grasz cwelu");
+        this.AddMessage("Derp", "jak grasz cwelu");
     }
 
     /// <summary> 
@@ -122,7 +137,7 @@ public class TextManager : MonoBehaviour
     /// </summary>
     public void AddMessage(string playerName, string message)
     {
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/Chat").GetComponent<UnityEngine.UI.Text>().text 
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/Chat/Viewport/Content").GetComponent<UnityEngine.UI.Text>().text 
             += playerName + ": " + message + "\n";
     }
 
