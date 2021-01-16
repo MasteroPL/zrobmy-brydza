@@ -7,17 +7,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GameManagerLib.Models;
 
 namespace ServerSocket.Models {
     public class Lobby {
         public List<ClientConnection> ConnectedClients = new List<ClientConnection>();
         public ActionsManager ActionsManager;
+        public Match Game;
         public string Password;
+        public ClientConnection LobbyOwner = null;
 
         public Lobby(string password = "") {
             // Lista akcji definiowana w konfiguracji
             ActionsManager = new ActionsManager(MainConfig.GAME_ACTIONS);
             Password = password;
+
+            Game = new Match();
         }
 
         public void Join(ClientConnection newConnection) {
@@ -33,6 +38,11 @@ namespace ServerSocket.Models {
             }
 
             ConnectedClients.Add(newConnection);
+
+            if(LobbyOwner == null) {
+                LobbyOwner = newConnection;
+            }
+
             Console.WriteLine("Player " + newConnection.Session.Get("username") + " joined the lobby!");
             newConnection.Session.Set("joined-lobby", this);
         }

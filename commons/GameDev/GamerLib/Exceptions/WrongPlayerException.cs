@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GameManagerLib.Exceptions
 {
-    class WrongPlayerException : Exception
+    public class WrongPlayerException : Exception
     {
         public WrongPlayerException() : base() { }
         public WrongPlayerException(string message) : base(message) {}
