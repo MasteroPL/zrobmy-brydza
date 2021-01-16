@@ -1,13 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class TextManager : MonoBehaviour
 {
     Points NS;
     Points WE;
     string space;
-
+    InputField ChatField;
     void Start()
     {
         System.Console.WriteLine("dupa");
@@ -25,7 +25,7 @@ public class TextManager : MonoBehaviour
         AddBid("e", "1D");
         AddBid("w", "1S");
         AddBid("n", "PAS");
-        
+        /*
         this.AddMessage("Derp", "jak grasz cwelu");
         this.AddMessage("Herp", "sklej wary lapsie");
         this.AddMessage("Herp", "sklej wary lapsie");
@@ -42,7 +42,7 @@ public class TextManager : MonoBehaviour
         this.AddMessage("Herp", "sklej wary lapsie");
         this.AddMessage("Herp", "sklej wary lapsie");
         this.AddMessage("Derp", "jak grasz cwelu");
-        this.AddMessage("Derp", "jak grasz cwelu");
+        this.AddMessage("Derp", "jak grasz cwelu");*/
     }
 
     /// <summary> 
@@ -92,8 +92,8 @@ public class TextManager : MonoBehaviour
     /// </summary>
     public void AddBid(string player, string value)
     {
-        GameObject textfield;
         player = player.ToUpper();
+        GameObject textfield;   
         textfield = GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/"+ player + "PlayerDeclarations/" + player + "BidList");
         textfield.GetComponent<UnityEngine.UI.Text>().text += value + "\n";
     }
@@ -132,13 +132,14 @@ public class TextManager : MonoBehaviour
 
     /// <summary> 
     /// dodaj wiadomość do chatu
-    /// <para>playerName - nazwa gracza (string)</para> 
     /// <para>message - wiadomość (string)</para>
     /// </summary>
-    public void AddMessage(string playerName, string message)
+    public void AddMessage(string message)
     {
+        Debug.Log("reeee");
         GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/Chat/Viewport/Content").GetComponent<UnityEngine.UI.Text>().text 
-            += playerName + ": " + message + "\n";
+            += message + "\n";
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/InputField/Text").GetComponent<UnityEngine.UI.Text>().text = "";
+        Debug.Log(GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/InputField/Text").GetComponent<UnityEngine.UI.Text>().text);
     }
-
 }
