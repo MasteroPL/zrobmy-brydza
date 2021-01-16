@@ -50,6 +50,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actions\HelloWorld\HelloWorldAction.cs" />
+    <Compile Include="Actions\Sit\RequestSerializer.cs" />
+    <Compile Include="Actions\Sit\ResponseSerializer.cs" />
+    <Compile Include="Actions\Sit\SitAction.cs" />
+    <Compile Include="Actions\StartGame\RequestSerializer.cs" />
+    <Compile Include="Actions\StartGame\ResponseSerializer.cs" />
+    <Compile Include="Actions\StartGame\StartGameAction.cs" />
     <Compile Include="Config\MainConfig.cs" />
     <Compile Include="Models\BridgeServerSocket.cs" />
     <Compile Include="Models\Exceptions\DuplicateLobbyIdException.cs" />
@@ -68,6 +74,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\GameDev\GamerLib\GamerLib.csproj">
+      <Project>{0241cd53-4c0f-48ed-923d-fc2cc0facc37}</Project>
+      <Name>GamerLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EasyHosting\EasyHosting.csproj">
       <Project>{fb7b10c5-89fa-42dc-a706-f504a0674b9f}</Project>
       <Name>EasyHosting</Name>
