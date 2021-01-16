@@ -47,7 +47,7 @@ namespace EasyHosting.Models.Serialization
 		/// <param name="fieldName">Nazwa pola</param>
 		/// <param name="errorCode">Kod błędu</param>
 		/// <param name="errorMessage">Treść błędu</param>
-		protected void AddError(string fieldName, string errorCode, string errorMessage) {
+		public void AddError(string fieldName, string errorCode, string errorMessage) {
 			AddError(fieldName, new ValidationError { ErrorCode = errorCode, ErrorMessage = errorMessage });
 		}
 		private void AddErrors(FieldInfo field, IEnumerable<ValidationError> errors) {
@@ -70,7 +70,7 @@ namespace EasyHosting.Models.Serialization
 			}
 		}
 
-		protected void ThrowException() {
+		public void ThrowException() {
 			throw new ValidationException(Errors);
 		}
 
