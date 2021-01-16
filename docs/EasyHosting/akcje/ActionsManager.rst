@@ -104,47 +104,31 @@ Jak widać z przykładu, akcje wykonują się dokładnie w takiej kolejności, w
 Dokumentacja klasy
 ******************
 
-.. class::
-    ActionsManager
+.. sphinxsharp:type:: public class ActionsManager
 
-Klasa do zarządzania dostępnymi akcjami
+    Klasa do zarządzania dostępnymi akcjami
 
 Konstruktory
 ============
 
-.. method::
-    public ActionsManager() 
-    :noindex:
+.. sphinxsharp:method:: public ActionsManager(Dictionary<string, BaseAction> actionsDictionary)
+    :param(1): Inicjalny słownik akcji
 
-Domyślny konstruktor, pozostawia słownik akcji pusty, do manualnego uzupełnienie
+    Konstruktor z inicjalną definicją słownika akcji
 
-.. method:: 
-    public ActionsManager(Dictionary<string, BaseAction action> actionsDictionary)
-    :noindex:
 
-Konstruktor z inicjalną definicją słownika akcji
+.. sphinxsharp:method:: public ActionsManager()
 
-    :Parametry:
-        * actionsDictionary: Dictionary<string, BaseAction action>
-            Inicjalny słownik akcji
+    Domyślny konstruktor, pozostawia słownik akcji pusty, do manualnego uzupełnienie
 
 Metody
 ======
 
-.. method::
-    public void AddAction(string actionName, BaseAction action)
+.. sphinxsharp:method:: public void AddAction(string actionName, BaseAction action)
+    :param(1): Nazwa (identyfikator) akcji
+    :param(2): Obiekt definiujący akcję
 
-Dodaje akcję do listy dostępnych akcji w tym managerze
-
-    :Parametry:
-        * actionName: string
-            Nazwa (identyfikator) akcji
-        * action: BaseAction
-            Obiekt definiujący akcję
-
-    :Wyjątki:
-        * ArgumentException
-            Rzucany, jeśli ta nazwa akcji jest już zajęta
+    Dodaje akcję do listy dostępnych akcji w tym managerze
 
 
 .. method::

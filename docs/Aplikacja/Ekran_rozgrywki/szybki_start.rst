@@ -4,7 +4,9 @@ Szybki start
 
 Ekran rozgrywki korzysta z modelu MVC. Wykorzystywane w kontrolerze (klasie głównej - GameScriptManager - oraz klasach odpowiadających za stan) 
 odpowiednie elementy interfejsu użytkownika mają wpływ na stan rozgrywki poprzez przypisane im metody. Walidacja zmian odbywa się w komunikacji 
-kontroler - stanem tj. przed aktualizacją stanu, kontroler "odpytuje" stan czy nowa jego wartość może zostać wprowadzona. Przykład takowej komunikacji widać poniżej: ::
+kontroler - stanem tj. przed aktualizacją stanu, kontroler "odpytuje" stan czy nowa jego wartość może zostać wprowadzona. Przykład takowej komunikacji widać poniżej:
+
+.. code:: C#
     
     public class AuctionBaseState : ScriptableObject
     {

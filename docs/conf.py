@@ -33,6 +33,7 @@ release = '0.1-pre-alpha'
 # ones.
 extensions = [
     "sphinx_rtd_theme",
+    "sphinxsharp.sphinxsharp"
 ]
 
 # Add any paths that contain templates here, relative to this directory.
