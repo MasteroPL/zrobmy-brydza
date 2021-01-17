@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GameManagerLib.Models;
 
 [CreateAssetMenu(menuName = "AuctionState")]
 public class AuctionBaseState : ScriptableObject
@@ -15,7 +16,7 @@ public class AuctionBaseState : ScriptableObject
     public void Init(PlayerTag FirstDeclaringPlayer)
     {
         CurrentContract = null;
-        ContractCache = new Contract(ContractHeight.NONE, ContractColor.NONE);
+        ContractCache = new Contract(ContractHeight.NONE, ContractColor.NONE, PlayerTag.NOBODY);
         CurrentPlayer = FirstDeclaringPlayer;
         PossibleContracts = new List<Contract>();
 
@@ -24,9 +25,9 @@ public class AuctionBaseState : ScriptableObject
             {
                 if(height != -1 && color != -1)
                 {
-                    PossibleContracts.Add(new Contract((ContractHeight)height, (ContractColor)color));
-                    PossibleContracts.Add(new Contract((ContractHeight)height, (ContractColor)color, true));
-                    PossibleContracts.Add(new Contract((ContractHeight)height, (ContractColor)color, true, true));
+                    PossibleContracts.Add(new Contract((ContractHeight)height, (ContractColor)color, PlayerTag.NOBODY));
+                    PossibleContracts.Add(new Contract((ContractHeight)height, (ContractColor)color, PlayerTag.NOBODY, true));
+                    PossibleContracts.Add(new Contract((ContractHeight)height, (ContractColor)color, PlayerTag.NOBODY, true, true));
                 }
             }
         }
@@ -78,7 +79,7 @@ public class AuctionBaseState : ScriptableObject
         if (isContractConsistent)
         {
             CurrentContract = ContractCache;
-            ContractCache = new Contract(ContractHeight.NONE, ContractColor.NONE);
+            ContractCache = new Contract(ContractHeight.NONE, ContractColor.NONE, PlayerTag.NOBODY);
             return true;
         }
         return false;

@@ -5,10 +5,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using Assets.Code.UI;
 using Assets.Code.Models;
+using GameManagerLib.Models;
 
 public class AuctionModule : MonoBehaviour
 {
-    private GameManagerScript MainModule;
+    private Game MainModule;
     [SerializeField] AuctionBaseState AuctionState;
     private UserData MyData;
 
@@ -46,7 +47,8 @@ public class AuctionModule : MonoBehaviour
     [SerializeField] Text SPlayerDeclarations;
     [SerializeField] Text WPlayerDeclarations;
 
-    public void InitAuctionModule(GameManagerScript MainModule, UserData UserData, PlayerTag StartingPlayer)
+    // TODO port for start method
+    public void InitAuctionModule(Game MainModule, UserData UserData, PlayerTag StartingPlayer)
     {
         this.MainModule = MainModule;
         MyData = UserData;
@@ -85,7 +87,7 @@ public class AuctionModule : MonoBehaviour
 
     void Update()
     {
-        if (MainModule.CurrentState == AuctionState)
+        /*if (MainModule.GameState == GameState.BIDDING) // TO RECODE
         {
             if (AuctionState.CurrentPlayer == MyData.position)
             {
@@ -113,7 +115,7 @@ public class AuctionModule : MonoBehaviour
             {
                 AuctionDialog.enabled = false; // hiding dialog
             }
-        }
+        }*/
     }
 
     /*void declareNewContract()
