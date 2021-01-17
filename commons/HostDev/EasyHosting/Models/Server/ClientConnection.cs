@@ -12,6 +12,14 @@ namespace EasyHosting.Models.Server
 {
 	public class ClientConnection
 	{
+		/// <summary>
+		/// Komunikaty typu "PUSH", czyli wysałane z serwera do użytkownika. Nie są to odpowiedzi do zapytań
+		/// </summary>
+		private LinkedList<JObject> CommunicatesQueue = new LinkedList<JObject>();
+
+		private ServerSocket _ServerSocket;
+		public ServerSocket ServerSocket { get { return _ServerSocket; } private set { _ServerSocket = value; } }
+
 		private Session _Session = new Session();
 		public Session Session { get { return _Session; } protected set { _Session = value; } }
 
@@ -60,7 +68,6 @@ namespace EasyHosting.Models.Server
 		private TcpClient _TcpClient = null;
 		public TcpClient TcpClient { get { return _TcpClient; } protected set { this._TcpClient = value; } }
 
-		public ConnectionState ConnectionState { get; protected set; }
 
 		public bool DataAvailable {
 			get {
@@ -85,13 +92,33 @@ namespace EasyHosting.Models.Server
             }
         }
 
+		/// <summary>
+		/// Dodaje nowy komunikat do kolejki. Po przetworzeniu zapytań wszystkie komunikaty z kolejki są wysyłane do użytkownika
+		/// </summary>
+		/// <param name="communicate">Komunikat</param>
+		public void AddCommunicate(JObject communicate) {
+			CommunicatesQueue.AddLast(communicate);
+        }
+		/// <summary>
+		/// Metoda wysyła wszystkie zakolejkowane komunikaty
+		/// 
+		/// Powinna być wywoływana tylko przez bazową klasę "ServerSocket"
+		/// </summary>
+		public void SendCommunicates() {
+			foreach(var communicate in CommunicatesQueue) {
+				WriteData(communicate);
+            }
+			CommunicatesQueue.Clear();
+        }
+
 		public void Flush() {
 			var stream = TcpClient.GetStream();
 			stream.Flush();
         }
 
-		public ClientConnection(TcpClient tcpClient) {
+		public ClientConnection(TcpClient tcpClient, ServerSocket serverSocket = null) {
 			this.TcpClient = tcpClient;
+			this.ServerSocket = serverSocket;
 		}
 	}
 }

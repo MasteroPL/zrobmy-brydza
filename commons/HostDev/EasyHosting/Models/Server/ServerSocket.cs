@@ -57,6 +57,14 @@ namespace EasyHosting.Models.Server
             List<ClientConnection> toRemove = new List<ClientConnection>();
 
             while (true) {
+                // Komunikaty
+                foreach(var connection in AuthorizedConnections) {
+                    connection.SendCommunicates();
+                }
+                foreach(var connection in UnauthorizedConnections) {
+                    connection.SendCommunicates();
+                }
+
                 // Zautoryzowane połączenia
                 foreach (var connection in AuthorizedConnections) {
                     if (connection.DataAvailable) {
