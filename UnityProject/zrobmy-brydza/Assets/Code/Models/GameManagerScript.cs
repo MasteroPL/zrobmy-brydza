@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using Assets.Code.Models;
 using Assets.Code.UI;
+using GameManagerLib.Models;
 
 public class GameManagerScript : MonoBehaviour
 {
@@ -21,40 +22,30 @@ public class GameManagerScript : MonoBehaviour
      * Y = 3.597
      */
     [SerializeField] GameObject hiddenCard;
-    [SerializeField] AuctionModule AuctionMod;
-    [SerializeField] PlayingModule PlayingMod;
-    private UserData userData;
-
-    // States
-    public ScriptableObject CurrentState; // keeping current app state
-    public AuctionBaseState AuctionState;
-    public PlayingBaseState PlayingState;
+    //[SerializeField] AuctionModule AuctionModule;
+    //private UserData userData;
 
     void Start()
     {
-        userData = new UserData();
-        AuctionMod.InitAuctionModule(this, userData, PlayerTag.N);
-        PlayingMod.InitPlayingModule(this);
+        //userData = new UserData();
+        //AuctionMod.InitAuctionModule(this, userData, PlayerTag.N);
+        //PlayingMod.InitPlayingModule(this);
     }
 
-    public void startGame()
+    public void StartGame(GameManagerLib.Models.Card[] handN, GameManagerLib.Models.Card[] handE, GameManagerLib.Models.Card[] handS, GameManagerLib.Models.Card[] handW)
     {
-        CurrentState = AuctionState;
-        //Here will be method, checking if there are 4 players ready.
-        if (CurrentState.Equals(AuctionState))
-        {
-            // position
-            //float[] myCardsX = { -5.69277f, -5.25f, -4.80724f, -4.36446f, -3.92169f, -3.47892f, -3.03615f, -2.59344f, -2.150609f, -1.70784f, -1.26507f, -0.8223f, -0.37953f };
-            // uzywam localposition
+        //GiveCardsToPlayer(userData.position);
+        //GiveHiddenCardsToPlayers(userData.position);
 
-            GiveCardsToPlayer(userData.position);
-            GiveHiddenCardsToPlayers(userData.position);
+        GiveCardsToPlayer(PlayerTag.N, handN);
+        GiveCardsToPlayer(PlayerTag.S, handS);
+        GiveCardsToPlayer(PlayerTag.W, handW);
+        GiveCardsToPlayer(PlayerTag.E, handE);
 
-            GameObject auctionObject = GameObject.Find("/Canvas/TableCanvas/AuctionDialog");
-            auctionObject.SetActive(true);
-            GameObject startButtonObject = GameObject.Find("/Canvas/StartButton");
-            startButtonObject.SetActive(false);
-        } 
+        GameObject auctionObject = GameObject.Find("/Canvas/TableCanvas/AuctionDialog");
+        auctionObject.SetActive(true);
+        GameObject startButtonObject = GameObject.Find("/Canvas/StartButton");
+        startButtonObject.SetActive(false);
     }
 
     private void GiveHiddenCardsToPlayers(PlayerTag MyPosition)
@@ -96,15 +87,16 @@ public class GameManagerScript : MonoBehaviour
     }
 
     // temporary method, it is here to make the code shorter
-    private void GiveCardsToPlayer(PlayerTag PlayerIdentifier)
+    private void GiveCardsToPlayer(PlayerTag PlayerIdentifier, GameManagerLib.Models.Card[] cards)
     {
         float[] myCardsX = { -2.37f, -1.975f, -1.58f, -1.185f, -0.79f, -0.395f, 0.0f, 0.395f, 0.79f, 1.185f, 1.58f, 1.975f, 2.37f };
         float[] opCardsY = { 1.72f, 1.4334f, 1.1468f, 0.86f, 0.5736f, 0.287f, 0.0f, -0.2862f, -0.5728f, -0.8594f, -1.146f, -1.43f, -1.72f };
 
-        List<string> cards = ServerDialler.GetPlayerCards(PlayerIdentifier);
-        for (int i = 0; i < cards.Count; i++)
+        for (int i = 0; i < cards.Length; i++)
         {
-            GameObject card = GameObject.Find(cards[i]);
+            string cardName = CalculateCardName(cards[i]);
+
+            GameObject card = GameObject.Find(cardName);
             switch (PlayerIdentifier)
             {
                 case PlayerTag.N:
@@ -121,14 +113,79 @@ public class GameManagerScript : MonoBehaviour
                     break;
             }
             
-            card.GetComponent<Card>().playerID = userData.position;
+            card.GetComponent<Card>().playerID = PlayerIdentifier;
             SpriteRenderer sr = card.GetComponent<SpriteRenderer>();
             sr.sortingOrder = i;
         }
     }
 
+    // TO RECONSIDER
+    private string CalculateCardName(GameManagerLib.Models.Card card)
+    {
+        char color = ' ', figure = ' ';
+        bool errorOccurred = false;
+        switch (card.Color)
+        {
+            case CardColor.CLUB:
+                color = 'C';
+                break;
+            case CardColor.DIAMOND:
+                color = 'D';
+                break;
+            case CardColor.HEART:
+                color = 'H';
+                break;
+            case CardColor.SPADE:
+                color = 'S';
+                break;
+            default:
+                errorOccurred = true;
+                break;
+        }
+
+        if ((int)card.Figure < 1)
+        {
+            errorOccurred = true;
+        }
+        else if ((int)card.Figure > 9)
+        {
+            switch (card.Figure)
+            {
+                case CardFigure.ACE:
+                    figure = 'A';
+                    break;
+                case CardFigure.KING:
+                    figure = 'K';
+                    break;
+                case CardFigure.QUEEN:
+                    figure = 'Q';
+                    break;
+                case CardFigure.JACK:
+                    figure = 'J';
+                    break;
+                case CardFigure.TEN:
+                    figure = 'T';
+                    break;
+                default:
+                    errorOccurred = true;
+                    break;
+            }
+        }
+        else
+        {
+            figure = ((int)card.Figure).ToString()[0];
+        }
+
+        if (!errorOccurred)
+        {
+            return "CARD_" + figure + color;
+        }
+        return "";
+    }
+
     public void putCard(Card card)
     {
+        /*
         if(card.currentState == CardState.ON_HAND)
         {
             string c = "";
@@ -224,29 +281,11 @@ public class GameManagerScript : MonoBehaviour
             }
             PlayingMod.putCard(cardName, card.playerID);
         }
+        */
     }
 
     public bool checkTurn()
     {
         return true;
     }
-}
-
-public enum GameState
-{
-    AWAITING_PLAYERS = 0,
-    STARTING = 1,
-    BIDDING = 2,
-    PLAYING = 3,
-    PAUSED = 4,
-    GAME_FINISHED = 5
-}
-
-public enum PlayerTag
-{
-    NOBODY = -1,
-    N = 0,
-    E = 1,
-    S = 2,
-    W = 3
 }

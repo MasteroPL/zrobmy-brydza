@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Assets.Code.Models
 {
-    [Serializable]
+    /*[Serializable]
     public class ServerPlayerCardsResponse
     {
         public List<CardObject> PlayerHand;
@@ -28,5 +28,5 @@ namespace Assets.Code.Models
             PutCard = Card;
             this.Position = Position;
         }
-    }
+    }*/
 }
