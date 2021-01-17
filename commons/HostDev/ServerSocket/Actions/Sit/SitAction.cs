@@ -22,7 +22,9 @@ namespace ServerSocket.Actions.Sit {
             Match game = lobby.Game;
 
             try {
-                game.AddPlayer(new Player((PlayerTag)data.PlaceTag, (string)conn.Session.Get("username")));
+                var player = new Player((PlayerTag)data.PlaceTag, (string)conn.Session.Get("username"));
+                game.AddPlayer(player);
+                conn.Session.Set("player", player);
             } catch(SeatTakenException) {
                 data.AddError("PlaceTag", "SEAT_TAKEN", "Miejsce jest już zajęte");
                 data.ThrowException();
