@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GameManagerLib.Exceptions
 {
-    class WrongCardException : Exception
+    public class WrongCardException : Exception
     {
         public WrongCardException() : base() { }
         public WrongCardException(string message) : base(message) { }

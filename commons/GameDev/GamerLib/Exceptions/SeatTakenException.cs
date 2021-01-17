@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GameManagerLib.Exceptions
 {
-    class SeatTakenException : Exception
+    public class SeatTakenException : Exception
     {
         public SeatTakenException() : base() { }
         public SeatTakenException(string message) : base(message) { }

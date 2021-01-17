@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GameManagerLib.Exceptions
 {
-    class UnexpectedFunctionEndException : Exception
+    public class UnexpectedFunctionEndException : Exception
     {
         public UnexpectedFunctionEndException() : base() { }
         public UnexpectedFunctionEndException(string message) : base(message) { }

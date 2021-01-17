@@ -131,48 +131,42 @@ Metody
     Dodaje akcję do listy dostępnych akcji w tym managerze
 
 
-.. method::
-    public void AddActions(Dictionary<string, BaseAction> actions)
+.. sphinxsharp:method:: public void AddActions(Dictionary<string, BaseAction> actions)
+    :param(1): Słownik akcji do dodania
 
-Dodaje wiele akcji
-
-    :Parametry:
-        * actions: Dictionary<string, BaseAction>
-            Słownik akcji do dodania
-
-    :Wyjątki:
-        * ArgumentException
-            Rzucany, jeśli nazwa akcji jest już zajęta
+    Dodaje wiele akcji
+    
+Wyjątki:
+    :ArgumentException: Rzucany, jeśli nazwa akcji jest już zajęta
 
 
-.. method::
-    public JObject PerformActions(ClientConnection conn, JObject actionsData)
+.. sphinxsharp:method:: public JObject PerformActions(ClientConnection conn, JObject actionsData)
+    :param(1): Połączenie klienta
+    :param(2): Definicja akcji
+    :returns: Wyniki każdej akcji w kolejności takiej, w jakiej zdefiniowane były akcje w źródłowym JObject.
 
-Wykonuje akcje zdefiniowane w źródłowym JObject.
+    Wykonuje zdefiniowane akcje
 
-    :Parametry:
-        * ClientConnection conn
-            Połączenie klienta
-        * actionsData: JObject
-            Definicja akcji. Struktura: ::
+Struktury
+    :actionsData:
+        ::
 
-                {
-                    "actions": [
-                        {
-                            "name": "action-name-1",
-                            "data": { ... }
-                        },
-                        {
-                            "name": "action-name-2",
-                            "data": { ... }
-                        },
-                        ...
-                    ]
-                }
+            {
+                "actions": [
+                    {
+                        "name": "action-name-1",
+                        "data": { ... }
+                    },
+                    {
+                        "name": "action-name-2",
+                        "data": { ... }
+                    },
+                    ...
+                ]
+            }
 
-    :Zwraca:
-        Wyniki każdej akcji w kolejności takiej, w jakiej zdefiniowane były akcje w źródłowym JObject.
-        Struktura: ::
+    :Returns:
+        ::
 
             {
                 "actions": [
@@ -189,48 +183,30 @@ Wykonuje akcje zdefiniowane w źródłowym JObject.
             }
 
 
-.. method::
-    public JObject PerformAction(ClientConnection conn, JObject actionData)
+.. sphinxsharp:method:: public JObject PerformAction(ClientConnection conn, JObject actionData)
+    :param(1): Połączenie klienta
+    :param(2): Dane pojedycznej akcji
+    :returns: Bezpośrednia odpowiedź z wywołania akcji
 
-Wykonuje pojedynczą akcję
 
-    :Parametry:
-        * conn: ClientConnection
-            Połączenie klienta
-        * actionData: JObject
-            Dane pojedycznej akcji
-            Struktura: ::
+Struktury:
+    :actionData:
+        ::
 
-                {
-                	"name": "action-name-1",
-            		"data": { ... }
-                }
+            {
+                "name": "action-name-1",
+                "data": { ... }
+            }
 
-    :Zwraca:
-        Bezpośrednia odpowiedź z wywołania akcji
-
-    :Wyjątki:
-        * ActionNotFoundException
-            Rzucany, jeżeli nie znaleziono akcji o danej nazwie
     
 
-.. method::
-    public JObject PerformAction(ClientConnection conn, string actionName, JObject actionData)
-    :noindex:
+.. sphinxsharp:method:: public JObject PerformAction(ClientConnection conn, string actionName, JObject actionData)
+    :param(1): Połączenie klienta
+    :param(2): Nazwa akcji
+    :param(3): Dane akcji
+    :returns: Bezpośrednia odpowiedź z wywołania akcji
 
-Wykonuje pojedynczą akcję
+    Wykonuje pojedynczą akcję
 
-    :Parametry:
-        * conn: ClientConnection
-            Połączenie klienta
-        * actionName: string
-            Nazwa akcji
-        * actionData: JObject
-            Dane akcji
-
-    :Zwraca:
-        Bezpośrednia odpowiedź z wywołania akcji
-
-    :Wyjątki:
-        * ActionNotFoundException
-            Rzucany, jeżeli nie znaleziono akcji o danej nazwie
+Wyjątki:
+    :ActionNotFoundException: Rzucany, jeżeli nie znaleziono akcji o danej nazwie

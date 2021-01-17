@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientSocketTesting", "Clie
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerSocket", "ServerSocket\ServerSocket.csproj", "{6A99B9EF-3465-47D8-AAA2-72F67774EE9E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GamerLib", "..\GameDev\GamerLib\GamerLib.csproj", "{0241CD53-4C0F-48ED-923D-FC2CC0FACC37}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{6A99B9EF-3465-47D8-AAA2-72F67774EE9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A99B9EF-3465-47D8-AAA2-72F67774EE9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A99B9EF-3465-47D8-AAA2-72F67774EE9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0241CD53-4C0F-48ED-923D-FC2CC0FACC37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0241CD53-4C0F-48ED-923D-FC2CC0FACC37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0241CD53-4C0F-48ED-923D-FC2CC0FACC37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0241CD53-4C0F-48ED-923D-FC2CC0FACC37}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
