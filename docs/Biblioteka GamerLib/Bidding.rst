@@ -2,9 +2,6 @@
 Biddging
 ##############
 
-******************
-Dokumentacja klasy
-******************
 
 .. class::
     Biddging
@@ -22,7 +19,7 @@ Pola
     public PlayerTag Dealer;
     private int PassCounter = 0;
     private bool End = false;
-    public PlayerTag Declarer;
+    public PlayerTag Declarer; // rozgrywający
 
     // Tablice mówiące, kto jaki kolor jako pierwszy deklarował
     // 0 - C
@@ -38,7 +35,7 @@ Konstruktor
 
 .. sphinxsharp:method:: public Bidding(PlayerTag Dealer)
     :param(1): Gracz, który rozdawał karty (następny po nim rozpoczyna licytację).
-    
+
     .. code-block:: C#
 
         public Bidding(PlayerTag Dealer)

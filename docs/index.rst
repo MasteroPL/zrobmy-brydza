@@ -18,6 +18,7 @@ Zróbmy Brydża! - Dokumentacja
    Biblioteka GamerLib/Player
    Biblioteka GamerLib/Card
    Biblioteka GamerLib/GameInfo
+   Biblioteka GamerLib/Contract
    
 .. toctree::
    :maxdepth: 2
