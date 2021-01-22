@@ -14,6 +14,7 @@ Zróbmy Brydża! - Dokumentacja
 
    Biblioteka GamerLib/test
    Biblioteka GamerLib/Bidding
+   Biblioteka GamerLib/Trick
 
 .. toctree::
    :maxdepth: 2
