@@ -13,11 +13,12 @@ namespace GameManagerLib.Models
         public CardState CurrentState = CardState.ON_HAND;
         public PlayerTag PlayerID;
 
-        public Card(CardFigure Figure, CardColor Color, PlayerTag PlayerID)
+        public Card(CardFigure Figure, CardColor Color, PlayerTag PlayerID, CardState CurrentState = CardState.ON_HAND)
         {
             this.Figure = Figure;
             this.Color = Color;
             this.PlayerID = PlayerID;
+            this.CurrentState = CurrentState;
         }
     }
  

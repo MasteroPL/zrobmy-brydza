@@ -5,6 +5,8 @@ using System.IO;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using System.Net;
+using EasyHosting.Meta.Validators;
+using EasyHosting.Models.Server.Serializers;
 
 namespace EasyHosting.Models.Server
 {
@@ -69,7 +71,22 @@ namespace EasyHosting.Models.Server
                 foreach (var connection in AuthorizedConnections) {
                     if (connection.DataAvailable) {
                         JObject data = connection.GetData();
-                        JObject response = HandleRequest(connection, data);
+                        JObject response;
+
+                        try {
+                            try {
+                                response = HandleRequest(connection, data);
+                            } catch (ValidationException e) {
+                                response = e.GetJson();
+                            }
+                        } catch (Exception e) {
+                            var resp = new StandardResponseSerializer() {
+                                Status = "ERR_INTERNAL",
+                                Message = "Wystąpił wewnętrzny błąd serwera"
+                            };
+                            response = resp.GetApiObject();
+                        }
+
                         connection.WriteData(response);
                         connection.Flush();
 
@@ -82,13 +99,31 @@ namespace EasyHosting.Models.Server
                 foreach (var connection in UnauthorizedConnections){
                     if (TimeSpan.Compare(connection.GetConnectionTime(), TimeForAuthorization) <= 0) {
                         if (connection.DataAvailable) {
-                            JObject data = connection.GetData();
-                            if (AuthorizeConnection(connection, data)) {
-                                AuthorizedConnections.Add(connection);
-                                toRemove.Add(connection);
+                            // Zero zaufania do niezautoryzowanych połączeń
+                            try {
+                                JObject data = connection.GetData();
+                                if (AuthorizeConnection(connection, data)) {
+                                    AuthorizedConnections.Add(connection);
+                                    toRemove.Add(connection);
 
-                                // Informacja dla odbiorcy o poprawnej autoryzacji
-                                connection.WriteData(AuthorizationSuccessfulResponse);
+                                    // Informacja dla odbiorcy o poprawnej autoryzacji
+                                    connection.WriteData(AuthorizationSuccessfulResponse);
+                                    connection.Flush();
+                                }
+                                else {
+                                    var resp = new StandardResponseSerializer() {
+                                        Status = "FORBIDDEN",
+                                        Message = "Autoryzacja odrzucona"
+                                    };
+                                    connection.WriteData(resp.GetApiObject());
+                                    connection.Flush();
+                                }
+                            }catch(Exception e) {
+                                var resp = new StandardResponseSerializer() {
+                                    Status = "FORBIDDEN",
+                                    Message = "Autoryzacja odrzucona"
+                                };
+                                connection.WriteData(resp.GetApiObject());
                                 connection.Flush();
                             }
                         }
