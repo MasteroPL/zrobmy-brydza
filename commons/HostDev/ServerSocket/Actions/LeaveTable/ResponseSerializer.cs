@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace ServerSocket.Actions.LeaveTable
 {
-    class ResponseSerializer : BaseSerializer
+    public class ResponseSerializer : BaseSerializer
     {
         public class ResponseSerializer : BaseSerializer
         {

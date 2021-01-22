@@ -5,7 +5,7 @@ using ServerSocket.Serializers;
 
 namespace ServerSocket.Actions.GetHand
 {
-    class RequestSerializer : BaseSerializer
+    public class RequestSerializer : BaseSerializer
     {
         [SerializerField(apiName: "cards")]
         public CardSerializer[] Hand;
@@ -26,8 +26,8 @@ namespace ServerSocket.Actions.GetHand
                 {
                     AddError("cards", "INVALID_NUMBER_OF_CARDS", "Musi być 13 kart.");
                 }
-                
-                if(PlayerID < -1 || PlayerID > 3)
+
+                if (PlayerID < -1 || PlayerID > 3)
                 {
                     AddError("PlayerID", "INVALID_PLAYER_ID", "Dozwolone wartości <-1,3>.");
                 }
@@ -42,6 +42,5 @@ namespace ServerSocket.Actions.GetHand
         public RequestSerializer() : base() { }
         public RequestSerializer(JObject data) : base(data) { }
     }
+}
 
-}
-}

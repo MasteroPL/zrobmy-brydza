@@ -7,7 +7,7 @@ using GameManagerLib.Exceptions;
 
 namespace ServerSocket.Actions.LeaveTable
 {
-    class LeaveTableAction : BaseAction
+    public class LeaveTableAction : BaseAction
     {
         public LeaveTableAction() : base(
             typeof(RequestSerializer),
