@@ -6,16 +6,19 @@ using Assets.Code.Models;
 public class GameInit : MonoBehaviour
 {
     Game game;
+    [SerializeField] GameManagerScript GameManagerScript;
+
     // Start is called before the first frame update
     void Start()
     {
-        game = new Game();
+        //Debug.Log(GameManagerScript);
+        game = new Game(GameManagerScript);
     }
 
     public void InitBridgeGame()
     {
         game.StartGame();
-        Debug.Log("debug");
+        //Debug.Log("debug");
     }
 
     // Update is called once per frame
