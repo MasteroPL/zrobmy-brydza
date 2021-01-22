@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace ServerSocket.Serializers
 {
-    class CardSerializer : BaseSerializer
+    public class CardSerializer : BaseSerializer
     {
         [SerializerField(apiName: "color")]
         public int Color;
@@ -44,9 +44,8 @@ namespace ServerSocket.Serializers
             {
                 ThrowException();
             }
-
-            public RequestSerializer() : base() { }
-            public RequestSerializer(JObject data) : base(data) { }
         }
+        public CardSerializer() : base() { }
+        public CardSerializer(JObject data) : base(data) { }
     }
 }

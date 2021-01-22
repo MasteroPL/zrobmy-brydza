@@ -5,17 +5,16 @@ using ServerSocket.Models;
 using ServerSocket.Serializers;
 using GameManagerLib.Exceptions;
 using GameManagerLib.Models;
+using System;
 
 namespace ServerSocket.Actions.GetHand
 {
-    class GetHandAction : BaseAction
-    {
-    public GetHandAction() : base(
-        typeof(RequestSerializer),
-        typeof(ResponseSerializer)
-        ){ }
-        protected override BaseSerializer PerformAction(ClientConnection conn, BaseSerializer requestData)
-        {
+    class GetHandAction : BaseAction {
+        public GetHandAction() : base(
+            typeof(RequestSerializer),
+            typeof(ResponseSerializer)
+            ) { }
+        protected override BaseSerializer PerformAction(ClientConnection conn, BaseSerializer requestData) {
             RequestSerializer data = (RequestSerializer)requestData;
             ResponseSerializer resp = (ResponseSerializer)InitializeResponseSerializer();
             resp.Status = "OK";
@@ -23,31 +22,29 @@ namespace ServerSocket.Actions.GetHand
             Lobby lobby = (Lobby)conn.Session.Get("joined-lobby");
             Match game = lobby.Game;
 
-            Player player;
+            Player player = null;
 
             CardSerializer[] cards = data.Hand;
             Card[] hand = new Card[13];
 
-            for (int i = 0; i < hand.Length; i++)
-            {
-                hand[i] = new Card((Card.CardFigure)cards[i].Figure, (Card.CardColor)cards[i].Color, (Card.PlayerTag)data.PlayerID, (Card.CardState)cards[i].State);
+            for (int i = 0; i < hand.Length; i++) {
+                hand[i] = new Card((CardFigure)cards[i].Figure, (CardColor)cards[i].Color, (PlayerTag)data.PlayerID, (CardState)cards[i].State);
             }
 
-            Player player;
-
-            foreach (player in game.PlayerList)
-            {
-                if(player.Tag == (Player.PlayerTag)data.PlayerID)
-                {
+            foreach (var p in game.PlayerList) {
+                if (p.Tag == (PlayerTag)data.PlayerID) {
+                    player = p;
                     break;
                 }
             }
 
-            try
-            {
+            try {
                 player.Hand = hand;
+            } catch (Exception e) {
+                // ?????
             }
 
             return resp;
         }
+    }
 }
