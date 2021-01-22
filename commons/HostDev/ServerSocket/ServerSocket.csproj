@@ -56,6 +56,15 @@
     <Compile Include="Actions\SendChat\RequestSerializer.cs" />
     <Compile Include="Actions\SendChat\ResponseSerializer.cs" />
     <Compile Include="Actions\SendChat\SendChatAction.cs" />
+    <Compile Include="Actions\GetHand\GetHandAction.cs" />
+    <Compile Include="Actions\GetHand\RequestSerializer.cs" />
+    <Compile Include="Actions\GetHand\ResponseSerializer.cs" />
+    <Compile Include="Actions\LeavePlace\LeavePlaceAction.cs" />
+    <Compile Include="Actions\LeavePlace\RequestSerializer.cs" />
+    <Compile Include="Actions\LeavePlace\ResponseSerializer.cs" />
+    <Compile Include="Actions\LeaveTable\LeaveTableAction.cs" />
+    <Compile Include="Actions\LeaveTable\RequestSerializer.cs" />
+    <Compile Include="Actions\LeaveTable\ResponseSerializer.cs" />
     <Compile Include="Actions\Sit\RequestSerializer.cs" />
     <Compile Include="Actions\Sit\ResponseSerializer.cs" />
     <Compile Include="Actions\Sit\SitAction.cs" />
@@ -78,6 +87,7 @@
     <Compile Include="Serializers\ChatMessageSerializer.cs" />
     <Compile Include="Serializers\ContractSerializer.cs" />
     <Compile Include="Serializers\PlayerSerializer.cs" />
+    <Compile Include="Serializers\CardSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -49,7 +49,7 @@ namespace GameManagerLib.Models
                 this.CurrentPlayer = currentTrick.Winner;
                 for (int i = 0; i < 4; i++)
                 {
-                    currentTrick.CardList[i].CurrentState = (CardState)(3);
+                    currentTrick.CardList[i].CurrentState = CardState.DISPOSED;
                 }
                 currentTrick = new Trick();
             }
@@ -58,7 +58,7 @@ namespace GameManagerLib.Models
                 this.CurrentPlayer = NextPlayer(this.CurrentPlayer);
             }
 
-            Card.CurrentState = (CardState)(2);
+            Card.CurrentState = CardState.ON_TABLE;
             return true;
         }
 

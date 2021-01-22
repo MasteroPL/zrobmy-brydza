@@ -1,0 +1,24 @@
+﻿using EasyHosting.Meta;
+using EasyHosting.Models.Serialization;
+using Newtonsoft.Json.Linq;
+
+namespace ServerSocket.Actions.LeaveTable
+{
+    class RequestSerializer : BaseSerializer
+    {
+        [SerializerField(apiName: "player")]
+        public String Player;
+        public override void Validate(bool throwException = true)
+        {
+            base.Validate(throwException);
+
+            if (Errors.Count > 0 && throwException)
+            {
+                ThrowException();
+            }
+        }
+
+        public RequestSerializer() : base() { }
+        public RequestSerializer(JObject data) : base(data) { }
+    }
+}
