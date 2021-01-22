@@ -17,6 +17,12 @@ namespace GameManagerLib.Models
 		private bool End = false;
 		public PlayerTag Declarer;
 
+		// Tablice mówiące, kto jaki kolor jako pierwszy deklarował
+		// 0 - C
+		// 1 - D
+		// 2 - H
+		// 3 - S
+		// 4 - NT
 		private PlayerTag[] NS = new PlayerTag[5];
 		private PlayerTag[] WE = new PlayerTag[5];
 
