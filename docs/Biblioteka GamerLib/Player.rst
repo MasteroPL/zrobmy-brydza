@@ -12,6 +12,22 @@ Pola
 
 Obiekt klasy Player zawiera informacje o pozycji, nazwie oraz ręce gracza.
 
++------------+----------------------------------------------+-------------------------------------------------------------+
+| Pole       | Typ                                          | Opis                                                        |
++============+==============================================+=============================================================+
+|   Tag      | PlayerTag                                    | pozycja gracza                                              |
+|            |                                              |                                                             |
+|            |                                              |                                                             |
++------------+----------------------------------------------+-------------------------------------------------------------+
+| Name       | string                                       | nazwa gracza                                                |
+|            |                                              |                                                             |
+|            |                                              |                                                             |
++------------+----------------------------------------------+-------------------------------------------------------------+
+| Hand       | Card[]                                       | lista kart na ręku gracza                                   |
+|            |                                              | karty zagrane nie znikają z ręki,                           |
+|            |                                              | zmieniają tylko swój stan                                   |
++------------+----------------------------------------------+-------------------------------------------------------------+
+
 .. code-block:: C#
 
     public PlayerTag Tag { get; set; }
@@ -37,7 +53,7 @@ Konstruktory
 Typy wyliczeniowe
 ======================
 
-Typ wyliczeniowy PlayerTag definiuje pozycje gracza przy stole
+Typ wyliczeniowy PlayerTag definiuje pozycje gracza przy stole.
 
 .. code-block:: C#
 
