@@ -19,7 +19,7 @@ Obiekt klasy Trick zawiera informacje o kartach w lewej oraz pozycję gracza, kt
 |            |                                              |                                                             |
 |            |                                              |                                                             |
 +------------+----------------------------------------------+-------------------------------------------------------------+
-| CardList   | List<Card>                                   | Lista kart w danej lewej                                    |
+| CardList   | List<Card>                                   | lista kart w danej lewej                                    |
 |            |                                              |                                                             |
 |            |                                              |                                                             |
 |            |                                              |                                                             |
