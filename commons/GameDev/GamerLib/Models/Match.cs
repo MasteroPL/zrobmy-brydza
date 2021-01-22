@@ -25,7 +25,7 @@ namespace GameManagerLib.Models
             this.PlayerList = new List<Player>();
             this.BiddingList = new List<Bidding>();
             this.GameList = new List<GameInfo>();
-            this.GameState = (GameState)(0);
+            this.GameState = GameState.AWAITING_PLAYERS;
             this.PointsNS = new int[2];
             this.PointsWE = new int[2];
             this.PointsNS[0] = 0;
@@ -46,7 +46,7 @@ namespace GameManagerLib.Models
                     PlayerList.Add(NewPlayer);
                     if (this.PlayerList.Count == 4) 
                     {
-                        this.GameState = (GameState)(1);
+                        this.GameState = GameState.STARTING;
                         this.Dealer = NewPlayer.Tag;
                     }
 
@@ -69,7 +69,7 @@ namespace GameManagerLib.Models
             if (Index1 != -1)
             {
                 PlayerList.RemoveAt(Index1);
-                this.GameState = (GameState)(0);
+                this.GameState = GameState.AWAITING_PLAYERS;
                 return true;
             }
             else
@@ -92,9 +92,9 @@ namespace GameManagerLib.Models
 
         public bool Start()
         {
-            if (this.GameState == (GameState)(1))
+            if (this.GameState == GameState.STARTING)
             {
-                this.GameState = (GameState)(2);
+                this.GameState = GameState.BIDDING;
                 if (this.StartBidding())
                 {
                     return true;
@@ -112,7 +112,7 @@ namespace GameManagerLib.Models
         }
         public bool StartBidding()
         {
-            if ((int)this.GameState == 2)
+            if (this.GameState == GameState.BIDDING)
             {
                 // kijowe rozdawanie kart
                 int a = 2;
@@ -150,7 +150,7 @@ namespace GameManagerLib.Models
         {
             bool X = Contract.XEnabled;
             bool XX = Contract.XXEnabled;
-            if ((int)this.GameState != 2)
+            if (this.GameState != GameState.BIDDING)
             {
                 throw new WrongGameStateException();
             }
@@ -162,7 +162,7 @@ namespace GameManagerLib.Models
                     BiddingList.Add(CurrentBidding);
                     if (CurrentBidding.HighestContract.ContractColor != ContractColor.NONE)
                     {
-                        this.GameState = (GameState)(3);
+                        this.GameState = GameState.PLAYING;
                         CurrentGame = new GameInfo(CurrentBidding.HighestContract.ContractColor, CurrentBidding.Declarer);
                     }
                     else
@@ -197,7 +197,7 @@ namespace GameManagerLib.Models
                 if (CurrentGame.IsEnd())
                 {
                     GameList.Add(CurrentGame);
-                    this.GameState = (GameState)(2);
+                    this.GameState = GameState.BIDDING;
                     this.AddPoints(CurrentGame);
                     this.CheckPoints();
                     StartBidding();
