@@ -49,10 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\GetTableInfo\GetTableInfoAction.cs" />
-    <Compile Include="Actions\GetTableInfo\RequestSerializer.cs" />
-    <Compile Include="Actions\GetTableInfo\ResponseSerializer.cs" />
+    <Compile Include="Actions\Bid\BidAction.cs" />
+    <Compile Include="Actions\Bid\RequestSerializer.cs" />
+    <Compile Include="Actions\Bid\ResponseSerializer.cs" />
     <Compile Include="Actions\HelloWorld\HelloWorldAction.cs" />
+    <Compile Include="Actions\PutCard\PutCardAction.cs" />
+    <Compile Include="Actions\PutCard\ResponseSerializer.cs" />
     <Compile Include="Actions\SendChat\RequestSerializer.cs" />
     <Compile Include="Actions\SendChat\ResponseSerializer.cs" />
     <Compile Include="Actions\SendChat\SendChatAction.cs" />

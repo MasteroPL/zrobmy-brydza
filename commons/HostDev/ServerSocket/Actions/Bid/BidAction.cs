@@ -5,16 +5,16 @@ using ServerSocket.Models;
 using ServerSocket.Serializers;
 using GameManagerLib.Exceptions;
 using GameManagerLib.Models;
-using System;
 
-namespace ServerSocket.Actions.GetHand
+namespace ServerSocket.Actions.Bid
 {
-    public class GetHandAction : BaseAction
+    public class BidAction : BaseAction
     {
-    public GetHandAction() : base(
+        public BidAction : base(
         typeof(RequestSerializer),
         typeof(ResponseSerializer)
-        ){ }
+            ) { }
+
         protected override BaseSerializer PerformAction(ClientConnection conn, BaseSerializer requestData)
         {
             RequestSerializer data = (RequestSerializer)requestData;
@@ -24,29 +24,22 @@ namespace ServerSocket.Actions.GetHand
             Lobby lobby = (Lobby)conn.Session.Get("joined-lobby");
             Match game = lobby.Game;
 
-            Player player = null;
+            Player player;
 
-            CardSerializer[] cards = data.Hand;
-            Card[] hand = new Card[13];
 
-            for (int i = 0; i < hand.Length; i++) {
-                hand[i] = new Card((CardFigure)cards[i].Figure, (CardColor)cards[i].Color, (PlayerTag)data.PlayerID, (CardState)cards[i].State);
-            }
-
-            foreach (var p in game.PlayerList) {
-                if (p.Tag == (PlayerTag)data.PlayerID) {
-                    player = p;
+            foreach (player in game.PlayerList)
+            {
+                if (player.Name == (string)conn.Session.Get("username"))
+                {
                     break;
                 }
             }
 
-            try {
-                player.Hand = hand;
-            } catch (Exception e) {
-                // ?????
+            try
+            {
+                game.AddBid(new Contract((Contract.ContractHeight)data.Height, (Contract.ContractColor)data.Color, player.Tag, data.X, data.XX);
             }
 
             return resp;
         }
-    }
 }
