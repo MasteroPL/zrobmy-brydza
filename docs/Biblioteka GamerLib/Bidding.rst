@@ -2,9 +2,6 @@
 Biddging
 ##############
 
-******************
-Dokumentacja klasy
-******************
 
 .. class::
     Biddging
@@ -17,12 +14,12 @@ Pola
 .. code-block:: C#
 
     public PlayerTag CurrentPlayer;
-    public List<Contract> ContractList;
+    public List<Contract> ContractList; // historia licytacji
     public Contract HighestContract;
-    public PlayerTag Dealer;
+    public PlayerTag Dealer; // rozdający, gracz po nim zaczyna
     private int PassCounter = 0;
     private bool End = false;
-    public PlayerTag Declarer;
+    public PlayerTag Declarer; // rozgrywający
 
     // Tablice mówiące, kto jaki kolor jako pierwszy deklarował
     // 0 - C
@@ -38,7 +35,7 @@ Konstruktor
 
 .. sphinxsharp:method:: public Bidding(PlayerTag Dealer)
     :param(1): Gracz, który rozdawał karty (następny po nim rozpoczyna licytację).
-    
+
     .. code-block:: C#
 
         public Bidding(PlayerTag Dealer)
@@ -70,6 +67,10 @@ Metody
     :param(3): Rekonta
     :returns: True, jeżeli wszysko jest poprawne.
 
+    Wyjątki:
+    :WrongPlayerException: Rzucany, jeśli gracz, który jest właścicielem kary, nie może teraz jej wyłożyć.
+    :WrongBidException: Rzucany, jeśli zalicytowana odzywka jest niepoprawna.
+    :UnexpectedFunctionEndException: Rzucany jeżeli zadrzy się coś nieprzewidzianego. 
 
     Sprawdza, czy dana odzywka jest możliwa do zadeklarowania przez danego gracza, jest ona dodawana do listy.
     Zapamiętuje, który gracz z dróżyny jako pierwszy licytował dany kolor oraz sprawdza, czy licytacja dobiegłą końca.
