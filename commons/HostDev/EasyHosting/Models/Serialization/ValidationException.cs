@@ -1,4 +1,6 @@
-﻿using System;
+﻿using EasyHosting.Models.Server.Serializers;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
@@ -52,5 +54,41 @@ namespace EasyHosting.Meta.Validators
 
 			return result;
 		}
+
+		public JObject GetJson() {
+			var resp = new ErrorResponseSerializer() {
+				Status = "ERR",
+				FieldErrors = null
+			};
+
+			var fieldErrors = new Dictionary<string, List<ValidationError>>();
+
+			FieldInfo field;
+			SerializerFieldAttribute[] fieldMetas;
+			string fieldName;
+			foreach(var keyValuePair in Errors) {
+				field = keyValuePair.Key;
+
+				if (field != null) {
+					fieldMetas = (SerializerFieldAttribute[])field.GetCustomAttributes(typeof(SerializerFieldAttribute), false);
+
+					try {
+						// Pole które znalazło się na liście musi mieć SerializerFieldAttribute, jeśli nie ma, programista który kodował walidację danych jest idiotą
+						fieldName = fieldMetas[0].ApiName;
+					} catch(Exception e) {
+						throw new Exception("Jeżeli ten wyjątek został wyrzucony, programista, który kodował walidację danych w serializatorze, który wyrzucił wyjątek walidacji jest idiotą i dodał błąd dla pola, które nie jest częścią interfejsu API (nie ma atrybutu SerializerField)", e);
+                    }
+				}
+                else {
+					fieldName = "__GLOBAL__";
+                }
+
+				fieldErrors.Add(fieldName, keyValuePair.Value);
+            }
+
+			resp.FieldErrors = fieldErrors;
+
+			return resp.GetApiObject();
+        }
 	}
 }
