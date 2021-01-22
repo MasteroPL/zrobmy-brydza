@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GameManagerLib.Models;
 
 [CreateAssetMenu(menuName = "PlayingState")]
 public class PlayingBaseState : ScriptableObject

@@ -10,6 +10,12 @@ Zróbmy Brydża! - Dokumentacja
 
 .. toctree::
    :maxdepth: 2
+   :caption: Biblioteka GamerLib
+
+   Biblioteka GamerLib/test
+
+.. toctree::
+   :maxdepth: 2
    :caption: Aplikacja
 
    Aplikacja/wprowadzenie

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GameManagerLib.Models;
+using Newtonsoft.Json.Linq;
 
 namespace ServerSocket.Models {
     public class Lobby {
@@ -45,6 +46,12 @@ namespace ServerSocket.Models {
 
             Console.WriteLine("Player " + newConnection.Session.Get("username") + " joined the lobby!");
             newConnection.Session.Set("joined-lobby", this);
+        }
+
+        public void Broadcast(JObject communicate) {
+            foreach(var client in ConnectedClients) {
+                client.AddCommunicate(communicate);
+            }
         }
     }
 }

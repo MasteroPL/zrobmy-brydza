@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GameManagerLib.Models;
 
 public class GameInfo
 {
@@ -76,7 +77,7 @@ public class GameInfo
         }
     }
 
-    public void NextCard(Card Card)
+    public void NextCard(GameManagerLib.Models.Card Card)
     {
         currentTrick.NextCard(Card, this.ContractColor);
         if (currentTrick.GetCount() == 4)

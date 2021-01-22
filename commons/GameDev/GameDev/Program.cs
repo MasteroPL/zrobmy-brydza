@@ -21,6 +21,29 @@ namespace GameDev
             match.Start();
             Console.WriteLine(match.CurrentBidding.CurrentPlayer.ToString());
 
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(0))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(1))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(2))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(3))); //pas
+            Console.WriteLine(match.CurrentBidding.CurrentPlayer.ToString());
+
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(1))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(2))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(3))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(0))); //pas
+
+
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(2))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(3))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(0))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(1))); //pas
+
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(3))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(0))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(1))); //pas
+            match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(2))); //pas
+
+
             match.AddBid(new Contract((ContractHeight)(1), (ContractColor)(2), (PlayerTag)(0))); //1h
             match.AddBid(new Contract((ContractHeight)(-1),(ContractColor)(-1), (PlayerTag)(1))); //pas
             match.AddBid(new Contract((ContractHeight)(-1), (ContractColor)(-1), (PlayerTag)(2))); //pas

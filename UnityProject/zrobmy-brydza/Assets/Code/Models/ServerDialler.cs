@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using GameManagerLib.Models;
 
 namespace Assets.Code.Models
 {
     class ServerDialler
     {
-        public static void SendRequestToServer()
+        /*public static void SendRequestToServer()
         {
             CardObject card = new CardObject(CardFigure.ACE, CardColor.DIAMOND);
             PlayerTag position = PlayerTag.N;
@@ -206,6 +207,6 @@ namespace Assets.Code.Models
 
             System.IO.File.WriteAllText("./CardsResponseFromServer.txt", json); // That's just for checking response and sharing its format
             return json;
-        }
+        }*/
     }
 }

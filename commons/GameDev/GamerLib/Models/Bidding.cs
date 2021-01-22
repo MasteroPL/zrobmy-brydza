@@ -56,7 +56,7 @@ namespace GameManagerLib.Models
 			if (X == true)
 			{
 				PlayerTag Declarer = HighestContract.DeclaredBy;
-				if (IsTheSameTeam(Declarer, Contract.DeclaredBy) || HighestContract == null || (int)HighestContract.ContractColor == -1)
+				if (IsTheSameTeam(Declarer, Contract.DeclaredBy) || HighestContract == null || HighestContract.ContractColor == ContractColor.NONE)
 				{
 					throw new WrongBidException();
 				}
@@ -72,7 +72,7 @@ namespace GameManagerLib.Models
 			if (XX == true)
 			{
 				PlayerTag Declarer = HighestContract.DeclaredBy;
-				if (IsTheSameTeam(Declarer, Contract.DeclaredBy) == false || HighestContract == null || (int)HighestContract.ContractColor == -1 || HighestContract.XEnabled == false)
+				if (IsTheSameTeam(Declarer, Contract.DeclaredBy) == false || HighestContract == null || HighestContract.ContractColor == ContractColor.NONE || HighestContract.XEnabled == false)
 				{
                     throw new WrongBidException();
 				}
@@ -88,7 +88,7 @@ namespace GameManagerLib.Models
 			if (HighestContract == null)
 			{
 				this.HighestContract = Contract;
-				if((int)Contract.ContractColor != -1)
+				if(Contract.ContractColor != ContractColor.NONE)
                 {
 					SetColor(HighestContract.DeclaredBy, HighestContract.ContractColor);
 
@@ -102,18 +102,24 @@ namespace GameManagerLib.Models
 				ContractList.Add(Contract);
 				this.PassCounter++;
 				if (this.PassCounter == 3)
-				{	
-					if((int)HighestContract.DeclaredBy == 0 || (int)HighestContract.DeclaredBy == 2)
+				{	if (HighestContract.ContractColor != (ContractColor)(-1))
 					{
-						this.Declarer = NS[(int)HighestContract.ContractColor];
+						if ((int)HighestContract.DeclaredBy == 0 || (int)HighestContract.DeclaredBy == 2)
+						{
+							this.Declarer = NS[(int)HighestContract.ContractColor];
 
+						}
+						else
+						{
+							this.Declarer = WE[(int)HighestContract.ContractColor];
+						}
+
+						this.End = true;
 					}
-                    else
+					else
                     {
-						this.Declarer = WE[(int)HighestContract.ContractColor];
+						this.End = true;
 					}
-					
-					this.End = true;
 				}
 				return true;
 			}
@@ -158,14 +164,14 @@ namespace GameManagerLib.Models
 
 		private void SetColor(PlayerTag PlayerTag, ContractColor Color)
         {	
-			if((int)PlayerTag == 0 || (int)PlayerTag == 2)
+			if(PlayerTag == PlayerTag.N || PlayerTag == PlayerTag.S)
             {
 				if((int)NS[(int)Color] == -1)
                 {
 					NS[(int)Color] = PlayerTag;
                 }
             }
-			if ((int)PlayerTag == 1 || (int)PlayerTag == 3)
+			if (PlayerTag == PlayerTag.E || PlayerTag == PlayerTag.W)
 			{
 				if ((int)WE[(int)Color] == -1)
 				{
