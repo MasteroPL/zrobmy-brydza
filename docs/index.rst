@@ -19,7 +19,8 @@ Zróbmy Brydża! - Dokumentacja
    Biblioteka GamerLib/Card
    Biblioteka GamerLib/GameInfo
    Biblioteka GamerLib/Contract
-   
+   Biblioteka GamerLib/Match
+
 .. toctree::
    :maxdepth: 2
    :caption: Aplikacja

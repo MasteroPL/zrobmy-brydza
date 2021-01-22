@@ -37,7 +37,7 @@ Obiekt klasy Player zawiera informacje o pozycji, nazwie oraz ręce gracza.
 Konstruktory
 ============
 
-.. sphinxsharp:method:: Player(PlayerTag Tag, string Name)
+.. sphinxsharp:method:: public Player(PlayerTag Tag, string Name)
     :param(1): Tag miejsce zajmowane przez gracza.
     :param(2): Name nazwa gracza.
 

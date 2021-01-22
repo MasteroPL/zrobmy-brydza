@@ -47,7 +47,7 @@ Obiekt klasy Player zawiera informacje o pozycji, nazwie oraz ręce gracza.
 Konstruktory
 ============
 
-.. sphinxsharp:method:: GameInfo(ContractColor ContractColor, PlayerTag Declarer)
+.. sphinxsharp:method:: public GameInfo(ContractColor ContractColor, PlayerTag Declarer)
     :param(1): ContractColor kolor kontraktu.
     :param(2): Declarer pozycja gracza rozgrywającego.
 
