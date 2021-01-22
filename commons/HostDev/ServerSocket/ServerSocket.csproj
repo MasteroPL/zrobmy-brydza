@@ -53,6 +53,8 @@
     <Compile Include="Actions\Bid\RequestSerializer.cs" />
     <Compile Include="Actions\Bid\ResponseSerializer.cs" />
     <Compile Include="Actions\HelloWorld\HelloWorldAction.cs" />
+    <Compile Include="Actions\PutCard\PutCardAction.cs" />
+    <Compile Include="Actions\PutCard\ResponseSerializer.cs" />
     <Compile Include="Actions\SendChat\RequestSerializer.cs" />
     <Compile Include="Actions\SendChat\ResponseSerializer.cs" />
     <Compile Include="Actions\SendChat\SendChatAction.cs" />
