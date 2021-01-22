@@ -2,14 +2,8 @@
 Contract
 ##############
 
-
-##############
-Card
-##############
-
-
 .. class::
-    Card
+    Contract
 
 Obiekt klasy Card reprezentuje kartę.
 
@@ -94,14 +88,14 @@ Typ wyliczeniowy ContractHeight definiuje wyskości kontraktów, NONE oznacza pa
 
     .. code-block:: C#
 
-    public enum ContractHeight
-    {
-        NONE = -1,
-        ONE = 1,
-        TWO = 2,
-        THREE = 3,
-        FOUR = 4,
-        FIVE = 5,
-        SIX = 6,
-        SEVEN = 7
-    }
+        public enum ContractHeight
+        {
+            NONE = -1,
+            ONE = 1,
+            TWO = 2,
+            THREE = 3,
+            FOUR = 4,
+            FIVE = 5,
+            SIX = 6,
+            SEVEN = 7
+        }

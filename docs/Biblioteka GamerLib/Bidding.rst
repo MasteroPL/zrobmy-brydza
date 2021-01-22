@@ -60,6 +60,7 @@ Metody
     :returns: Kolejny gracz.
 
     Zwraca kolejnego gracza w kolejności N E S W N...
+    
 
 .. sphinxsharp:method:: public bool AddBid(Contract Contract, bool X = false, bool XX = false)
     :param(1): Odzywka gracza ( nie uwzględnia kontry, rekontry, jest to podawane jako odzielny argument).
@@ -68,9 +69,9 @@ Metody
     :returns: True, jeżeli wszysko jest poprawne.
 
     Wyjątki:
-    :WrongPlayerException: Rzucany, jeśli gracz, który jest właścicielem kary, nie może teraz jej wyłożyć.
-    :WrongBidException: Rzucany, jeśli zalicytowana odzywka jest niepoprawna.
-    :UnexpectedFunctionEndException: Rzucany jeżeli zadrzy się coś nieprzewidzianego. 
+        :WrongPlayerException: Rzucany, jeśli gracz, który jest właścicielem kary, nie może teraz jej wyłożyć.
+        :WrongBidException: Rzucany, jeśli zalicytowana odzywka jest niepoprawna.
+        :UnexpectedFunctionEndException: Rzucany jeżeli zadrzy się coś nieprzewidzianego. 
 
     Sprawdza, czy dana odzywka jest możliwa do zadeklarowania przez danego gracza, jest ona dodawana do listy.
     Zapamiętuje, który gracz z dróżyny jako pierwszy licytował dany kolor oraz sprawdza, czy licytacja dobiegłą końca.

@@ -86,6 +86,10 @@ Metody
                 return (PlayerTag)(ID + 1);
             }
         }
+        
+    Wyjątki:
+        :WrongPlayerException: Rzucany, jeśli gracz, który jest właścicielem kary, nie może teraz jej wyłożyć.
+
 
 .. sphinxsharp:method:: public bool NextCard(Card Card)
     :param(1): Card grana karta.
