@@ -6,14 +6,15 @@ using ServerSocket.Serializers;
 using GameManagerLib.Exceptions;
 using GameManagerLib.Models;
 
-namespace ServerSocket.Actions.GetHand
+namespace ServerSocket.Actions.Bid
 {
-    public class GetHandAction : BaseAction
+    public class BidAction : BaseAction
     {
-    public GetHandAction() : base(
+        public BidAction : base(
         typeof(RequestSerializer),
         typeof(ResponseSerializer)
-        ){ }
+            ) { }
+
         protected override BaseSerializer PerformAction(ClientConnection conn, BaseSerializer requestData)
         {
             RequestSerializer data = (RequestSerializer)requestData;
@@ -25,19 +26,10 @@ namespace ServerSocket.Actions.GetHand
 
             Player player;
 
-            CardSerializer[] cards = data.Hand;
-            Card[] hand = new Card[13];
-
-            for (int i = 0; i < hand.Length; i++)
-            {
-                hand[i] = new Card((Card.CardFigure)cards[i].Figure, (Card.CardColor)cards[i].Color, (Card.PlayerTag)data.PlayerID, (Card.CardState)cards[i].State);
-            }
-
-            Player player;
 
             foreach (player in game.PlayerList)
             {
-                if(player.Tag == (Player.PlayerTag)data.PlayerID)
+                if (player.Name == (string)conn.Session.Get("username"))
                 {
                     break;
                 }
@@ -45,7 +37,7 @@ namespace ServerSocket.Actions.GetHand
 
             try
             {
-                player.Hand = hand;
+                game.AddBid(new Contract((Contract.ContractHeight)data.Height, (Contract.ContractColor)data.Color, player.Tag, data.X, data.XX);
             }
 
             return resp;
