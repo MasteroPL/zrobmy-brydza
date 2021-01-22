@@ -160,9 +160,18 @@ namespace GameManagerLib.Models
                 if (CurrentBidding.IsEnd())
                 {
                     BiddingList.Add(CurrentBidding);
-                    this.GameState = (GameState)(3);
-                    CurrentGame = new GameInfo(CurrentBidding.HighestContract.ContractColor, CurrentBidding.Declarer);
+                    if (CurrentBidding.HighestContract.ContractColor != ContractColor.NONE)
+                    {
+                        this.GameState = (GameState)(3);
+                        CurrentGame = new GameInfo(CurrentBidding.HighestContract.ContractColor, CurrentBidding.Declarer);
+                    }
+                    else
+                    {
+                        this.GameState = GameState.BIDDING;
+                        StartBidding();
+                    }
                     return true;
+
                 }
                 CurrentBidding.CurrentPlayer = CurrentBidding.NextPlayer(CurrentBidding.CurrentPlayer);
                 return true;

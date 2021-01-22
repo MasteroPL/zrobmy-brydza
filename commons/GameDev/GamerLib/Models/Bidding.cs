@@ -102,18 +102,24 @@ namespace GameManagerLib.Models
 				ContractList.Add(Contract);
 				this.PassCounter++;
 				if (this.PassCounter == 3)
-				{	
-					if((int)HighestContract.DeclaredBy == 0 || (int)HighestContract.DeclaredBy == 2)
+				{	if (HighestContract.ContractColor != (ContractColor)(-1))
 					{
-						this.Declarer = NS[(int)HighestContract.ContractColor];
+						if ((int)HighestContract.DeclaredBy == 0 || (int)HighestContract.DeclaredBy == 2)
+						{
+							this.Declarer = NS[(int)HighestContract.ContractColor];
 
+						}
+						else
+						{
+							this.Declarer = WE[(int)HighestContract.ContractColor];
+						}
+
+						this.End = true;
 					}
-                    else
+					else
                     {
-						this.Declarer = WE[(int)HighestContract.ContractColor];
+						this.End = true;
 					}
-					
-					this.End = true;
 				}
 				return true;
 			}
