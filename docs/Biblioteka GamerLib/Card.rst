@@ -7,6 +7,7 @@ Card
     Card
 
 Obiekt klasy Card reprezentuje kartę.
+
 +------------+----------------------------------------------+-------------------------------------------------------------+
 | Pole       | Typ                                          | Opis                                                        |
 +============+==============================================+=============================================================+
@@ -26,6 +27,13 @@ Obiekt klasy Card reprezentuje kartę.
 |            |                                              |                                                             |
 |            |                                              |                                                             |
 +------------+----------------------------------------------+-------------------------------------------------------------+
+
+.. code-block:: C#
+
+    public CardFigure Figure;
+    public CardColor Color;
+    public CardState CurrentState = CardState.ON_HAND;
+    public PlayerTag PlayerID;
 
 
 
@@ -50,7 +58,7 @@ Konstruktor
 
 
 Typy wyliczeniowe
-======================
+=================
 
 Typ wyliczeniowy CardState definiuje stany kart.
 
