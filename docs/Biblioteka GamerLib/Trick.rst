@@ -5,21 +5,21 @@ Trick
 Definicja
 ============
 
-Klasa reprezentująca lewą.
+Klasa reprezentująca lewę.
 
 Pola
 ======
 
-Obiekt klasy Trick zawiera informacje o kartach w lewej oraz pozycję gracza, który wział daną lewą.
+Obiekt klasy Trick zawiera informacje o kartach w lewie oraz pozycję gracza, który wział daną lewę.
 
 +------------+----------------------------------------------+-------------------------------------------------------------+
 | Pole       | Typ                                          | Opis                                                        |
 +============+==============================================+=============================================================+
-|   Winner   | PlayerTag                                    | pozycja gracza, który wziął tę lewą                         |
+|   Winner   | PlayerTag                                    | pozycja gracza, który wziął tę lewę                         |
 |            |                                              |                                                             |
 |            |                                              |                                                             |
 +------------+----------------------------------------------+-------------------------------------------------------------+
-| CardList   | List<Card>                                   | lista kart w danej lewej                                    |
+| CardList   | List<Card>                                   | lista kart w danej lewie                                    |
 |            |                                              |                                                             |
 |            |                                              |                                                             |
 |            |                                              |                                                             |
@@ -35,6 +35,8 @@ Konstruktory
 ============
 
 Konstruktor nie wymaga żadnych argumentów.
+
+.. sphinxsharp:method:: public Trick()
 
 .. code-block:: C#
 
@@ -67,7 +69,7 @@ Metody
 
 .. sphinxsharp:method:: public int GetCount()
 
-    Metoda zwracająca aktualną liczbę kart w lewej
+    Metoda zwracająca aktualną liczbę kart w lewie.
 
     .. code-block:: C#
 
@@ -79,7 +81,7 @@ Metody
 .. sphinxsharp:method:: SetWinner(ContractColor ContractColor)
     :param(1): ContractColor kolor atowy.
 
-    Metoda ustalająca kto wziął lewą (pole Winner) na podstawie kart i koloru atowego.
+    Metoda ustalająca kto wziął lewę (pole Winner) na podstawie kart i koloru atowego.
 
     .. code-block:: C#
 

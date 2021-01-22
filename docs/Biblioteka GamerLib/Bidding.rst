@@ -14,9 +14,9 @@ Pola
 .. code-block:: C#
 
     public PlayerTag CurrentPlayer;
-    public List<Contract> ContractList;
+    public List<Contract> ContractList; // historia licytacji
     public Contract HighestContract;
-    public PlayerTag Dealer;
+    public PlayerTag Dealer; // rozdający, gracz po nim zaczyna
     private int PassCounter = 0;
     private bool End = false;
     public PlayerTag Declarer; // rozgrywający
@@ -60,6 +60,7 @@ Metody
     :returns: Kolejny gracz.
 
     Zwraca kolejnego gracza w kolejności N E S W N...
+    
 
 .. sphinxsharp:method:: public bool AddBid(Contract Contract, bool X = false, bool XX = false)
     :param(1): Odzywka gracza ( nie uwzględnia kontry, rekontry, jest to podawane jako odzielny argument).
@@ -67,6 +68,10 @@ Metody
     :param(3): Rekonta
     :returns: True, jeżeli wszysko jest poprawne.
 
+    Wyjątki:
+        :WrongPlayerException: Rzucany, jeśli gracz, który jest właścicielem kary, nie może teraz jej wyłożyć.
+        :WrongBidException: Rzucany, jeśli zalicytowana odzywka jest niepoprawna.
+        :UnexpectedFunctionEndException: Rzucany jeżeli zadrzy się coś nieprzewidzianego. 
 
     Sprawdza, czy dana odzywka jest możliwa do zadeklarowania przez danego gracza, jest ona dodawana do listy.
     Zapamiętuje, który gracz z dróżyny jako pierwszy licytował dany kolor oraz sprawdza, czy licytacja dobiegłą końca.

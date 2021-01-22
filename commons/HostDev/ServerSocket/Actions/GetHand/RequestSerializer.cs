@@ -43,4 +43,3 @@ namespace ServerSocket.Actions.GetHand
         public RequestSerializer(JObject data) : base(data) { }
     }
 }
-

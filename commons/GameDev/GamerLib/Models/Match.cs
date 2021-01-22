@@ -77,7 +77,7 @@ namespace GameManagerLib.Models
                 throw new WrongPlayerException();
             }
         }
-        public PlayerTag NextPlayer(PlayerTag CurrentPlayer)
+        private PlayerTag NextPlayer(PlayerTag CurrentPlayer)
         {
             int ID = (int)(CurrentPlayer);
             if (ID == 3)
@@ -110,7 +110,7 @@ namespace GameManagerLib.Models
             }
 
         }
-        public bool StartBidding()
+        private bool StartBidding()
         {
             if (this.GameState == GameState.BIDDING)
             {
@@ -207,7 +207,7 @@ namespace GameManagerLib.Models
             }
             throw new UnexpectedFunctionEndException();
         }
-        public void AddPoints(GameInfo Game)
+        private void AddPoints(GameInfo Game)
         {
             PlayerTag declarer = Game.Declarer;
             int contractHigh = (int)this.CurrentBidding.HighestContract.ContractHeight;

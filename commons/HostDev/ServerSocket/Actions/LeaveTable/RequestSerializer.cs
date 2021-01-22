@@ -7,7 +7,7 @@ namespace ServerSocket.Actions.LeaveTable
     public class RequestSerializer : BaseSerializer
     {
         [SerializerField(apiName: "player")]
-        public String Player;
+        public string Player;
         public override void Validate(bool throwException = true)
         {
             base.Validate(throwException);
