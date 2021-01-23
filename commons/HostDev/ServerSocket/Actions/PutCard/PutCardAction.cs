@@ -11,10 +11,10 @@ namespace ServerSocket.Actions.PutCard
 {
     public class PutCardAction : BaseAction
     {
-        public BidAction : base(
-        typeof(CardSerializer),
-        typeof(ResponseSerializer)
-            ) { }
+        public PutCardAction() : base(
+            typeof(CardSerializer),
+            typeof(ResponseSerializer)
+           ) { }
 
       protected override BaseSerializer PerformAction(ClientConnection conn, BaseSerializer requestData)
         {
@@ -25,13 +25,10 @@ namespace ServerSocket.Actions.PutCard
             Lobby lobby = (Lobby)conn.Session.Get("joined-lobby");
             Match game = lobby.Game;
 
-            try
-            {
-                //TODO aż Radek ogarnie wyłożenie karty.
-            }
+            // TODO
 
-
-            return resp;
+            //return resp;
+            return null;
         }
     }
 }
