@@ -121,18 +121,8 @@ namespace GameManagerLib.Models
                 {
                     for (int j = 0; j < 13; j++)
                     {
-                        PlayerList[i].Hand[j] = new Card((CardFigure)a, (CardColor)b, PlayerList[i].Tag);
+                        PlayerList[i].Hand[j] = new Card((CardFigure)(j+2), (CardColor)i, PlayerList[i].Tag);
                         PlayerList[i].Hand[j].CurrentState = (CardState)(1);
-                        a++;
-                        b++;
-                        if(a == 15)
-                        {
-                            a = 2;
-                        }
-                        if(b == 4)
-                        {
-                            b = 0;
-                        }
                     }
                 }
                 //TODO tu trza porządnie rozdać karty
@@ -182,7 +172,8 @@ namespace GameManagerLib.Models
             }
         }
 
-        public bool NextCard(Card Card)
+
+        private bool PutNextCard(Card Card)
         {
             if ((int)this.GameState != 3)
             {
@@ -192,7 +183,7 @@ namespace GameManagerLib.Models
             {
                 throw new WrongCardException();
             }
-            if (CurrentGame.NextCard(Card)) 
+            if (CurrentGame.NextCard(Card))
             {
                 if (CurrentGame.IsEnd())
                 {
@@ -207,6 +198,51 @@ namespace GameManagerLib.Models
             }
             throw new UnexpectedFunctionEndException();
         }
+
+        private bool CheckPutNextCard(Card Card)
+        {
+            if ((int)this.GameState != 3)
+            {
+                return false;
+            }
+            if (PlayableCard(Card) == false)
+            {
+                return false;
+            }
+            return CurrentGame.CheckNextCard(Card);
+        }
+
+        public bool CheckNextCard(PlayerTag playerTag, CardColor cardColor, CardFigure cardFigure)
+        {
+
+            int playerIndex = PlayerList.FindIndex((Player) => { return Player.Tag == playerTag; });
+
+            for (int i = 0; i < 13; i++)
+            {
+                if (PlayerList[playerIndex].Hand[i].Color == cardColor && PlayerList[playerIndex].Hand[i].Figure == cardFigure)
+                { 
+                    return CheckPutNextCard(PlayerList[0].Hand[1]);
+                }
+            }
+            return false;
+        }
+
+        public bool NextCard(PlayerTag playerTag, CardColor cardColor, CardFigure cardFigure)
+        {
+
+            int playerIndex = PlayerList.FindIndex((Player) => { return Player.Tag == playerTag; });
+
+            for (int i = 0; i < 13; i++)
+            {
+                if (PlayerList[playerIndex].Hand[i].Color == cardColor && PlayerList[playerIndex].Hand[i].Figure == cardFigure)
+                {
+                    PutNextCard(PlayerList[0].Hand[1]);
+                    return true;
+                }
+            }
+            throw new WrongCardException();
+        }
+
         private void AddPoints(GameInfo Game)
         {
             PlayerTag declarer = Game.Declarer;
