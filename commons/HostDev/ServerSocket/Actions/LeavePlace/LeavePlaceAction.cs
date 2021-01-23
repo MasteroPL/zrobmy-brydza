@@ -4,6 +4,7 @@ using EasyHosting.Models.Server;
 using GameManagerLib.Models;
 using ServerSocket.Models;
 using GameManagerLib.Exceptions;
+using System;
 
 namespace ServerSocket.Actions.LeavePlace{
 
@@ -30,8 +31,9 @@ namespace ServerSocket.Actions.LeavePlace{
                     game.RemovePlayer(player);
                     conn.Session.Remove("player");
                 }
-                catch () {
+                catch (Exception e) {
                     //TO-DO nie wiem jakie może to wyrzucić wyjątki
+                    // To się dowiedz
                 }
 
             }

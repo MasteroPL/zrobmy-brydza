@@ -8,10 +8,10 @@ using GameManagerLib.Models;
 public class Card: MonoBehaviour
 {
     //  Card in UI
-    public CardFigure figure;
-    public CardColor color;
-    public CardState currentState = CardState.ON_HAND;
-    public PlayerTag playerID;
+    public CardFigure Figure;
+    public CardColor Color;
+    public CardState CurrentState = CardState.ON_HAND;
+    public PlayerTag PlayerID;
     [SerializeField] GameObject Game;
     GameManagerScript GameManager;
 

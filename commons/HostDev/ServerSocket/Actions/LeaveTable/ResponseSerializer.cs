@@ -6,12 +6,9 @@ namespace ServerSocket.Actions.LeaveTable
 {
     public class ResponseSerializer : BaseSerializer
     {
-        public class ResponseSerializer : BaseSerializer
-        {
-            [SerializerField(apiName: "status")]
-            public string Status;
-            public ResponseSerializer() : base() { }
-            public ResponseSerializer(JObject data) : base(data) { }
-        }
+        [SerializerField(apiName: "status")]
+        public string Status;
+        public ResponseSerializer() : base() { }
+        public ResponseSerializer(JObject data) : base(data) { }
     }
 }

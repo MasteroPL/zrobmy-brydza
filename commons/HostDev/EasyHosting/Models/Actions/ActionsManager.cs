@@ -1,4 +1,5 @@
-﻿using EasyHosting.Models.Server;
+﻿using EasyHosting.Meta.Validators;
+using EasyHosting.Models.Server;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -104,6 +105,7 @@ namespace EasyHosting.Models.Actions
 			
 			int index = 0;
 			foreach(var action in actions) {
+				jObjPtr = new JObject();
 				try {
 					jObjPtr = PerformAction(conn, action.Name, action.Data);
 				} catch(ActionNotFoundException e) {
@@ -141,7 +143,11 @@ namespace EasyHosting.Models.Actions
 				throw new ActionNotFoundException(actionName, "Action " + actionName + " has not been defined for this manager.");
 			}
 
-			return ActionsDictionary[actionName].Invoke(conn, actionData);
+			try {
+				return ActionsDictionary[actionName].Invoke(conn, actionData);
+			} catch (ValidationException e) {
+				throw e;
+            }
 		}
 		/// <summary>
 		/// Wykonuje pojedynczą akcję

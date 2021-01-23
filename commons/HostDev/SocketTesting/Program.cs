@@ -49,8 +49,8 @@ namespace SocketTesting
             "]}";
             Console.WriteLine(actionsData);
             var jobj = JObject.Parse(actionsData);
-            JObject resp = actMng.PerformActions(jobj);
-            Console.WriteLine("Odpowiedź od akcji: \n" + resp.ToString());
+            //JObject resp = actMng.PerformActions(jobj);
+            //Console.WriteLine("Odpowiedź od akcji: \n" + resp.ToString());
 
 
             //var act = new SampleAction();

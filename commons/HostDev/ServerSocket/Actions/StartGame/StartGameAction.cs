@@ -21,15 +21,15 @@ namespace ServerSocket.Actions.StartGame {
             Lobby lobby = (Lobby)conn.Session.Get("joined-lobby");
             Match game = lobby.Game;
 
-            try {
-                game.AddPlayer(new Player((PlayerTag)data.PlaceTag, (string)conn.Session.Get("username")));
-            } catch(SeatTakenException e) {
-                resp.Status = 400;
-                resp.Error = "To miejsce jest zajęte";
-            } catch(DuplicatedPlayerNameException e) {
-                resp.Status = 400;
-                resp.Error = "Niepoprawna operacja";
-            }
+            //try {
+            //    game.AddPlayer(new Player((PlayerTag)data., (string)conn.Session.Get("username")));
+            //} catch(SeatTakenException e) {
+            //    resp.Status = 400;
+            //    resp.Error = "To miejsce jest zajęte";
+            //} catch(DuplicatedPlayerNameException e) {
+            //    resp.Status = 400;
+            //    resp.Error = "Niepoprawna operacja";
+            //}
 
             return resp;
         }

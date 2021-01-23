@@ -27,7 +27,7 @@ public class AuctionBaseState : ScriptableObject
                 {
                     PossibleContracts.Add(new Contract((ContractHeight)height, (ContractColor)color, PlayerTag.NOBODY));
                     PossibleContracts.Add(new Contract((ContractHeight)height, (ContractColor)color, PlayerTag.NOBODY, true));
-                    PossibleContracts.Add(new Contract((ContractHeight)height, (ContractColor)color, PlayerTag.NOBODY, true, true));
+                    PossibleContracts.Add(new Contract((ContractHeight)height, (ContractColor)color, PlayerTag.NOBODY, false, true));
                 }
             }
         }
@@ -53,7 +53,7 @@ public class AuctionBaseState : ScriptableObject
         }
         ContractCache.ContractHeight = CurrentContract.ContractHeight;
         ContractCache.ContractColor = CurrentContract.ContractColor;
-        ContractCache.XEnabled = true;
+        ContractCache.XEnabled = false;
         ContractCache.XXEnabled = true;
         return true;
     }
@@ -75,7 +75,7 @@ public class AuctionBaseState : ScriptableObject
     public bool UpdateContract()
     {
         bool isContractConsistent = IsContractConsistent(ContractCache);
-        Debug.Log(ContractCache.ToString() + " : " + isContractConsistent);
+        //Debug.Log(ContractCache.ToString() + " : " + isContractConsistent);
         if (isContractConsistent)
         {
             CurrentContract = ContractCache;
