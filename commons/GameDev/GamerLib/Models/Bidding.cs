@@ -142,6 +142,57 @@ namespace GameManagerLib.Models
             throw new UnexpectedFunctionEndException();
 		}
 
+		public bool CheckAddBid(Contract Contract, bool X = false, bool XX = false)
+		{
+			if (Contract.DeclaredBy != CurrentPlayer)
+			{
+				return false;
+			}
+
+			if (X == true)
+			{
+				PlayerTag Declarer = HighestContract.DeclaredBy;
+				if (IsTheSameTeam(Declarer, Contract.DeclaredBy) || HighestContract == null || HighestContract.ContractColor == ContractColor.NONE)
+				{
+					return false;
+				}
+				else
+				{
+					return true;
+				}
+			}
+
+			if (XX == true)
+			{
+				PlayerTag Declarer = HighestContract.DeclaredBy;
+				if (IsTheSameTeam(Declarer, Contract.DeclaredBy) == false || HighestContract == null || HighestContract.ContractColor == ContractColor.NONE || HighestContract.XEnabled == false)
+				{
+					return false;
+				}
+				else
+				{
+					return true;
+				}
+			}
+
+			if (HighestContract == null)
+			{
+				return true;
+			}
+
+			if ((int)Contract.ContractColor == -1)
+			{
+				return true;
+			}
+
+			if (Contract.IsHigher(HighestContract))
+			{
+				return true;
+			}
+
+			return false;
+		}
+
 		public bool IsEnd()
 		{
 			return this.End;

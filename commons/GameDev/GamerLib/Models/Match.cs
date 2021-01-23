@@ -449,6 +449,97 @@ namespace GameManagerLib.Models
             }
         }
 
+        public bool CheckAddPlayer(Player NewPlayer)
+        {
+            int Index1 = PlayerList.FindIndex((Player) => { return Player.Name == NewPlayer.Name; });
+            if (Index1 == -1)
+            {
+                int Index2 = PlayerList.FindIndex((Player) => { return Player.Tag == NewPlayer.Tag; });
+                if (Index2 == -1)
+                {
+                    if (this.PlayerList.Count == 4)
+                    {
+                        return false;
+                    }
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool CheckRemovePlayer(Player RPlayer)
+        {
+            int Index1 = PlayerList.FindIndex((Player) => { return Player.Name == RPlayer.Name; });
+            if (Index1 != -1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool CheckStart()
+        {
+            if (this.GameState == GameState.STARTING)
+            {
+                this.GameState = GameState.BIDDING;
+                if (this.StartBidding())
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        public bool CheckAddBid(Contract Contract)
+        {
+            bool X = Contract.XEnabled;
+            bool XX = Contract.XXEnabled;
+            if (this.GameState != GameState.BIDDING)
+            {
+                return false;
+            }
+            bool GoodBid = CurrentBidding.CheckAddBid(Contract, X, XX);
+            if (GoodBid)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+        private bool CheckStartBidding()
+        {
+            if (this.GameState == GameState.BIDDING)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public class PointsHistory {
             public List<String> NSHistory;
             public List<String> WEHistory;
