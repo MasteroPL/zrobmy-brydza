@@ -219,7 +219,7 @@ namespace GameManagerLib.Models
             {
                 if (PlayerList[playerIndex].Hand[i].Color == cardColor && PlayerList[playerIndex].Hand[i].Figure == cardFigure)
                 { 
-                    return CheckPutNextCard(PlayerList[0].Hand[1]);
+                    return CheckPutNextCard(PlayerList[playerIndex].Hand[i]);
                 }
             }
             return false;
