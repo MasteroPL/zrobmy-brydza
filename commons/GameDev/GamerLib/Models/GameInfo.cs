@@ -61,6 +61,21 @@ namespace GameManagerLib.Models
             Card.CurrentState = CardState.ON_TABLE;
             return true;
         }
+        public bool CheckNextCard(Card Card)
+        {
+            if (Card.PlayerID != this.CurrentPlayer)
+            {
+                return false;
+            }
+
+        
+            if (currentTrick.GetCount() == 4)
+            {
+                return false;
+            }
+            
+            return true;
+        }
 
         public bool IsEnd()
         {

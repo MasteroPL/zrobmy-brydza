@@ -115,24 +115,12 @@ namespace GameManagerLib.Models
             if (this.GameState == GameState.BIDDING)
             {
                 // kijowe rozdawanie kart
-                int a = 2;
-                int b = 0;
                 for( int i = 0; i < 4; i++)
                 {
                     for (int j = 0; j < 13; j++)
                     {
-                        PlayerList[i].Hand[j] = new Card((CardFigure)a, (CardColor)b, PlayerList[i].Tag);
+                        PlayerList[i].Hand[j] = new Card((CardFigure)(j+2), (CardColor)i, PlayerList[i].Tag);
                         PlayerList[i].Hand[j].CurrentState = (CardState)(1);
-                        a++;
-                        b++;
-                        if(a == 15)
-                        {
-                            a = 2;
-                        }
-                        if(b == 4)
-                        {
-                            b = 0;
-                        }
                     }
                 }
                 //TODO tu trza porządnie rozdać karty
@@ -182,7 +170,8 @@ namespace GameManagerLib.Models
             }
         }
 
-        public bool NextCard(Card Card)
+
+        private bool PutNextCard(Card Card)
         {
             if ((int)this.GameState != 3)
             {
@@ -192,7 +181,7 @@ namespace GameManagerLib.Models
             {
                 throw new WrongCardException();
             }
-            if (CurrentGame.NextCard(Card)) 
+            if (CurrentGame.NextCard(Card))
             {
                 if (CurrentGame.IsEnd())
                 {
@@ -207,6 +196,51 @@ namespace GameManagerLib.Models
             }
             throw new UnexpectedFunctionEndException();
         }
+
+        private bool CheckPutNextCard(Card Card)
+        {
+            if ((int)this.GameState != 3)
+            {
+                return false;
+            }
+            if (PlayableCard(Card) == false)
+            {
+                return false;
+            }
+            return CurrentGame.CheckNextCard(Card);
+        }
+
+        public bool CheckNextCard(PlayerTag playerTag, CardColor cardColor, CardFigure cardFigure)
+        {
+
+            int playerIndex = PlayerList.FindIndex((Player) => { return Player.Tag == playerTag; });
+
+            for (int i = 0; i < 13; i++)
+            {
+                if (PlayerList[playerIndex].Hand[i].Color == cardColor && PlayerList[playerIndex].Hand[i].Figure == cardFigure)
+                { 
+                    return CheckPutNextCard(PlayerList[0].Hand[1]);
+                }
+            }
+            return false;
+        }
+
+        public bool NextCard(PlayerTag playerTag, CardColor cardColor, CardFigure cardFigure)
+        {
+
+            int playerIndex = PlayerList.FindIndex((Player) => { return Player.Tag == playerTag; });
+
+            for (int i = 0; i < 13; i++)
+            {
+                if (PlayerList[playerIndex].Hand[i].Color == cardColor && PlayerList[playerIndex].Hand[i].Figure == cardFigure)
+                {
+                    PutNextCard(PlayerList[playerIndex].Hand[i]);
+                    return true;
+                }
+            }
+            throw new WrongCardException();
+        }
+
         private void AddPoints(GameInfo Game)
         {
             PlayerTag declarer = Game.Declarer;
@@ -446,6 +480,97 @@ namespace GameManagerLib.Models
                 {
                     return false;
                 }
+            }
+        }
+
+        public bool CheckAddPlayer(Player NewPlayer)
+        {
+            int Index1 = PlayerList.FindIndex((Player) => { return Player.Name == NewPlayer.Name; });
+            if (Index1 == -1)
+            {
+                int Index2 = PlayerList.FindIndex((Player) => { return Player.Tag == NewPlayer.Tag; });
+                if (Index2 == -1)
+                {
+                    if (this.PlayerList.Count == 4)
+                    {
+                        return false;
+                    }
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool CheckRemovePlayer(Player RPlayer)
+        {
+            int Index1 = PlayerList.FindIndex((Player) => { return Player.Name == RPlayer.Name; });
+            if (Index1 != -1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool CheckStart()
+        {
+            if (this.GameState == GameState.STARTING)
+            {
+                this.GameState = GameState.BIDDING;
+                if (this.StartBidding())
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        public bool CheckAddBid(Contract Contract)
+        {
+            bool X = Contract.XEnabled;
+            bool XX = Contract.XXEnabled;
+            if (this.GameState != GameState.BIDDING)
+            {
+                return false;
+            }
+            bool GoodBid = CurrentBidding.CheckAddBid(Contract, X, XX);
+            if (GoodBid)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+        private bool CheckStartBidding()
+        {
+            if (this.GameState == GameState.BIDDING)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
