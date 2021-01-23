@@ -33,7 +33,7 @@ namespace ServerSocket.Actions.PutCard
                     break;
                 }
             }
-            game.NextCard(p.Tag, (Card.CardColor)data.Color, (Card.CardFigure)data.Figure);
+            game.NextCard(p.Tag, (CardColor)data.Color, (CardFigure)data.Figure);
 
             return resp;
         }
