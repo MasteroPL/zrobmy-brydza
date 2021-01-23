@@ -12,8 +12,8 @@ public class Taunt : MonoBehaviour
         var objects = Resources.LoadAll<AudioClip>("Sound/Taunts");
 
         Taunts.AddRange(objects);
-		Debug.Log(Taunts.Count);
-		Debug.Log(Taunts[0]);
+		//Debug.Log(Taunts.Count);
+		//Debug.Log(Taunts[0]);
     }
   
     // Update is called once per frame
