@@ -330,7 +330,8 @@ public class GameManagerScript : MonoBehaviour
 
     public void putCard(Card card)
     {
-        bool putOK = Game.PutCard(new GameManagerLib.Models.Card(card.Figure, card.Color, card.PlayerID));
+        bool putOK = Game.PutCard(card.Figure, card.Color, card.PlayerID);
+        Debug.Log("Czy można położyć kartę? -" + putOK.ToString());
         if (putOK)
         {
             if (card.CurrentState == CardState.ON_HAND)
@@ -412,6 +413,23 @@ public class GameManagerScript : MonoBehaviour
                 }
                 Game.UserData.position = (PlayerTag)(((int)Game.UserData.position + 1) % 4); // for dev mode
 
+                if (Game.IsTrickComplete())
+                {
+                    SleepFor2Seconds();
+                    Trick lastTrick = Game.Match.CurrentGame.TrickList[Game.Match.CurrentGame.TrickList.Count - 1];
+                    GameObject tmp;
+                    for (int i = 0; i < lastTrick.CardList.Count; i++)
+                    {
+                        string tmpCardName = CalculateCardName(lastTrick.CardList[i]);
+                        tmp = GameObject.Find(tmpCardName);
+                        tmp.transform.position = new Vector3(-100, 0, 0);
+                    }
+
+                    Text TeamTakenHandsCounterLabel = GameObject.Find("TeamTakenHandsCounterLabel").GetComponent<Text>();
+                    TeamTakenHandsCounterLabel.text = "NS : " + Game.CalculateTeamTricks(PlayerTag.N, PlayerTag.S).ToString() + "\n";
+                    TeamTakenHandsCounterLabel.text += "EW : " + Game.CalculateTeamTricks(PlayerTag.E, PlayerTag.W).ToString();
+                    Game.UserData.position = lastTrick.Winner; // for dev mode
+                }
                 //SpriteRenderer cardSpriteRenderer = cardToPut.GetComponent<SpriteRenderer>();
 
                 /*string prevPutCardName = "";
@@ -436,6 +454,11 @@ public class GameManagerScript : MonoBehaviour
                 }*/
             }
         }
+    }
+
+    IEnumerator SleepFor2Seconds()
+    {
+        yield return new WaitForSeconds(2);
     }
 
     public bool checkTurn()

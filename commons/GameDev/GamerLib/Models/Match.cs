@@ -114,16 +114,25 @@ namespace GameManagerLib.Models
         {
             if (this.GameState == GameState.BIDDING)
             {
-                // kijowe rozdawanie kart
-                for( int i = 0; i < 4; i++)
+                List<Card> deck = GenerateSimpleDeck();
+                CardShuffler<Card> Shuffler = new CardShuffler<Card>(deck);
+                List<Card> ShuffledCards = Shuffler.Shuffle();
+
+                // metoda "GetShuffledPlayersCards" zostala stworzona specjalnie na potrzeby brydza - Shuffler jest napisany by tasowac dowolnego typu obiekty 
+                List<List<Card>> PlayersCards = Shuffler.GetShuffledPlayersCards(ShuffledCards);
+                PlayerList[0].Hand = PlayersCards[0].OrderBy(c => c.Figure).OrderBy(c => c.Color).ToArray();
+                PlayerList[1].Hand = PlayersCards[1].OrderBy(c => c.Figure).OrderBy(c => c.Color).ToArray();
+                PlayerList[2].Hand = PlayersCards[2].OrderBy(c => c.Figure).OrderBy(c => c.Color).ToArray();
+                PlayerList[3].Hand = PlayersCards[3].OrderBy(c => c.Figure).OrderBy(c => c.Color).ToArray();
+
+                for(int i = 0; i < 4; i++)
                 {
-                    for (int j = 0; j < 13; j++)
+                    foreach(Card card in PlayerList[i].Hand)
                     {
-                        PlayerList[i].Hand[j] = new Card((CardFigure)(j+2), (CardColor)i, PlayerList[i].Tag);
-                        PlayerList[i].Hand[j].CurrentState = (CardState)(1);
+                        card.PlayerID = (PlayerTag)i;
                     }
                 }
-                //TODO tu trza porządnie rozdać karty
+
                 CurrentBidding = new Bidding(this.Dealer);
                 this.Dealer = this.NextPlayer(Dealer);
                 return true;
@@ -132,6 +141,22 @@ namespace GameManagerLib.Models
             {
                 return false;
             }
+        }
+
+        private List<Card> GenerateSimpleDeck()
+        {
+            List<Card> cards = new List<Card>();
+            Card tmp;
+            for (int i = 0; i < Enum.GetNames(typeof(CardColor)).Length; i++)
+            {
+                for (int j = 2; j <= 14; j++)
+                {
+                    tmp = new Card((CardFigure)j, (CardColor)i, PlayerTag.NOBODY);
+                    tmp.CurrentState = (CardState)(1);
+                    cards.Add(tmp);
+                }
+            }
+            return cards;
         }
 
         public bool AddBid(Contract Contract)

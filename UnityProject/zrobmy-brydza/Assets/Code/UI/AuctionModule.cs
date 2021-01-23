@@ -82,6 +82,11 @@ public class AuctionModule : MonoBehaviour
         XButton.onClick.AddListener(() => { AuctionState.DeclareX(); });
         XXButton.onClick.AddListener(() => { AuctionState.DeclareXX(); });
         OKButton.onClick.AddListener(() => {
+            // "OK" click shouldn't let pass
+            if (AuctionState.ContractCache.ContractHeight == ContractHeight.NONE || AuctionState.ContractCache.ContractColor == ContractColor.NONE)
+            {
+                return;
+            }
             bool updatedCorrectly = MainModule.AddBid(AuctionState.ContractCache.ContractHeight,
                                 AuctionState.ContractCache.ContractColor,
                                 MainModule.UserData.position,
@@ -106,6 +111,7 @@ public class AuctionModule : MonoBehaviour
                 UpdateContractList();
                 AuctionState.CurrentPlayer = (PlayerTag)(((int)AuctionState.CurrentPlayer + 1) % 4);
                 MainModule.UserData.position = (PlayerTag)(((int)MainModule.UserData.position + 1) % 4); // for dev mode
+                PassCounter = 0;
             }
         });
         PassButton.onClick.AddListener(() => {
@@ -169,10 +175,15 @@ public class AuctionModule : MonoBehaviour
                     MainModule.ShuffleAndGiveCardsAgain();
                     AuctionState.CurrentPlayer = MainModule.Match.CurrentBidding.CurrentPlayer;
                     MainModule.UserData.position = MainModule.Match.CurrentBidding.CurrentPlayer; // for dev mode
+                    NPlayerDeclarations.text = "";
+                    EPlayerDeclarations.text = "";
+                    SPlayerDeclarations.text = "";
+                    WPlayerDeclarations.text = "";
                 }
                 else if (MainModule.Match.CurrentBidding.IsEnd())
                 {
                     DeclaredContractLabel.text = "Contract:\n" + MainModule.Match.CurrentBidding.HighestContract.ToString();
+                    TeamTakenHandsCounterLabel.text = "NS : 0\nEW : 0";
                     MainModule.GameState = GameState.PLAYING;
                     MainModule.UserData.position = (PlayerTag)(((int)MainModule.UserData.position + 1) % 4); // for dev mode
                     AuctionDialog.enabled = false;

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Assets.Code.UI;
+using Debug = UnityEngine.Debug;
 
 namespace Assets.Code.Models
 {
@@ -95,32 +96,54 @@ namespace Assets.Code.Models
             GameManagerScript.ShowGrandCards(grand, grandCards);
         }
 
-        public bool PutCard(GameManagerLib.Models.Card Card)
+        public bool PutCard(CardFigure Figure, CardColor Color, PlayerTag owner)
         {
-            PlayerTag owner = Card.PlayerID;
-            PlayerTag ownerPartner = (PlayerTag)(((int)Card.PlayerID + 2) % 4);
-            if (UserData.position != Card.PlayerID && UserData.position != ownerPartner)
+            PlayerTag ownerPartner = (PlayerTag)(((int)owner + 2) % 4);
+            if (UserData.position != owner && UserData.position != ownerPartner)
             {
                 return false;
             }
-            bool isOK = true;
-            try
+
+            Debug.Log("debug");
+            Debug.Log("Owner:" + owner.ToString() + "; Color: " + Color.ToString() + "; Figure: " + Figure.ToString());
+            bool isOK = Match.CheckNextCard(owner, Color, Figure);
+            if (isOK)
             {
-                isOK = Match.NextCard(Card);
-            }catch(GameManagerLib.Exceptions.WrongGameStateException ex)
-            {
-                Console.WriteLine("WrongGameState");
-                isOK = false;
-            }catch(GameManagerLib.Exceptions.WrongCardException ex)
-            {
-                Console.WriteLine("WrongCardException");
-                isOK = false;
-            }catch(GameManagerLib.Exceptions.UnexpectedFunctionEndException ex)
-            {
-                Console.WriteLine("UnexpectedFunctionEndException");
-                isOK = false;
+                try
+                {
+                    Match.NextCard(owner, Color, Figure);
+                    isOK = true;
+                }
+                catch(GameManagerLib.Exceptions.WrongCardException ex) // in case any exception is thrown
+                {
+                    isOK = false;
+                }   
             }
             return isOK;
+        }
+
+        public bool IsTrickComplete()
+        {
+            return Match.CurrentGame.currentTrick.GetCount() == 0;
+        }
+
+        public int CalculateTeamTricks(PlayerTag player1, PlayerTag player2)
+        {
+            if (Math.Abs((int) player1 - (int)player2) != 2)
+            {
+                return -1;
+            }
+
+            int counter = 0;
+            List<Trick> TrickList = Match.CurrentGame.TrickList;
+            for (int i = 0; i < TrickList.Count; i++)
+            {
+                if (TrickList[i].Winner == player1 || TrickList[i].Winner == player2)
+                {
+                    counter++;
+                }
+            }
+            return counter;
         }
     }
 }
