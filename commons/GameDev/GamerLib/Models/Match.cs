@@ -115,8 +115,6 @@ namespace GameManagerLib.Models
             if (this.GameState == GameState.BIDDING)
             {
                 // kijowe rozdawanie kart
-                int a = 2;
-                int b = 0;
                 for( int i = 0; i < 4; i++)
                 {
                     for (int j = 0; j < 13; j++)
@@ -236,7 +234,7 @@ namespace GameManagerLib.Models
             {
                 if (PlayerList[playerIndex].Hand[i].Color == cardColor && PlayerList[playerIndex].Hand[i].Figure == cardFigure)
                 {
-                    PutNextCard(PlayerList[0].Hand[1]);
+                    PutNextCard(PlayerList[playerIndex].Hand[i]);
                     return true;
                 }
             }

@@ -53,7 +53,7 @@ namespace GameDev
             Console.WriteLine(match.CurrentBidding.CurrentPlayer.ToString());
             Console.WriteLine(match.GameState);
 
-            match.NextCard(PlayerTag.N,CardColor.CLUB,CardFigure.ACE);
+            match.NextCard(PlayerTag.E, CardColor.DIAMOND, CardFigure.ACE);
            
             Console.WriteLine(match.GameState);
             Console.WriteLine(match.GameState);
