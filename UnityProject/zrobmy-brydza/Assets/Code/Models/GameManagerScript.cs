@@ -41,7 +41,7 @@ public class GameManagerScript : MonoBehaviour
         GameObject.Find("Player2IndicatorText").GetComponent<Text>().text = ((PlayerTag)(((int)Game.UserData.position + 3) % 4)).ToString();
     }
 
-    // this method is implemented in case concrete user switches his place
+    // this method is implemented in case concrete user switches his place - currently not used
     public void UpdateTable(Game Game, GameManagerLib.Models.Card[] PlayerHand)
     {
         UpdateTableCenter(Game);
@@ -71,13 +71,17 @@ public class GameManagerScript : MonoBehaviour
         HiddenCardsOfPlayerS = new List<GameObject>();
         HiddenCardsOfPlayerW = new List<GameObject>();
 
-        //UpdateTable(Game, PlayerHand);
-
         // for dev mode
-        GiveCardsToPlayer(PlayerTag.N, Game.Match.PlayerList[0].Hand);
-        GiveCardsToPlayer(PlayerTag.S, Game.Match.PlayerList[2].Hand);
-        GiveCardsToPlayer(PlayerTag.W, Game.Match.PlayerList[3].Hand);
-        GiveCardsToPlayer(PlayerTag.E, Game.Match.PlayerList[1].Hand);
+        if (Game.DevMode)
+        {
+            GiveCardsToPlayer(PlayerTag.N, Game.Match.PlayerList[0].Hand);
+            GiveCardsToPlayer(PlayerTag.S, Game.Match.PlayerList[2].Hand);
+            GiveCardsToPlayer(PlayerTag.W, Game.Match.PlayerList[3].Hand);
+            GiveCardsToPlayer(PlayerTag.E, Game.Match.PlayerList[1].Hand);
+        } else
+        {
+            UpdateTable(Game, PlayerHand);
+        }
 
         PlayerTag StartingPlayer = Game.Match.CurrentBidding.CurrentPlayer;
         AuctionModule.InitAuctionModule(Game, Game.UserData, StartingPlayer);
@@ -85,69 +89,17 @@ public class GameManagerScript : MonoBehaviour
         GameObject auctionObject = GameObject.Find("/Canvas/TableCanvas/AuctionDialog");
         auctionObject.SetActive(true);
         GameObject startButtonObject = GameObject.Find("/Canvas/StartButton");
-        startButtonObject.SetActive(false);
+        if (startButtonObject != null)
+        {
+            startButtonObject.SetActive(false);
+        }
     }
 
     public void RestartGame()
     {
-        GameObject card;
-        for(int i = 0; i < 4; i++)
-        {
-            for(int j = 2; j <=14 ; j++)
-            {
-                string cardName = "CARD_";
-
-                if (j > 9)
-                {
-                    switch (j)
-                    {
-                        case 10:
-                            cardName += "T";
-                            break;
-                        case 11:
-                            cardName += "J";
-                            break;
-                        case 12:
-                            cardName += "Q";
-                            break;
-                        case 13:
-                            cardName += "K";
-                            break;
-                        case 14:
-                            cardName += "A";
-                            break;
-                    }
-                }
-                else
-                {
-                    cardName += j.ToString();
-                }
-
-                switch (i)
-                {
-                    case 0:
-                        cardName += "C";
-                        break;
-                    case 1:
-                        cardName += "D";
-                        break;
-                    case 2:
-                        cardName += "H";
-                        break;
-                    case 3:
-                        cardName += "S";
-                        break;
-                }
-
-                card = GameObject.Find(cardName);
-                card.transform.position = new Vector3(-100, 0, 0);
-            }
-        }
-
-        GiveCardsToPlayer(PlayerTag.N, Game.Match.PlayerList[0].Hand);
-        GiveCardsToPlayer(PlayerTag.S, Game.Match.PlayerList[2].Hand);
-        GiveCardsToPlayer(PlayerTag.W, Game.Match.PlayerList[3].Hand);
-        GiveCardsToPlayer(PlayerTag.E, Game.Match.PlayerList[1].Hand);
+        Game.Match.GameState = GameState.BIDDING;
+        AuctionModule.ReleaseListeners();
+        Game.RestartGame();
     }
 
     public void ShowGrandCards(PlayerTag grand, GameManagerLib.Models.Card[] grandHand)
@@ -246,16 +198,16 @@ public class GameManagerScript : MonoBehaviour
             switch (PlayerIdentifier)
             {
                 case PlayerTag.N:
-                    card.transform.localPosition = new Vector3(myCardsX[i], -3.28f);
+                    card.transform.localPosition = new Vector3(myCardsX[i], -3.28f, -i);
                     break;
                 case PlayerTag.S:
-                    card.transform.localPosition = new Vector3(myCardsX[i], 3.07f);
+                    card.transform.localPosition = new Vector3(myCardsX[i], 3.07f, -i);
                     break;
                 case PlayerTag.W:
-                    card.transform.localPosition = new Vector3(4.61f, opCardsY[i]);
+                    card.transform.localPosition = new Vector3(4.61f, opCardsY[i], -i);
                     break;
                 case PlayerTag.E:
-                    card.transform.localPosition = new Vector3(-4.61f, opCardsY[i]);
+                    card.transform.localPosition = new Vector3(-4.61f, opCardsY[i], -i);
                     break;
             }
             
@@ -331,7 +283,8 @@ public class GameManagerScript : MonoBehaviour
     public void putCard(Card card)
     {
         bool putOK = Game.PutCard(card.Figure, card.Color, card.PlayerID);
-        Debug.Log("Czy można położyć kartę? -" + putOK.ToString());
+        Debug.Log("Moja pozycja : " + Game.UserData.position.ToString());
+        Debug.Log("Card owner : " + card.PlayerID.ToString());
         if (putOK)
         {
             if (card.CurrentState == CardState.ON_HAND)
@@ -411,7 +364,10 @@ public class GameManagerScript : MonoBehaviour
                 {
                     Game.ShowGrandCards();
                 }
-                Game.UserData.position = (PlayerTag)(((int)Game.UserData.position + 1) % 4); // for dev mode
+                if (Game.DevMode)
+                {
+                    Game.UserData.position = (PlayerTag)(((int)Game.UserData.position + 1) % 4); // for dev mode
+                }
 
                 if (Game.IsTrickComplete())
                 {
@@ -428,30 +384,16 @@ public class GameManagerScript : MonoBehaviour
                     Text TeamTakenHandsCounterLabel = GameObject.Find("TeamTakenHandsCounterLabel").GetComponent<Text>();
                     TeamTakenHandsCounterLabel.text = "NS : " + Game.CalculateTeamTricks(PlayerTag.N, PlayerTag.S).ToString() + "\n";
                     TeamTakenHandsCounterLabel.text += "EW : " + Game.CalculateTeamTricks(PlayerTag.E, PlayerTag.W).ToString();
-                    Game.UserData.position = lastTrick.Winner; // for dev mode
-                }
-                //SpriteRenderer cardSpriteRenderer = cardToPut.GetComponent<SpriteRenderer>();
+                    if (Game.DevMode)
+                    {
+                        Game.UserData.position = lastTrick.Winner; // for dev mode
+                    }
 
-                /*string prevPutCardName = "";
-                switch (card.PlayerID)
-                {
-                    case PlayerTag.N:
-                        prevPutCardName = PlayingState.currentPutCardLabelForPlayerN;
-                        break;
-                    case PlayerTag.E:
-                        prevPutCardName = PlayingState.currentPutCardLabelForPlayerE;
-                        break;
-                    case PlayerTag.S:
-                        prevPutCardName = PlayingState.currentPutCardLabelForPlayerS;
-                        break;
-                    case PlayerTag.W:
-                        prevPutCardName = PlayingState.currentPutCardLabelForPlayerW;
-                        break;
+                    if (Game.Match.CurrentGame.IsEnd())
+                    {
+                        RestartGame(); // restart game if all 13 tricks were put on the table
+                    }
                 }
-                if (prevPutCardName != null)
-                {
-                    cardSpriteRenderer.sortingOrder = GameObject.Find(prevPutCardName).GetComponent<SpriteRenderer>().sortingOrder + 1;
-                }*/
             }
         }
     }

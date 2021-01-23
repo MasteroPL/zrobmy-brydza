@@ -58,12 +58,30 @@ public class AuctionModule : MonoBehaviour
         this.MainModule = MainModule;
         AuctionState.Init(StartingPlayer);
 
+        DeclaredContractLabel.text = "";
+        TeamTakenHandsCounterLabel.text = "";
+
+        NPlayerDeclarations.text = "";
+        EPlayerDeclarations.text = "";
+        SPlayerDeclarations.text = "";
+        WPlayerDeclarations.text = "";
+        if (MainModule.DevMode)
+        {
+            MainModule.UserData.position = MainModule.Match.CurrentBidding.CurrentPlayer;
+        }
+
         // setting visibility of dialog for first render, later it'll be updated according to game state & current player
         if (AuctionState.CurrentPlayer == MainModule.UserData.position)
+        {
             AuctionDialog.enabled = true;
+            AssignControls();
+        }
         else
             AuctionDialog.enabled = false;
+    }
 
+    private void AssignControls()
+    {
         // assigning handlers to buttons
         AuctionHeight1Button.onClick.AddListener(() => { AuctionState.DeclareContractHeight(ContractHeight.ONE); });
         AuctionHeight2Button.onClick.AddListener(() => { AuctionState.DeclareContractHeight(ContractHeight.TWO); });
@@ -81,7 +99,8 @@ public class AuctionModule : MonoBehaviour
 
         XButton.onClick.AddListener(() => { AuctionState.DeclareX(); });
         XXButton.onClick.AddListener(() => { AuctionState.DeclareXX(); });
-        OKButton.onClick.AddListener(() => {
+        OKButton.onClick.AddListener(() =>
+        {
             // "OK" click shouldn't let pass
             if (AuctionState.ContractCache.ContractHeight == ContractHeight.NONE || AuctionState.ContractCache.ContractColor == ContractColor.NONE)
             {
@@ -92,7 +111,7 @@ public class AuctionModule : MonoBehaviour
                                 MainModule.UserData.position,
                                 AuctionState.ContractCache.XEnabled,
                                 AuctionState.ContractCache.XXEnabled);
-            
+
             /*string baseString = "Height: " + AuctionState.ContractCache.ContractHeight.ToString() + "; Color: " + AuctionState.ContractCache.ContractColor.ToString();
             if (AuctionState.ContractCache.XEnabled)
             {
@@ -114,7 +133,8 @@ public class AuctionModule : MonoBehaviour
                 PassCounter = 0;
             }
         });
-        PassButton.onClick.AddListener(() => {
+        PassButton.onClick.AddListener(() =>
+        {
             bool correctlyDeclared = MainModule.AddBid(ContractHeight.NONE, ContractColor.NONE, MainModule.UserData.position);
             if (correctlyDeclared)
             {
@@ -134,26 +154,52 @@ public class AuctionModule : MonoBehaviour
                         WPlayerDeclarations.text += "pas" + "\n";
                         break;
                 }
-                AuctionState.CurrentPlayer = (PlayerTag)(((int)AuctionState.CurrentPlayer + 1) % 4);
-                MainModule.UserData.position = (PlayerTag)(((int)MainModule.UserData.position + 1) % 4); // for dev mode
+                AuctionState.CurrentPlayer = MainModule.Match.CurrentBidding.CurrentPlayer;
+                if (MainModule.DevMode)
+                {
+                    MainModule.UserData.position = MainModule.Match.CurrentBidding.CurrentPlayer;
+                }
                 //Debug.Log("PassCounter: " + MainModule.Match.CurrentBidding.GetPassCounter());
                 //Debug.Log("Liczba przeprowadzonych licytacji: " + MainModule.Match.BiddingList.Count);
             }
         });
     }
 
+    public void ReleaseListeners()
+    {
+        PassCounter = 0;
+        AuctionHeight1Button.onClick.RemoveAllListeners();
+        AuctionHeight2Button.onClick.RemoveAllListeners();
+        AuctionHeight3Button.onClick.RemoveAllListeners();
+        AuctionHeight4Button.onClick.RemoveAllListeners();
+        AuctionHeight5Button.onClick.RemoveAllListeners();
+        AuctionHeight6Button.onClick.RemoveAllListeners();
+        AuctionHeight7Button.onClick.RemoveAllListeners();
+
+        ClubsSignButton.onClick.RemoveAllListeners();
+        DiamondsSignButton.onClick.RemoveAllListeners();
+        HeartsSignButton.onClick.RemoveAllListeners();
+        SpadesSignButton.onClick.RemoveAllListeners();
+        NTSignButton.onClick.RemoveAllListeners();
+
+        XButton.onClick.RemoveAllListeners();
+        XXButton.onClick.RemoveAllListeners();
+        OKButton.onClick.RemoveAllListeners();
+        PassButton.onClick.RemoveAllListeners();
+    }
+
     void Start()
     {
-        DeclaredContractLabel.text = "";
-        TeamTakenHandsCounterLabel.text = "";
     }
 
     void Update()
     {
         if (MainModule != null)
         {
+            //Debug.Log("GameState == Bidding? " + (MainModule.GameState == GameState.BIDDING).ToString());
             if (MainModule.GameState == GameState.BIDDING)
             {
+                //Debug.Log("CurrentPlayer: " + MainModule.UserData.position.ToString() + " AuctionState.CurrentPlayer: " + AuctionState.CurrentPlayer.ToString());
                 if (AuctionState.CurrentPlayer == MainModule.UserData.position)
                 {
                     AuctionDialog.enabled = true;  // showing dialog
@@ -164,10 +210,10 @@ public class AuctionModule : MonoBehaviour
                     AuctionDialog.enabled = false; // hiding dialog
                 }
 
-                Debug.Log("Aktualnie licytujący: " + MainModule.Match.CurrentBidding.CurrentPlayer.ToString());
+                //Debug.Log("Aktualnie licytujący: " + MainModule.Match.CurrentBidding.CurrentPlayer.ToString());
                 //Debug.Log("Liczba pass'ow : " + MainModule.Match.CurrentBidding.GetPassCounter() + "; Czy koniec licytacji? : " + MainModule.Match.CurrentBidding.IsEnd());
-                Debug.Log("Aktualna pozycja: " + MainModule.UserData.position.ToString());
-                Debug.Log("Status rozgrywki: " + MainModule.GameState.ToString());
+                //Debug.Log("Aktualna pozycja: " + MainModule.UserData.position.ToString());
+                //Debug.Log("Status rozgrywki: " + MainModule.GameState.ToString());
                 if (PassCounter == 4)
                 {
                     PassCounter = 0;
@@ -185,7 +231,11 @@ public class AuctionModule : MonoBehaviour
                     DeclaredContractLabel.text = "Contract:\n" + MainModule.Match.CurrentBidding.HighestContract.ToString();
                     TeamTakenHandsCounterLabel.text = "NS : 0\nEW : 0";
                     MainModule.GameState = GameState.PLAYING;
-                    MainModule.UserData.position = (PlayerTag)(((int)MainModule.UserData.position + 1) % 4); // for dev mode
+
+                    if (MainModule.DevMode)
+                    {
+                        MainModule.UserData.position = MainModule.Match.CurrentGame.CurrentPlayer;
+                    }
                     AuctionDialog.enabled = false;
                 }
             }

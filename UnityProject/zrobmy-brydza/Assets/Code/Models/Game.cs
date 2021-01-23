@@ -15,6 +15,7 @@ namespace Assets.Code.Models
         public GameState GameState;
         public Match Match;
         public UserData UserData;
+        public bool DevMode = true;
 
         public Game(GameManagerScript GameManagerScript)
         {
@@ -33,6 +34,30 @@ namespace Assets.Code.Models
             Match.AddPlayer(new Player(PlayerTag.W, "gracz4"));
 
             Match.Start();
+            GameState = GameState.BIDDING;
+
+            //Match.PlayerList[0].Hand, Match.PlayerList[1].Hand, Match.PlayerList[2].Hand, Match.PlayerList[3].Hand
+            GameManagerLib.Models.Card[] MyHand = { };
+            switch (UserData.position)
+            {
+                case PlayerTag.N:
+                    MyHand = Match.PlayerList[0].Hand;
+                    break;
+                case PlayerTag.E:
+                    MyHand = Match.PlayerList[1].Hand;
+                    break;
+                case PlayerTag.S:
+                    MyHand = Match.PlayerList[2].Hand;
+                    break;
+                case PlayerTag.W:
+                    MyHand = Match.PlayerList[3].Hand;
+                    break;
+            }
+            GameManagerScript.StartGame(this, MyHand);
+        }
+
+        public void RestartGame()
+        {
             GameState = GameState.BIDDING;
 
             //Match.PlayerList[0].Hand, Match.PlayerList[1].Hand, Match.PlayerList[2].Hand, Match.PlayerList[3].Hand
