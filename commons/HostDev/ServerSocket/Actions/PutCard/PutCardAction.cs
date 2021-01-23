@@ -24,11 +24,19 @@ namespace ServerSocket.Actions.PutCard
 
             Lobby lobby = (Lobby)conn.Session.Get("joined-lobby");
             Match game = lobby.Game;
-
-            // TODO
-
-            //return resp;
-            return null;
+            Player p
+            foreach (p in game.PlayerList)
+            {
+                if ((string)conn.Session.Get("username") == p.Name)
+                {
+                    break;
+                }
+            }
+            try
+            {
+                game.NextCard(p.Tag, (Card.CardColor)data.Color, (Card.CardFigure)data.Figure)
+            }
+            return resp;
         }
     }
 }
