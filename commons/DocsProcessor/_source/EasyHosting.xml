@@ -7,6 +7,8 @@
         <member name="T:EasyHosting.Meta.Validators.AlternativeValidatorAttribute">
             <summary>
             Klasa pozwalająca zdefiniować zestaw alternatyw pod kątem konfiguracyjnej walidacji pól
+			
+			test2
             </summary>
         </member>
         <member name="M:EasyHosting.Meta.Validators.AlternativeValidatorAttribute.#ctor(System.String,EasyHosting.Meta.Validators.FieldValidatorAttribute[])">

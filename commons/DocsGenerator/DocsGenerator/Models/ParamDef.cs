@@ -22,7 +22,7 @@ namespace DocsGenerator.Models {
             def.TypeDef = new TypeDef(info.ParameterType);
             def.Name = info.Name;
             def.HasDefault = info.HasDefaultValue;
-            def.DefaultValue = info.DefaultValue.ToString();
+            def.DefaultValue = (info.DefaultValue == null) ? "null" : info.DefaultValue.ToString();
 
             return def;
         }

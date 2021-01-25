@@ -15,7 +15,7 @@ namespace DocsGenerator.Models {
             Type = type;
             Name = type.Name;
             Namespace = Type.Namespace;
-            FullName = Namespace + Name;
+            FullName = type.FullName;
         }
     }
 }

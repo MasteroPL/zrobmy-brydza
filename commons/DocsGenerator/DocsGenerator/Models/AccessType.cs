@@ -11,4 +11,21 @@ namespace DocsGenerator.Models {
         INNER = '_',
         PUBLIC = '+'
     }
+
+    public static class AccessTypeM {
+        public static string GetName(AccessType at) {
+            switch (at) {
+                case AccessType.PRIVATE:
+                    return "private";
+                case AccessType.PROTECTED:
+                    return "protected";
+                case AccessType.PUBLIC:
+                    return "public";
+                case AccessType.INNER:
+                    return "";
+            }
+
+            return null;
+        }
+    }
 }

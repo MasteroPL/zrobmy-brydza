@@ -1,6 +1,7 @@
 ﻿using DocsGenerator.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -13,8 +14,55 @@ namespace DocsGenerator.Utils {
 
         public AssemblyDef AssemblyDef = null;
         public Assembly SourceAssembly = null;
+        public XmlDocument SourceDoc = null;
+        public XmlNode SourceDocRoot = null;
+        public Dictionary<string, XmlNode> DefinedMembers = new Dictionary<string, XmlNode>();
+
+        // Helper method to format the key strings
+        private static string XmlDocumentationKeyHelper(
+          string typeFullNameString,
+          string memberNameString
+        ) {
+            string key = Regex.Replace(
+              typeFullNameString, @"\[.*\]",
+              string.Empty).Replace('+', '.'
+            );
+            if (memberNameString != null) {
+                key += "." + memberNameString;
+            }
+            return key;
+        }
+        public XmlNode GetDocumentation(Type type) {
+            string key = "T:" + XmlDocumentationKeyHelper(type.FullName, null);
+            return (DefinedMembers.ContainsKey(key)) ? DefinedMembers[key] : null;
+        }
+        public XmlNode GetDocumentation(MethodInfo methodInfo) {
+
+            string methodName = methodInfo.ToString();
+            methodName = methodName.Split(' ')[1];
+            string methodKey = Regex.Replace(methodName, @"\`\d+\[(.*)\]", "{$1}");
+
+            string key = "M:" + XmlDocumentationKeyHelper(methodInfo.DeclaringType.FullName, methodKey);
+
+            return (DefinedMembers.ContainsKey(key)) ? DefinedMembers[key] : null;
+        }
+        public XmlNode GetDocumentation(PropertyInfo propertyInfo) {
+            string key = "P:" + XmlDocumentationKeyHelper(
+              propertyInfo.DeclaringType.FullName, propertyInfo.Name);
+            return (DefinedMembers.ContainsKey(key)) ? DefinedMembers[key] : null;
+        }
+
+        protected static XmlNode GetMembersNode(XmlNode root) {
+            for(int i = 0; i < root.ChildNodes.Count; i++) {
+                if(root.ChildNodes[i].Name == "members") {
+                    return root.ChildNodes[i];
+                }
+            }
+            return null;
+        }
 
         public void ProcessXML(string pathToXML) {
+            DefinedMembers.Clear();
             XmlDocument doc = new XmlDocument();
             doc.PreserveWhitespace = false;
 
@@ -22,20 +70,60 @@ namespace DocsGenerator.Utils {
             AssemblyDef = new AssemblyDef();
 
             var root = doc.ChildNodes.Item(1);
+            var membersNode = GetMembersNode(root);
+            this.SourceDoc = doc;
+            this.SourceDocRoot = root;
+            ReadAssembly();
 
-            XmlNode child;
-            for (int i = 0; i < root.ChildNodes.Count; i++) {
-                child = root.ChildNodes[i];
+            XmlNode memberNode;
+            for(int i = 0; i < membersNode.ChildNodes.Count; i++) {
+                memberNode = membersNode.ChildNodes[i];
+                DefinedMembers.Add(memberNode.Attributes["name"].InnerText, memberNode);
+            }
 
-                switch (child.Name) {
-                    case "assembly":
-                        ProcessAssemblyData(child);
-                        SourceAssembly = Assembly.Load(AssemblyDef.AssemblyName);
-                        break;
+            var typesInAssembly = SourceAssembly.DefinedTypes;
+            foreach(Type type in typesInAssembly) {
+                ProcessType(type);
+            }
 
-                    case "members":
-                        ProcessMembersData(child);
-                        break;
+            Console.WriteLine("OK");
+
+            //XmlNode child;
+            //for (int i = 0; i < root.ChildNodes.Count; i++) {
+            //    child = root.ChildNodes[i];
+
+            //    switch (child.Name) {
+            //        case "assembly":
+            //            ProcessAssemblyData(child);
+            //            SourceAssembly = Assembly.Load(AssemblyDef.AssemblyName);
+            //            break;
+
+            //        case "members":
+            //            ProcessMembersData(child);
+            //            break;
+            //    }
+            //}
+        }
+
+        protected void ReadAssembly() {
+            XmlDocument doc = this.SourceDoc;
+            var nodes = doc.GetElementsByTagName("assembly");
+            var node = nodes[0];
+
+            var nameNode = node.FirstChild;
+            SourceAssembly = Assembly.Load(nameNode.InnerText);
+            AssemblyDef.AssemblyName = nameNode.InnerText;
+        }
+
+        protected void ProcessType(Type type) {
+            ClassDef def = ClassDef.FromType(type, this);
+            AssemblyDef.AddClassDef(def);
+        }
+
+        public void WriteToFile(string fileName) {
+            using (StreamWriter outputFile = new StreamWriter(fileName, false)) {
+                foreach (var cls in AssemblyDef.ClassDefs.Values) {
+                    outputFile.WriteLine(cls.GetDocRepresentation());
                 }
             }
         }
