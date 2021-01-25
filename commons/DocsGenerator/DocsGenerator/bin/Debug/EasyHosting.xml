@@ -1,0 +1,337 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>EasyHosting</name>
+    </assembly>
+    <members>
+        <member name="T:EasyHosting.Meta.Validators.AlternativeValidatorAttribute">
+            <summary>
+            Klasa pozwalająca zdefiniować zestaw alternatyw pod kątem konfiguracyjnej walidacji pól
+            </summary>
+        </member>
+        <member name="M:EasyHosting.Meta.Validators.AlternativeValidatorAttribute.#ctor(System.String,EasyHosting.Meta.Validators.FieldValidatorAttribute[])">
+            <summary>
+            Klasa pozwalająca zdefiniować zestaw alternatyw pod kątem konfiguracyjnej walidacji pól
+            </summary>
+            <param name="errorCodeOnFail">Kod błędu, który ma się zwrócić w przypadku nieudanej walidacji. Jeśli null, zostanie przypisany ALTERNATIVE_CHECK_FAILED</param>
+            <param name="alternateValidators">Ciąg kolejnych, alternatywnych walidatorów</param>
+        </member>
+        <member name="T:EasyHosting.Meta.Validators.ConjuctionValidatorAttribute">
+            <summary>
+            Klasa pozwalająca zdefiniować zestaw warunków, które pole musi spełniać
+            </summary>
+        </member>
+        <member name="M:EasyHosting.Meta.Validators.ConjuctionValidatorAttribute.#ctor(EasyHosting.Meta.Validators.FieldValidatorAttribute[])">
+            <summary>
+            Klasa pozwalająca zdefiniować zestaw warunków, które pole musi spełniać
+            </summary>
+            <param name="validators">Ciąg kolejnych, alternatywnych walidatorów</param>
+        </member>
+        <member name="T:EasyHosting.Meta.Validators.FieldValidatorAttribute">
+            <summary>
+            Bazowa klasa definiowania atrybutów walidacji danych serializatora
+            </summary>
+        </member>
+        <member name="P:EasyHosting.Meta.Validators.FieldValidatorAttribute.ErrorsText">
+            <summary>
+            Konwertuje listę błędów na tekst
+            </summary>
+        </member>
+        <member name="P:EasyHosting.Meta.Validators.FieldValidatorAttribute.ErrorsCount">
+            <summary>
+            Liczba błędów
+            </summary>
+        </member>
+        <member name="M:EasyHosting.Meta.Validators.FieldValidatorAttribute.AddError(System.String,System.String)">
+            <summary>
+            Dodaje treść błędu do listy wszystkich błędów które wystąpiły podczas walidacji
+            </summary>
+            <param name="errorCode">Kod błędu</param>
+            <param name="errorMessage">Treść błędu</param>
+        </member>
+        <member name="M:EasyHosting.Meta.Validators.FieldValidatorAttribute.AddErrors(System.Collections.Generic.IEnumerable{EasyHosting.Meta.Validators.ValidationError})">
+            <summary>
+            Dodaje treść błędu do listy wszystkich błędów które wystąpiły podczas walidacji
+            </summary>
+            <param name="errors">Błędy do dodania</param>
+        </member>
+        <member name="M:EasyHosting.Meta.Validators.FieldValidatorAttribute.ThrowException">
+            <summary>
+            Rzuca wszystkie dodane błędy spakowane w pojedynczy wyjątek "ValidationException"
+            </summary>
+        </member>
+        <member name="M:EasyHosting.Meta.Validators.FieldValidatorAttribute.Validate(System.Object,System.Boolean)">
+            <summary>
+            Wykonuje walidację danych
+            </summary>
+            <param name="o">Obiekt do zwalidowania</param>
+            <param name="throwException">Określa czy wyrzucić wyjątek, jeśli walidacja się nie powiedzie</param>
+            <returns>Zwalidowany obiekt</returns>
+            <exception cref="T:EasyHosting.Meta.Validators.ValidationException">Wyrzucany przy nieudanej walidacji</exception>
+        </member>
+        <member name="M:EasyHosting.Meta.Validators.ValidationException.GetErrorsList">
+            <summary>
+            Zwraca wszystkie przypisane błędy w jednej liście (bez podziału na pola, dla których te błędy zostały przypisane)
+            </summary>
+            <returns>Lista błędów</returns>
+        </member>
+        <member name="M:EasyHosting.Models.Actions.ActionResponseSerializer.CreateInstance(System.String,System.String,Newtonsoft.Json.Linq.JObject,System.Collections.Generic.IEnumerable{EasyHosting.Models.Actions.ErrorData})">
+            <summary>
+            Tworzy instancję tego serializatora wykonując walidację wprowadzonych danych
+            </summary>
+            <param name="status">Status odpowiedzi</param>
+            <param name="actionName">Nazwa wykonanej akcji</param>
+            <param name="data">Dane wynikowe wykonanej akcji</param>
+            <param name="errors">Błędy wykonanej akcji</param>
+            <returns></returns>
+        </member>
+        <member name="T:EasyHosting.Models.Actions.ActionsManager">
+            <summary>
+            Klasa do zarządzania dostępnymi akcjami
+            </summary>
+        </member>
+        <member name="M:EasyHosting.Models.Actions.ActionsManager.#ctor(System.Collections.Generic.Dictionary{System.String,EasyHosting.Models.Actions.BaseAction})">
+            <summary>
+            Konstruktor z inicjalną definicją słownika akcji
+            </summary>
+            <param name="actionsDictionary">Inicjalny słownik akcji</param>
+        </member>
+        <member name="M:EasyHosting.Models.Actions.ActionsManager.#ctor">
+            <summary>
+            Domyślny konstruktor, pozostawia słownik akcji pusty, do manualnego uzupełnienie
+            </summary>
+        </member>
+        <member name="M:EasyHosting.Models.Actions.ActionsManager.AddAction(System.String,EasyHosting.Models.Actions.BaseAction)">
+            <summary>
+            Dodaje akcję do listy dostępnych akcji w tym managerze
+            </summary>
+            <param name="actionName">Nazwa (identyfikator) akcji</param>
+            <param name="action">Obiekt definiujący akcję</param>
+        </member>
+        <member name="M:EasyHosting.Models.Actions.ActionsManager.AddActions(System.Collections.Generic.Dictionary{System.String,EasyHosting.Models.Actions.BaseAction})">
+            <summary>
+            Dodaje wiele akcji
+            </summary>
+            <param name="actions">Słownik akcji do dodania</param>
+        </member>
+        <member name="M:EasyHosting.Models.Actions.ActionsManager.PerformActions(EasyHosting.Models.Server.ClientConnection,Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Wykonuje akcje zdefiniowane w źródłowym JObject.
+            </summary>
+            <param name="actionsData">
+            Definicja akcji. Struktura:
+            {
+            	"actions": [
+            		{
+            			"name": "action-name-1",
+            			"data": { ... }
+            		},
+            		{
+            			"name": "action-name-2",
+            			"data": { ... }
+            		},
+            		...
+            	]
+            }
+            </param>
+            <returns>
+            Wyniki każdej akcji w kolejności takiej, w jakiej zdefiniowane były akcje w źródłowym JObject.
+            Struktura:
+            {
+            	"actions": [
+            		{
+            			"name": "action-name-1",
+            			"data": (response)
+            		},
+            		{
+            			"name": "action-name-2",
+            			"data": (response)
+            		},
+            		...
+            	]
+            }
+            </returns>
+        </member>
+        <member name="M:EasyHosting.Models.Actions.ActionsManager.PerformAction(EasyHosting.Models.Server.ClientConnection,System.String,Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Wykonuje pojedynczą akcję
+            </summary>
+            <param name="actionName">Nazwa akcji</param>
+            <param name="actionData">Dane akcji</param>
+            <returns>Bezpośrednia odpowiedź z wywołania akcji</returns>
+        </member>
+        <member name="M:EasyHosting.Models.Actions.ActionsManager.PerformAction(EasyHosting.Models.Server.ClientConnection,Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Wykonuje pojedynczą akcję
+            </summary>
+            <param name="actionData">
+            Dane pojedycznej akcji
+            Struktura:
+            {
+            	"name": "action-name-1",
+            	"data": { ... }
+            }
+            </param>
+            <returns>Bezpośrednia odpowiedź z wywołania akcji</returns>
+        </member>
+        <member name="T:EasyHosting.Models.Actions.BaseAction">
+            <summary>
+            Klasa do definiowania jednostkowych czynności, wywoływanych przez API
+            </summary>
+        </member>
+        <member name="E:EasyHosting.Models.Actions.BaseAction.Invoked">
+            <summary>
+            Wydarzenie wywoływane kiedy dowolna akcja zostanie wywołana
+            </summary>
+        </member>
+        <member name="E:EasyHosting.Models.Actions.BaseAction.InvokedThis">
+            <summary>.,
+            Wydarzenie wywoływane kiedy ta akcja zostanie wywołana
+            </summary>
+        </member>
+        <member name="E:EasyHosting.Models.Actions.BaseAction.Finished">
+            <summary>
+            Wydarzenie wywoływane kiedy dowolna akcja się zakończy
+            </summary>
+        </member>
+        <member name="E:EasyHosting.Models.Actions.BaseAction.FinishedThis">
+            <summary>
+            Wydarzenie wywoływane kiedy ta akcja się zakończy
+            </summary>
+        </member>
+        <member name="P:EasyHosting.Models.Actions.BaseAction.RequestSerializerType">
+            <summary>
+            Serializator używany do walidacji danych wejściowych
+            </summary>
+        </member>
+        <member name="P:EasyHosting.Models.Actions.BaseAction.ResponseSerializerType">
+            <summary>
+            Serializator używany do przygotowania odpowiedzi (danych wyjściowych)
+            </summary>
+        </member>
+        <member name="M:EasyHosting.Models.Actions.BaseAction.#ctor(System.Type,System.Type)">
+            <param name="requestSerializerType">Serializator danych wejściowych</param>
+            <param name="responseSerializerType">Serializator danych wyjściowych</param>
+        </member>
+        <member name="M:EasyHosting.Models.Actions.BaseAction.Invoke(EasyHosting.Models.Server.ClientConnection,Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Wywołuje wykonanie akcji
+            </summary>
+            <param name="requestData">Dane wejściowe</param>
+            <returns>Odpowiedź od akcji</returns>
+        </member>
+        <member name="M:EasyHosting.Models.Actions.BaseAction.InitializeResponseSerializer">
+            <summary>
+            Inicjalizuje serializator odpowiedzi w oparciu o zdefiniowany w konstruktorze typu serializator
+            </summary>
+            <returns>Zainicjalizowany serializator</returns>
+        </member>
+        <member name="M:EasyHosting.Models.Actions.BaseAction.PerformAction(EasyHosting.Models.Server.ClientConnection,EasyHosting.Models.Serialization.BaseSerializer)">
+            <summary>
+            Właściwa metoda wykonująca akcję. Otrzymuje na wejściu zwalidowane dane po walidacji
+            </summary>
+            <param name="requestData">Dane wejściowe wpisane do serializatora. Serializator przekazywany na wejściu jest typu "requestSerializerType", definiowanego w konstruktorze</param>
+            <returns>Odpowiedź w postaci serializatora</returns>
+        </member>
+        <member name="P:EasyHosting.Models.Client.ClientSocket.Initialized">
+            <summary>
+            Określa, czy TcpClient został zainicjalizowany
+            </summary>
+        </member>
+        <member name="P:EasyHosting.Models.Client.ClientSocket.BufferSize">
+            <summary>
+            Zdefiniowany rozmiar bufora nadającego i odbierającego
+            </summary>
+        </member>
+        <member name="P:EasyHosting.Models.Serialization.BaseSerializer.DataOrigin">
+            <summary>
+            Przechowuje oryginalny obiekt JSONa przekazany do serializatora
+            </summary>
+        </member>
+        <member name="P:EasyHosting.Models.Serialization.BaseSerializer.Errors">
+            <summary>
+            Słownik błędów, które wystąpiły podczas walidacji (nazwa pola -> lista błędów dla pola)
+            </summary>
+        </member>
+        <member name="M:EasyHosting.Models.Serialization.BaseSerializer.AddError(System.String,System.String,System.String)">
+            <summary>
+            Dodaje błąd do listy błędów dla wybranego pola
+            </summary>
+            <param name="fieldName">Nazwa pola</param>
+            <param name="errorCode">Kod błędu</param>
+            <param name="errorMessage">Treść błędu</param>
+        </member>
+        <member name="M:EasyHosting.Models.Serialization.BaseSerializer.#ctor">
+            <summary>
+            Server -> User   Serializer constructor
+            </summary>
+        </member>
+        <member name="M:EasyHosting.Models.Serialization.BaseSerializer.#ctor(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            User -> Server   Serializer constructor
+            </summary>
+            <param name="data"></param>
+        </member>
+        <member name="M:EasyHosting.Models.Serialization.BaseSerializer.SetData(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Ustawia dane źródłowe dla serializatora
+            </summary>
+            <param name="data">Dane źródłowe dla serializatora</param>
+        </member>
+        <member name="M:EasyHosting.Models.Serialization.BaseSerializer.GetApiObject">
+            <summary>
+            Zwraca JObject o formacie zdefiniowanym jako format API (W atrybucie SerializerField argument apiName)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:EasyHosting.Models.Server.ClientConnection.CommunicatesQueue">
+            <summary>
+            Komunikaty typu "PUSH", czyli wysałane z serwera do użytkownika. Nie są to odpowiedzi do zapytań
+            </summary>
+        </member>
+        <member name="M:EasyHosting.Models.Server.ClientConnection.AddCommunicate(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Dodaje nowy komunikat do kolejki. Po przetworzeniu zapytań wszystkie komunikaty z kolejki są wysyłane do użytkownika
+            </summary>
+            <param name="communicate">Komunikat</param>
+        </member>
+        <member name="M:EasyHosting.Models.Server.ClientConnection.SendCommunicates">
+            <summary>
+            Metoda wysyła wszystkie zakolejkowane komunikaty
+            
+            Powinna być wywoływana tylko przez bazową klasę "ServerSocket"
+            </summary>
+        </member>
+        <member name="P:EasyHosting.Models.Server.ServerSocket.Initialized">
+            <summary>
+            Określa, czy TcpListener został zainicjalizowany i nasłuchuje połączeń
+            </summary>
+        </member>
+        <member name="P:EasyHosting.Models.Server.ServerSocket.TcpListener">
+            <summary>
+            Zainicjalizowany TcpListener
+            </summary>
+        </member>
+        <member name="M:EasyHosting.Models.Server.ServerSocket.AuthorizeConnection(EasyHosting.Models.Server.ClientConnection,Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Metoda wywoływana po uzyskaniu pierwszego strumienia danych z 
+            niezautoryzowanego połączenia. Powinna zwalidować poprawność 
+            danych autoryzacyjnych w przychodzącym strumieniu danych
+            i zwrócić "true" jeśli autoryzacja przebiegła pomyslnie lub
+            "false" w przeciwnym przypadku
+            </summary>
+            <param name="conn">Połączenie z którego przyszły dane autoryzacyjne</param>
+            <returns>True - autoryzacja poprawna; False - autoryzacja odrzucona</returns>
+        </member>
+        <member name="M:EasyHosting.Models.Server.ServerSocket.HandleRequest(EasyHosting.Models.Server.ClientConnection,Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Metoda wywoływana po uzyskaniu strumienia danych ze 
+            zautoryzowanego połączenia. Strumień danych jest konwertowany
+            do obiektu JObject i przekazywany wraz z połączeniem.
+            </summary>
+            <param name="conn">Połączenie klienta</param>
+            <param name="requestData">Dane przychodzące od klienta</param>
+            <returns>Odpowiedź dla klienta w formacie JObject</returns>
+        </member>
+    </members>
+</doc>

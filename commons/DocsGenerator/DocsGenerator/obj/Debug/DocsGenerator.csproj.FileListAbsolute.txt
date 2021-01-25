@@ -1,0 +1,11 @@
+C:\Users\janpr\Desktop\university\GroupProject\zrobmy-brydza\commons\DocsGenerator\DocsGenerator\obj\Debug\DocsGenerator.csprojAssemblyReference.cache
+C:\Users\janpr\Desktop\university\GroupProject\zrobmy-brydza\commons\DocsGenerator\DocsGenerator\obj\Debug\DocsGenerator.csproj.CoreCompileInputs.cache
+C:\Users\janpr\Desktop\university\GroupProject\zrobmy-brydza\commons\DocsGenerator\DocsGenerator\bin\Debug\DocsGenerator.exe.config
+C:\Users\janpr\Desktop\university\GroupProject\zrobmy-brydza\commons\DocsGenerator\DocsGenerator\bin\Debug\DocsGenerator.exe
+C:\Users\janpr\Desktop\university\GroupProject\zrobmy-brydza\commons\DocsGenerator\DocsGenerator\bin\Debug\DocsGenerator.pdb
+C:\Users\janpr\Desktop\university\GroupProject\zrobmy-brydza\commons\DocsGenerator\DocsGenerator\bin\Debug\EasyHosting.dll
+C:\Users\janpr\Desktop\university\GroupProject\zrobmy-brydza\commons\DocsGenerator\DocsGenerator\bin\Debug\EasyHosting.pdb
+C:\Users\janpr\Desktop\university\GroupProject\zrobmy-brydza\commons\DocsGenerator\DocsGenerator\bin\Debug\EasyHosting.xml
+C:\Users\janpr\Desktop\university\GroupProject\zrobmy-brydza\commons\DocsGenerator\DocsGenerator\obj\Debug\DocsGenerator.csproj.CopyComplete
+C:\Users\janpr\Desktop\university\GroupProject\zrobmy-brydza\commons\DocsGenerator\DocsGenerator\obj\Debug\DocsGenerator.exe
+C:\Users\janpr\Desktop\university\GroupProject\zrobmy-brydza\commons\DocsGenerator\DocsGenerator\obj\Debug\DocsGenerator.pdb
