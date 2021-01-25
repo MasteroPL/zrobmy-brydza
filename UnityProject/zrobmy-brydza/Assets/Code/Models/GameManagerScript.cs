@@ -31,6 +31,36 @@ public class GameManagerScript : MonoBehaviour
 
     void Start()
     {
+        InvokeRepeating("CurrentPlayerLight", 2.0f, 0.05f);
+    }
+
+    private void CurrentPlayerLight()
+    {
+        GameObject.Find("Player3IndicatorLight").GetComponent<Image>().color = new Color(255f, 255f, 255f, 100f);
+        GameObject.Find("Player4IndicatorLight").GetComponent<Image>().color = new Color(255f, 255f, 255f, 100f);
+        GameObject.Find("Player1IndicatorLight").GetComponent<Image>().color = new Color(255f, 255f, 255f, 100f);
+        GameObject.Find("Player2IndicatorLight").GetComponent<Image>().color = new Color(255f, 255f, 255f, 100f);
+
+        if (Game != null && Game.Match.CurrentGame != null)
+        {
+            Debug.Log("Aktualny gracz: " + Game.Match.CurrentGame.CurrentPlayer.ToString() + "; Moja obecna pozycja: " + Game.UserData.position.ToString());
+            if (Game.Match.CurrentGame.CurrentPlayer.ToString() == GameObject.Find("Player3IndicatorText").GetComponent<Text>().text)
+            {
+                GameObject.Find("Player3IndicatorLight").GetComponent<Image>().color = new Color(255f, 255f, 0f, 242f);
+            } 
+            else if (Game.Match.CurrentGame.CurrentPlayer.ToString() == GameObject.Find("Player4IndicatorText").GetComponent<Text>().text)
+            {
+                GameObject.Find("Player4IndicatorLight").GetComponent<Image>().color = new Color(255f, 255f, 0f, 242f);
+            } 
+            else if (Game.Match.CurrentGame.CurrentPlayer.ToString() == GameObject.Find("Player1IndicatorText").GetComponent<Text>().text)
+            {
+                GameObject.Find("Player1IndicatorLight").GetComponent<Image>().color = new Color(255f, 255f, 0f, 242f);
+            } 
+            else if (Game.Match.CurrentGame.CurrentPlayer.ToString() == GameObject.Find("Player2IndicatorText").GetComponent<Text>().text)
+            {
+                GameObject.Find("Player2IndicatorLight").GetComponent<Image>().color = new Color(255f, 255f, 0f, 242f);
+            }
+        }
     }
 
     public void UpdateTableCenter(Game Game)
