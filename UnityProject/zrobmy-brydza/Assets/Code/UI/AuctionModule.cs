@@ -52,7 +52,6 @@ public class AuctionModule : MonoBehaviour
 
     private int PassCounter = 0;
 
-    // TODO port for start method
     public void InitAuctionModule(Game MainModule, UserData UserData, PlayerTag StartingPlayer)
     {
         this.MainModule = MainModule;
@@ -61,10 +60,8 @@ public class AuctionModule : MonoBehaviour
         DeclaredContractLabel.text = "";
         TeamTakenHandsCounterLabel.text = "";
 
-        NPlayerDeclarations.text = "";
-        EPlayerDeclarations.text = "";
-        SPlayerDeclarations.text = "";
-        WPlayerDeclarations.text = "";
+        AssignAuctionFirstRow();
+
         if (MainModule.DevMode)
         {
             MainModule.UserData.position = MainModule.Match.CurrentBidding.CurrentPlayer;
@@ -77,7 +74,24 @@ public class AuctionModule : MonoBehaviour
             AssignControls();
         }
         else
+        {
             AuctionDialog.enabled = false;
+            ReleaseListeners();
+        }
+    }
+
+    private void AssignAuctionFirstRow()
+    {
+        NPlayerDeclarations.text = "";
+        EPlayerDeclarations.text = "";
+        SPlayerDeclarations.text = "";
+        WPlayerDeclarations.text = "";
+        Text[] auctionTexts = { NPlayerDeclarations, EPlayerDeclarations, SPlayerDeclarations, WPlayerDeclarations };
+
+        for (int i = 0; i < (int)MainModule.Match.CurrentBidding.CurrentPlayer; i++)
+        {
+            auctionTexts[i].text = "-\n";
+        }
     }
 
     private void AssignControls()
@@ -106,30 +120,22 @@ public class AuctionModule : MonoBehaviour
             {
                 return;
             }
+
             bool updatedCorrectly = MainModule.AddBid(AuctionState.ContractCache.ContractHeight,
                                 AuctionState.ContractCache.ContractColor,
                                 MainModule.UserData.position,
                                 AuctionState.ContractCache.XEnabled,
                                 AuctionState.ContractCache.XXEnabled);
 
-            /*string baseString = "Height: " + AuctionState.ContractCache.ContractHeight.ToString() + "; Color: " + AuctionState.ContractCache.ContractColor.ToString();
-            if (AuctionState.ContractCache.XEnabled)
-            {
-                baseString += "; X";
-            }
-            if (AuctionState.ContractCache.XXEnabled)
-            {
-                baseString += "; XX";
-            }
-            Debug.Log(baseString);
-            Debug.Log("Updated correctly? " + updatedCorrectly.ToString());*/
-
             if (updatedCorrectly)
             {
                 AuctionState.UpdateContract();
                 UpdateContractList();
-                AuctionState.CurrentPlayer = (PlayerTag)(((int)AuctionState.CurrentPlayer + 1) % 4);
-                MainModule.UserData.position = (PlayerTag)(((int)MainModule.UserData.position + 1) % 4); // for dev mode
+                AuctionState.CurrentPlayer = MainModule.Match.CurrentBidding.CurrentPlayer;
+                if (MainModule.DevMode)
+                {
+                    MainModule.UserData.position = MainModule.Match.CurrentBidding.CurrentPlayer; // for dev mode
+                }
                 PassCounter = 0;
             }
         });
@@ -159,8 +165,6 @@ public class AuctionModule : MonoBehaviour
                 {
                     MainModule.UserData.position = MainModule.Match.CurrentBidding.CurrentPlayer;
                 }
-                //Debug.Log("PassCounter: " + MainModule.Match.CurrentBidding.GetPassCounter());
-                //Debug.Log("Liczba przeprowadzonych licytacji: " + MainModule.Match.BiddingList.Count);
             }
         });
     }
@@ -196,10 +200,8 @@ public class AuctionModule : MonoBehaviour
     {
         if (MainModule != null)
         {
-            //Debug.Log("GameState == Bidding? " + (MainModule.GameState == GameState.BIDDING).ToString());
             if (MainModule.GameState == GameState.BIDDING)
             {
-                //Debug.Log("CurrentPlayer: " + MainModule.UserData.position.ToString() + " AuctionState.CurrentPlayer: " + AuctionState.CurrentPlayer.ToString());
                 if (AuctionState.CurrentPlayer == MainModule.UserData.position)
                 {
                     AuctionDialog.enabled = true;  // showing dialog
@@ -210,25 +212,28 @@ public class AuctionModule : MonoBehaviour
                     AuctionDialog.enabled = false; // hiding dialog
                 }
 
-                //Debug.Log("Aktualnie licytujący: " + MainModule.Match.CurrentBidding.CurrentPlayer.ToString());
-                //Debug.Log("Liczba pass'ow : " + MainModule.Match.CurrentBidding.GetPassCounter() + "; Czy koniec licytacji? : " + MainModule.Match.CurrentBidding.IsEnd());
-                //Debug.Log("Aktualna pozycja: " + MainModule.UserData.position.ToString());
-                //Debug.Log("Status rozgrywki: " + MainModule.GameState.ToString());
                 if (PassCounter == 4)
                 {
                     PassCounter = 0;
                     MainModule.GameState = GameState.BIDDING;
                     MainModule.ShuffleAndGiveCardsAgain();
-                    AuctionState.CurrentPlayer = MainModule.Match.CurrentBidding.CurrentPlayer;
-                    MainModule.UserData.position = MainModule.Match.CurrentBidding.CurrentPlayer; // for dev mode
-                    NPlayerDeclarations.text = "";
-                    EPlayerDeclarations.text = "";
-                    SPlayerDeclarations.text = "";
-                    WPlayerDeclarations.text = "";
+                    /*AuctionState.CurrentPlayer = MainModule.Match.CurrentBidding.CurrentPlayer;
+                    /*if (MainModule.DevMode)
+                    {
+                        MainModule.UserData.position = MainModule.Match.CurrentBidding.CurrentPlayer; // for dev mode
+                    }
+                    AssignAuctionFirstRow();*/
                 }
                 else if (MainModule.Match.CurrentBidding.IsEnd())
                 {
-                    DeclaredContractLabel.text = "Contract:\n" + MainModule.Match.CurrentBidding.HighestContract.ToString();
+                    if(MainModule.Match.CurrentGame.Declarer == PlayerTag.N || MainModule.Match.CurrentGame.Declarer == PlayerTag.S)
+                    {
+                        DeclaredContractLabel.text = "Contract:\nNS, " + MainModule.Match.CurrentBidding.HighestContract.ToString();
+                    } 
+                    else if (MainModule.Match.CurrentGame.Declarer == PlayerTag.E || MainModule.Match.CurrentGame.Declarer == PlayerTag.W)
+                    {
+                        DeclaredContractLabel.text = "Contract:\nEW, " + MainModule.Match.CurrentBidding.HighestContract.ToString();
+                    }
                     TeamTakenHandsCounterLabel.text = "NS : 0\nEW : 0";
                     MainModule.GameState = GameState.PLAYING;
 

@@ -31,7 +31,6 @@ public class GameManagerScript : MonoBehaviour
 
     void Start()
     {
-        InvokeRepeating("CurrentPlayerLight", 2.0f, 0.05f);
     }
 
     private void CurrentPlayerLight()
@@ -41,22 +40,31 @@ public class GameManagerScript : MonoBehaviour
         GameObject.Find("Player1IndicatorLight").GetComponent<Image>().color = new Color(255f, 255f, 255f, 100f);
         GameObject.Find("Player2IndicatorLight").GetComponent<Image>().color = new Color(255f, 255f, 255f, 100f);
 
-        if (Game != null && Game.Match.CurrentGame != null)
+        if (Game != null && Game.Match != null)
         {
-            Debug.Log("Aktualny gracz: " + Game.Match.CurrentGame.CurrentPlayer.ToString() + "; Moja obecna pozycja: " + Game.UserData.position.ToString());
-            if (Game.Match.CurrentGame.CurrentPlayer.ToString() == GameObject.Find("Player3IndicatorText").GetComponent<Text>().text)
+            string PlayerTagString = "";
+            if (Game.GameState == GameState.BIDDING)
+            {
+                PlayerTagString = Game.Match.CurrentBidding.CurrentPlayer.ToString();
+            }
+            else if (Game.GameState == GameState.PLAYING)
+            {
+                PlayerTagString = Game.Match.CurrentGame.CurrentPlayer.ToString();
+            }
+
+            if (PlayerTagString == GameObject.Find("Player3IndicatorText").GetComponent<Text>().text)
             {
                 GameObject.Find("Player3IndicatorLight").GetComponent<Image>().color = new Color(255f, 255f, 0f, 242f);
-            } 
-            else if (Game.Match.CurrentGame.CurrentPlayer.ToString() == GameObject.Find("Player4IndicatorText").GetComponent<Text>().text)
+            }
+            else if (PlayerTagString == GameObject.Find("Player4IndicatorText").GetComponent<Text>().text)
             {
                 GameObject.Find("Player4IndicatorLight").GetComponent<Image>().color = new Color(255f, 255f, 0f, 242f);
-            } 
-            else if (Game.Match.CurrentGame.CurrentPlayer.ToString() == GameObject.Find("Player1IndicatorText").GetComponent<Text>().text)
+            }
+            else if (PlayerTagString == GameObject.Find("Player1IndicatorText").GetComponent<Text>().text)
             {
                 GameObject.Find("Player1IndicatorLight").GetComponent<Image>().color = new Color(255f, 255f, 0f, 242f);
-            } 
-            else if (Game.Match.CurrentGame.CurrentPlayer.ToString() == GameObject.Find("Player2IndicatorText").GetComponent<Text>().text)
+            }
+            else if (PlayerTagString == GameObject.Find("Player2IndicatorText").GetComponent<Text>().text)
             {
                 GameObject.Find("Player2IndicatorLight").GetComponent<Image>().color = new Color(255f, 255f, 0f, 242f);
             }
@@ -123,13 +131,39 @@ public class GameManagerScript : MonoBehaviour
         {
             startButtonObject.SetActive(false);
         }
+        InvokeRepeating("CurrentPlayerLight", 0.5f, 0.05f);
     }
 
     public void RestartGame()
     {
         Game.Match.GameState = GameState.BIDDING;
+        if (Game.DevMode)
+        {
+            Game.UserData.position = Game.UserData.positionStart;
+        }
+
+        GameObject.Find("TeamTakenHandsCounterLabelBackground").GetComponent<Image>().color = new Color32(219, 31, 35, 0);
+        GameObject.Find("DeclaredContractLabelBackground").GetComponent<Image>().color = new Color32(219, 31, 35, 0);
+
         AuctionModule.ReleaseListeners();
+        ReleaseCardsOwners();
+        CancelInvoke();
         Game.RestartGame();
+    }
+
+    private void ReleaseCardsOwners()
+    {
+        GameObject cardObject;
+        for (int i = 0; i < Game.Match.PlayerList.Count; i++)
+        {
+            foreach (GameManagerLib.Models.Card card in Game.Match.PlayerList[i].Hand)
+            {
+                string cardName = CalculateCardName(card);
+                cardObject = GameObject.Find(cardName);
+                cardObject.GetComponent<Card>().PlayerID = PlayerTag.NOBODY;
+                cardObject.transform.position = new Vector3(-100, 0, 0);
+            }
+        }
     }
 
     public void ShowGrandCards(PlayerTag grand, GameManagerLib.Models.Card[] grandHand)
@@ -160,36 +194,19 @@ public class GameManagerScript : MonoBehaviour
         }
     }
 
-    // TODO dynamic change place
     private void GiveHiddenCardsToPlayers(PlayerTag MyPosition)
     {
-        float[] myCardsX = { -2.37f, -1.975f, -1.58f, -1.185f, -0.79f, -0.395f, 0.0f, 0.395f, 0.79f, 1.185f, 1.58f, 1.975f, 2.37f };
-        float[] opCardsY = { 1.72f, 1.4334f, 1.1468f, 0.86f, 0.5736f, 0.287f, 0.0f, -0.2862f, -0.5728f, -0.8594f, -1.146f, -1.43f, -1.72f };
-
         foreach (int player in System.Enum.GetValues(typeof(PlayerTag)))
         {
             GameObject CardsObject = GameObject.Find("Cards");
 
-            if (player != (int)MyPosition)
+            if (player != (int)MyPosition && player != (int)PlayerTag.NOBODY)
             {
+                List<float[]> coordinates = CalculateCardsCoordinates((PlayerTag)player);
                 for (int i = 0; i < 13; i++)
                 {
                     GameObject card = Instantiate(hiddenCard);
-                    switch (player)
-                    {
-                        case (int)PlayerTag.N:
-                            card.transform.localPosition = new Vector3(myCardsX[i] + (CardsObject.gameObject.transform.position.x), (CardsObject.gameObject.transform.position.y) + 3.28f, 0);
-                            break;
-                        case (int)PlayerTag.S:
-                            card.transform.localPosition = new Vector3(myCardsX[i] + (CardsObject.gameObject.transform.position.x), (CardsObject.gameObject.transform.position.y) + 3.07f, 0);
-                            break;
-                        case (int)PlayerTag.W:
-                            card.transform.localPosition = new Vector3(4.61f + (CardsObject.gameObject.transform.position.x), (CardsObject.gameObject.transform.position.y) + opCardsY[i], 0);
-                            break;
-                        case (int)PlayerTag.E:
-                            card.transform.localPosition = new Vector3(-4.61f + (CardsObject.gameObject.transform.position.x), (CardsObject.gameObject.transform.position.y) + opCardsY[i], 0);
-                            break;
-                    }
+                    card.transform.localPosition = new Vector3(coordinates[i][0] + CardsObject.gameObject.transform.position.x, coordinates[i][1] + CardsObject.gameObject.transform.position.y, 0);
                     if (Mathf.Abs((int)MyPosition - (int)player) != 2)
                     {
                         card.transform.rotation = Quaternion.Euler(0, 0, 90f);
@@ -215,31 +232,67 @@ public class GameManagerScript : MonoBehaviour
         }
     }
 
-    private void GiveCardsToPlayer(PlayerTag PlayerIdentifier, GameManagerLib.Models.Card[] cards)
+    private List<float[]> CalculateCardsCoordinates(PlayerTag Position)
     {
         float[] myCardsX = { -2.37f, -1.975f, -1.58f, -1.185f, -0.79f, -0.395f, 0.0f, 0.395f, 0.79f, 1.185f, 1.58f, 1.975f, 2.37f };
         float[] opCardsY = { 1.72f, 1.4334f, 1.1468f, 0.86f, 0.5736f, 0.287f, 0.0f, -0.2862f, -0.5728f, -0.8594f, -1.146f, -1.43f, -1.72f };
 
+        List<float[]> coordinates = new List<float[]>();
+        if ((int)Position == (int)Game.UserData.position) // down
+        {
+            for(int i = 0; i < 13; i++)
+            {
+                float[] tmp = new float[3];
+                tmp[0] = myCardsX[i];
+                tmp[1] = -3.28f;
+                tmp[2] = -i;
+                coordinates.Add(tmp);
+            }
+        }
+        else if ((int)Position == (((int)Game.UserData.position + 1) % 4)) // left
+        {
+            for (int i = 0; i < 13; i++)
+            {
+                float[] tmp = new float[3];
+                tmp[0] = -4.61f;
+                tmp[1] = opCardsY[i];
+                tmp[2] = -i;
+                coordinates.Add(tmp);
+            }
+        }
+        else if ((int)Position == (((int)Game.UserData.position + 2) % 4)) // up
+        {
+            for (int i = 0; i < 13; i++)
+            {
+                float[] tmp = new float[3];
+                tmp[0] = myCardsX[i];
+                tmp[1] = 3.07f;
+                tmp[2] = -i;
+                coordinates.Add(tmp);
+            }
+        }
+        else if ((int)Position == (((int)Game.UserData.position + 3) % 4)) // right
+        {
+            for (int i = 0; i < 13; i++)
+            {
+                float[] tmp = new float[3];
+                tmp[0] = 4.61f;
+                tmp[1] = opCardsY[i];
+                tmp[2] = -i;
+                coordinates.Add(tmp);
+            }
+        }
+        return coordinates;
+    }
+
+    private void GiveCardsToPlayer(PlayerTag PlayerIdentifier, GameManagerLib.Models.Card[] cards)
+    {
+        List<float[]> coordinates = CalculateCardsCoordinates(PlayerIdentifier);
         for (int i = 0; i < cards.Length; i++)
         {
             string cardName = CalculateCardName(cards[i]);
             GameObject card = GameObject.Find(cardName);
-
-            switch (PlayerIdentifier)
-            {
-                case PlayerTag.N:
-                    card.transform.localPosition = new Vector3(myCardsX[i], -3.28f, -i);
-                    break;
-                case PlayerTag.S:
-                    card.transform.localPosition = new Vector3(myCardsX[i], 3.07f, -i);
-                    break;
-                case PlayerTag.W:
-                    card.transform.localPosition = new Vector3(4.61f, opCardsY[i], -i);
-                    break;
-                case PlayerTag.E:
-                    card.transform.localPosition = new Vector3(-4.61f, opCardsY[i], -i);
-                    break;
-            }
+            card.transform.localPosition = new Vector3(coordinates[i][0], coordinates[i][1], coordinates[i][2]);
             
             card.GetComponent<Card>().PlayerID = PlayerIdentifier;
             SpriteRenderer sr = card.GetComponent<SpriteRenderer>();
@@ -313,8 +366,6 @@ public class GameManagerScript : MonoBehaviour
     public void putCard(Card card)
     {
         bool putOK = Game.PutCard(card.Figure, card.Color, card.PlayerID);
-        Debug.Log("Moja pozycja : " + Game.UserData.position.ToString());
-        Debug.Log("Card owner : " + card.PlayerID.ToString());
         if (putOK)
         {
             if (card.CurrentState == CardState.ON_HAND)
@@ -364,33 +415,53 @@ public class GameManagerScript : MonoBehaviour
                     cardName = "CARD_" + (int)card.Figure + c;
                 }
 
-                float newXpos = 0;
+                /*float newXpos = 0;
                 float newYpos = 0;
 
                 switch (card.PlayerID) // to reconsider, positions are relative to player who sits
                 {
-                    case PlayerTag.N:
+                    case PlayerTag.N: // down
                         newXpos = -3.02f;
                         newYpos = -1.03f;
                         break;
-                    case PlayerTag.E:
+                    case PlayerTag.E: // left
                         newXpos = -4.19f;
                         newYpos = 0.41f;
                         break;
-                    case PlayerTag.S:
+                    case PlayerTag.S: // up
                         newXpos = -3.02f;
                         newYpos = 1.87f;
                         break;
-                    case PlayerTag.W:
+                    case PlayerTag.W: // right
                         newXpos = -1.8f;
                         newYpos = 0.41f;
                         break;
+                }*/
+
+
+                float[] newPos = new float[2];
+                // WARNING! For production 'positionStart' should be replaced with 'position' 
+                if (card.PlayerID == Game.UserData.positionStart)
+                {
+                    newPos = CalculatePutCardPosition('D');
+                } 
+                else if(card.PlayerID == (PlayerTag)(( (int)Game.UserData.positionStart + 1) % 4 ))
+                {
+                    newPos = CalculatePutCardPosition('L');
+                }
+                else if (card.PlayerID == (PlayerTag)(((int)Game.UserData.positionStart + 2) % 4))
+                {
+                    newPos = CalculatePutCardPosition('U');
+                }
+                else if (card.PlayerID == (PlayerTag)(((int)Game.UserData.positionStart + 3) % 4))
+                {
+                    newPos = CalculatePutCardPosition('R');
                 }
 
                 GameObject cardToPut = GameObject.Find(cardName);
-                cardToPut.transform.position = new Vector3(newXpos, newYpos);
+                cardToPut.transform.position = new Vector3(newPos[0], newPos[1]);
 
-                if (Game.Match.CurrentGame.TrickList.Count == 0 && Game.Match.CurrentGame.currentTrick.CardList.Count == 1)
+                if (Game.Match.CurrentGame.TrickList.Count == 0 && Game.Match.CurrentGame.currentTrick.CardList.Count == 1 && !Game.DevMode)
                 {
                     Game.ShowGrandCards();
                 }
@@ -412,8 +483,21 @@ public class GameManagerScript : MonoBehaviour
                     }
 
                     Text TeamTakenHandsCounterLabel = GameObject.Find("TeamTakenHandsCounterLabel").GetComponent<Text>();
-                    TeamTakenHandsCounterLabel.text = "NS : " + Game.CalculateTeamTricks(PlayerTag.N, PlayerTag.S).ToString() + "\n";
-                    TeamTakenHandsCounterLabel.text += "EW : " + Game.CalculateTeamTricks(PlayerTag.E, PlayerTag.W).ToString();
+                    int NSTaken = Game.CalculateTeamTricks(PlayerTag.N, PlayerTag.S);
+                    int EWTaken = Game.CalculateTeamTricks(PlayerTag.E, PlayerTag.W);
+
+                    TeamTakenHandsCounterLabel.text = "NS : " + NSTaken.ToString() + "\n";
+                    TeamTakenHandsCounterLabel.text += "EW : " + EWTaken.ToString();
+
+                    if (Game.Match.CurrentGame.Declarer == PlayerTag.N || Game.Match.CurrentGame.Declarer == PlayerTag.S)
+                    {
+                        PaintContractLabel(NSTaken, EWTaken);
+                    }
+                    else if (Game.Match.CurrentGame.Declarer == PlayerTag.E || Game.Match.CurrentGame.Declarer == PlayerTag.W)
+                    {
+                        PaintContractLabel(EWTaken, NSTaken);
+                    }
+
                     if (Game.DevMode)
                     {
                         Game.UserData.position = lastTrick.Winner; // for dev mode
@@ -426,6 +510,48 @@ public class GameManagerScript : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void PaintContractLabel(int TakenHands, int EnemyTakenHands)
+    {
+        if (Game.Match.CurrentBidding.HighestContract != null)
+        {
+            if (6 + (int)Game.Match.CurrentBidding.HighestContract.ContractHeight <= TakenHands)
+            {
+                GameObject.Find("TeamTakenHandsCounterLabelBackground").GetComponent<Image>().color = new Color32(29, 143, 35, 255);
+                GameObject.Find("DeclaredContractLabelBackground").GetComponent<Image>().color = new Color32(29, 143, 35, 255);
+            }
+            else if (EnemyTakenHands > 13 - 6 - (int)Game.Match.CurrentBidding.HighestContract.ContractHeight)
+            {
+                GameObject.Find("TeamTakenHandsCounterLabelBackground").GetComponent<Image>().color = new Color32(219, 31, 35, 255);
+                GameObject.Find("DeclaredContractLabelBackground").GetComponent<Image>().color = new Color32(219, 31, 35, 255);
+            }
+        }
+    }
+
+    private float[] CalculatePutCardPosition(char Position)
+    {
+        float[] returned = new float[2];
+        switch (Position)
+        {
+            case 'U':
+                returned[0] = -3.02f;
+                returned[1] = 1.87f;
+                break;
+            case 'D':
+                returned[0] = -3.02f;
+                returned[1] = -1.03f;
+                break;
+            case 'L':
+                returned[0] = -4.19f;
+                returned[1] = 0.41f;
+                break;
+            case 'R':
+                returned[0] = -1.8f;
+                returned[1] = 0.41f;
+                break;
+        }
+        return returned;
     }
 
     IEnumerator SleepFor2Seconds()

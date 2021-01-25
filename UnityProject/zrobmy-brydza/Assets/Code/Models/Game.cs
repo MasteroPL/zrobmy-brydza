@@ -15,7 +15,7 @@ namespace Assets.Code.Models
         public GameState GameState;
         public Match Match;
         public UserData UserData;
-        public bool DevMode = true;
+        public bool DevMode = true; // change for 'true' in case you are dev
 
         public Game(GameManagerScript GameManagerScript)
         {
@@ -82,22 +82,6 @@ namespace Assets.Code.Models
 
         public void ShuffleAndGiveCardsAgain()
         {
-            GameManagerLib.Models.Card[] MyHand = { };
-            switch (UserData.position)
-            {
-                case PlayerTag.N:
-                    MyHand = Match.PlayerList[0].Hand;
-                    break;
-                case PlayerTag.E:
-                    MyHand = Match.PlayerList[1].Hand;
-                    break;
-                case PlayerTag.S:
-                    MyHand = Match.PlayerList[2].Hand;
-                    break;
-                case PlayerTag.W:
-                    MyHand = Match.PlayerList[3].Hand;
-                    break;
-            }
             GameManagerScript.RestartGame();
         }
 
@@ -129,8 +113,7 @@ namespace Assets.Code.Models
                 return false;
             }
 
-            Debug.Log("debug");
-            Debug.Log("Owner:" + owner.ToString() + "; Color: " + Color.ToString() + "; Figure: " + Figure.ToString());
+            //Debug.Log("Trying to put " + Figure.ToString() + "_" + Color.ToString() + " possessed by " + owner.ToString() + ". You are sitting at position " + UserData.position.ToString());
             bool isOK = Match.CheckNextCard(owner, Color, Figure);
             if (isOK)
             {

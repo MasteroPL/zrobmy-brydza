@@ -10,5 +10,6 @@ namespace Assets.Code.UI
     public class UserData
     {
         public PlayerTag position = PlayerTag.N;
+        public PlayerTag positionStart = PlayerTag.N; // non-changing position (just for development)
     }
 }
