@@ -7,6 +7,7 @@ Zróbmy Brydża! - Dokumentacja
 
    EasyHosting/serializacja/_index
    EasyHosting/akcje/_index
+   EasyHosting/dokumentacja_klas/_index
 
 .. toctree::
    :maxdepth: 2
