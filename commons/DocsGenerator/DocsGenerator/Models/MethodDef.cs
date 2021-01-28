@@ -10,6 +10,7 @@ using System.Xml;
 namespace DocsGenerator.Models {
     public class MethodDef {
         public ClassDef ParentClass = null;
+        public MethodInfo MethodInfo = null;
         public AccessType AccessType;
         public string Name = null;
         public bool IsConstructor = false;
@@ -92,8 +93,25 @@ namespace DocsGenerator.Models {
             return null;
         }
 
+        public string GetXMLName() {
+            string ns = ParentClass.TypeDef.GetDocFullName();
+            string name = Name;
+            StringBuilder prs = new StringBuilder();
+
+            bool first = true;
+            foreach(var param in Params) {
+                if (!first) {
+                    prs.Append(",");
+                }
+                prs.Append(param.TypeDef.GetDocFullName());
+                first = false;
+            }
+            return ns + "." + name + "(" + prs.ToString() + ")";
+        }
+
         public static MethodDef FromMethodInfo(ClassDef parentClass, MethodInfo info, XMLDocs doc = null) {
             var def = new MethodDef(parentClass);
+            def.MethodInfo = info;
 
             // Sczytywanie nazwy
             def.Name = info.Name;
@@ -132,7 +150,7 @@ namespace DocsGenerator.Models {
 
             // Dopisywanie dokumentacji
             if(doc != null) {
-                XmlNode docsNode = doc.GetDocumentation(info);
+                XmlNode docsNode = doc.GetDocumentation(def);
 
                 if (docsNode != null) {
                     XmlNode current;

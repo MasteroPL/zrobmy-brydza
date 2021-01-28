@@ -36,13 +36,15 @@ namespace DocsGenerator.Utils {
             string key = "T:" + XmlDocumentationKeyHelper(type.FullName, null);
             return (DefinedMembers.ContainsKey(key)) ? DefinedMembers[key] : null;
         }
-        public XmlNode GetDocumentation(MethodInfo methodInfo) {
+        public XmlNode GetDocumentation(MethodDef methodDef) {
+            MethodInfo methodInfo = methodDef.MethodInfo;
 
             string methodName = methodInfo.ToString();
             methodName = methodName.Split(' ')[1];
-            string methodKey = Regex.Replace(methodName, @"\`\d+\[(.*)\]", "{$1}");
+            string methodKey = methodDef.GetXMLName();
 
-            string key = "M:" + XmlDocumentationKeyHelper(methodInfo.DeclaringType.FullName, methodKey);
+            string key = "M:" + methodKey;
+            //string key = "M:" + XmlDocumentationKeyHelper(methodInfo.DeclaringType.FullName, methodKey);
 
             return (DefinedMembers.ContainsKey(key)) ? DefinedMembers[key] : null;
         }
@@ -120,12 +122,8 @@ namespace DocsGenerator.Utils {
             AssemblyDef.AddClassDef(def);
         }
 
-        public void WriteToFile(string fileName) {
-            using (StreamWriter outputFile = new StreamWriter(fileName, false)) {
-                foreach (var cls in AssemblyDef.ClassDefs.Values) {
-                    outputFile.WriteLine(cls.GetDocRepresentation());
-                }
-            }
+        public void WriteToFiles(string targetDir = "_docs") {
+            DocumentationWriter.WriteAssembly(targetDir, AssemblyDef);
         }
 
         protected void ProcessAssemblyData(XmlNode assemblyNode) {

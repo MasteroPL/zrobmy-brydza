@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.Xml;
 using DocsGenerator.Utils;
+using EasyHosting.Models.Actions;
 
 namespace DocsGenerator.Models {
     public class ClassDef {
@@ -44,6 +45,10 @@ namespace DocsGenerator.Models {
         }
 
         public static ClassDef FromType(Type type, XMLDocs doc = null) {
+            if (type == typeof(ActionsManager)) {
+                Console.WriteLine("OK");
+            }
+
             var def = new ClassDef();
             def.TypeDef = new TypeDef(type);
 

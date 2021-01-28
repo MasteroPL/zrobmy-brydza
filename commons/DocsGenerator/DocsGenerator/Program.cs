@@ -10,7 +10,7 @@ namespace DocsGenerator {
         static void Main(string[] args) {
             var docs = new XMLDocs();
             docs.ProcessXML("_source\\EasyHosting.xml");
-            docs.WriteToFile("test.txt");
+            docs.WriteToFiles();
         }
     }
 }
