@@ -14,15 +14,32 @@ namespace DocsGenerator.Utils {
             Directory.CreateDirectory(destDir);
             string filePath;
 
-            foreach(var classDef in assemblyDef.ClassDefs.Values) {
+            filePath = Path.Combine(destDir, "_index.rst");
+
+            using (StreamWriter wr = new StreamWriter(filePath)) {
+                wr.WriteLine("#################");
+                wr.WriteLine("Dokumentacja klas");
+                wr.WriteLine("#################");
+                wr.WriteLine();
+                wr.WriteLine(".. toctree::");
+                wr.WriteLine("\t:max-depth: 2");
+                wr.WriteLine();
+
+                foreach (var classDef in assemblyDef.ClassDefs.Values) {
+                    if (classDef.TypeDef.Name == "<>c")
+                        continue;
+
+                    wr.WriteLine("\t" + classDef.TypeDef.Name);
+                }
+            }
+
+            foreach (var classDef in assemblyDef.ClassDefs.Values) {
                 if (classDef.TypeDef.Name == "<>c")
                     continue;
 
                 filePath = Path.Combine(destDir, classDef.TypeDef.Name + ".rst");
 
-                using(StreamWriter wr = new StreamWriter(
-                    filePath
-                )) {
+                using(StreamWriter wr = new StreamWriter(filePath)) {
                     WriteClass(wr, classDef);
                 }
             }
