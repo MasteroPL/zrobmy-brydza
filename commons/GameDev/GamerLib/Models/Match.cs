@@ -114,7 +114,7 @@ namespace GameManagerLib.Models
         {
             if (this.GameState == GameState.BIDDING)
             {
-                List<Card> deck = GenerateSimpleDeck();
+                List<Card> deck = GenerateDeck();
                 CardShuffler<Card> Shuffler = new CardShuffler<Card>(deck);
                 List<Card> ShuffledCards = Shuffler.Shuffle();
 
@@ -143,17 +143,32 @@ namespace GameManagerLib.Models
             }
         }
 
-        private List<Card> GenerateSimpleDeck()
+        private List<Card> GenerateDeck()
         {
             List<Card> cards = new List<Card>();
             Card tmp;
-            for (int i = 0; i < Enum.GetNames(typeof(CardColor)).Length; i++)
+            if (GameList.Count > 0)
             {
-                for (int j = 2; j <= 14; j++)
+                for(int i = 0; i < GameList[GameList.Count - 1].TrickList.Count; i++)
                 {
-                    tmp = new Card((CardFigure)j, (CardColor)i, PlayerTag.NOBODY);
-                    tmp.CurrentState = (CardState)(1);
-                    cards.Add(tmp);
+                    for(int j = 0; j < GameList[GameList.Count - 1].TrickList[i].CardList.Count; j++)
+                    {
+                        tmp = new Card(GameList[GameList.Count - 1].TrickList[i].CardList[j].Figure, GameList[GameList.Count - 1].TrickList[i].CardList[j].Color, PlayerTag.NOBODY);
+                        tmp.CurrentState = (CardState)(1);
+                        cards.Add(tmp);
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < Enum.GetNames(typeof(CardColor)).Length; i++)
+                {
+                    for (int j = 2; j <= 14; j++)
+                    {
+                        tmp = new Card((CardFigure)j, (CardColor)i, PlayerTag.NOBODY);
+                        tmp.CurrentState = (CardState)(1);
+                        cards.Add(tmp);
+                    }
                 }
             }
             return cards;
