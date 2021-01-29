@@ -31,6 +31,18 @@ public class GameManagerScript : MonoBehaviour
 
     void Start()
     {
+        // method assignment should be placed in GameManagerScript, because of reference to Game class instance (where is located info about teams' points)
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/ChatButton").GetComponent<Button>().onClick.AddListener(() => { TextManager.ChatButton(); });
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/AuctionButton").GetComponent<Button>().onClick.AddListener(() => { TextManager.BidButton(); });
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/PointsButton").GetComponent<Button>().onClick.AddListener(() => { TextManager.PointsButton("NS", "13", "20", "12"); }); // TODO
+        TextManager.ChatButton(); // ChatButton simulation
+    }
+
+    void OnDestroy()
+    {
+        /*GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/ChatButton").GetComponent<Button>().onClick.RemoveAllListeners();
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/AuctionButton").GetComponent<Button>().onClick.RemoveAllListeners();
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/PointsButton").GetComponent<Button>().onClick.RemoveAllListeners();*/
     }
 
     private void CurrentPlayerLight()
@@ -146,6 +158,7 @@ public class GameManagerScript : MonoBehaviour
         GameObject.Find("DeclaredContractLabelBackground").GetComponent<Image>().color = new Color32(219, 31, 35, 0);
 
         AuctionModule.ReleaseListeners();
+
         ReleaseCardsOwners();
         CancelInvoke();
         Game.RestartGame();

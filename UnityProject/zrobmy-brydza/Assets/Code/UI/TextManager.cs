@@ -10,11 +10,28 @@ public class TextManager : MonoBehaviour
     InputField ChatField;
     void Start()
     {
-        Debug.Log("Initialization...");
-        GameObject.Find("ChatButton").GetComponent<Button>().onClick.AddListener(() => { ChatButton(); });
-        GameObject.Find("AuctionButton").GetComponent<Button>().onClick.AddListener(() => { BidButton(); });
+    }
 
-        this.ChatButton();
+    public static void ChatButton()
+    {
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList").SetActive(false);
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/Chat").SetActive(true);
+        // TODO hiding points window
+    }
+
+    public static void BidButton()
+    {
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/Chat").SetActive(false);
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList").SetActive(true);
+        // TODO hiding points window
+    }
+
+    public static void PointsButton(string team, string above, string below, string rounds)
+    {
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/Chat").SetActive(false);
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList").SetActive(false);
+        // TODO showing points window
+        Debug.Log(team + " got " + above + " points above and " + below + " below in all " + rounds + " rounds");
     }
 
     /// <summary> 
@@ -39,7 +56,7 @@ public class TextManager : MonoBehaviour
         this.WE.setValue(above + this.space + below + this.space + rounds);
     }
 
-    public void PointsButton()
+    /*public void PointsButton()
     {
         GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/NSPoints").SetActive(true);
         GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/EWPoints").SetActive(true);
@@ -55,7 +72,7 @@ public class TextManager : MonoBehaviour
             "Declarations/EPlayerDeclarationsBackground/EPlayerDeclarationsHeader").GetComponent<UnityEngine.UI.Text>().text = "S";
         GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/SPlayer" +
             "Declarations/SPlayerDeclarationsBackground/SPlayerDeclarationsHeader").GetComponent<UnityEngine.UI.Text>().text = "E";
-    }
+    }*/
 
     /// <summary> 
     /// dodaj odzywkę
@@ -70,18 +87,6 @@ public class TextManager : MonoBehaviour
         textfield = GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/"+ player + "PlayerDeclarations/" + player + "BidList");
         textfield.GetComponent<UnityEngine.UI.Text>().text += value + "\n";
     }*/
-
-    public void BidButton()
-    {
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/Chat").SetActive(false);
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList").SetActive(true);
-    }
-
-    public void ChatButton()
-    {
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList").SetActive(false);
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/Chat").SetActive(true);
-    }
 
     /// <summary> 
     /// dodaj wiadomość do chatu
