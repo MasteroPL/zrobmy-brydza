@@ -10,39 +10,11 @@ public class TextManager : MonoBehaviour
     InputField ChatField;
     void Start()
     {
-        System.Console.WriteLine("dupa");
-        this.space = "\n \n";
-        this.NS = GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/NSPoints").GetComponent<Points>();
-        this.WE = GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/EWPoints").GetComponent<Points>();
-
-        this.setNSPointsValue("0", "0", "");
-        this.setWEPointsValue("100", "0", "R");
+        Debug.Log("Initialization...");
+        GameObject.Find("ChatButton").GetComponent<Button>().onClick.AddListener(() => { ChatButton(); });
+        GameObject.Find("AuctionButton").GetComponent<Button>().onClick.AddListener(() => { BidButton(); });
 
         this.ChatButton();
-
-        AddBid("n", "1C");
-        AddBid("s", "1H");
-        AddBid("e", "1D");
-        AddBid("w", "1S");
-        AddBid("n", "PAS");
-        /*
-        this.AddMessage("Derp", "jak grasz cwelu");
-        this.AddMessage("Herp", "sklej wary lapsie");
-        this.AddMessage("Herp", "sklej wary lapsie");
-        this.AddMessage("Herp", "sklej wary lapsie");
-        this.AddMessage("Herp", "sklej wary lapsie");
-        this.AddMessage("Herp", "sklej wary lapsie");
-        this.AddMessage("Herp", "sklej wary lapsie");
-        this.AddMessage("Herp", "sklej wary lapsie");
-        this.AddMessage("Herp", "sklej wary lapsie");
-        this.AddMessage("Herp", "sklej wary lapsie");
-        this.AddMessage("Herp", "sklej wary lapsie");
-        this.AddMessage("Herp", "sklej wary lapsie");
-        this.AddMessage("Herp", "sklej wary lapsie");
-        this.AddMessage("Herp", "sklej wary lapsie");
-        this.AddMessage("Herp", "sklej wary lapsie");
-        this.AddMessage("Derp", "jak grasz cwelu");
-        this.AddMessage("Derp", "jak grasz cwelu");*/
     }
 
     /// <summary> 
@@ -90,44 +62,25 @@ public class TextManager : MonoBehaviour
     /// <para>player - S, W, E lub N (string)</para> 
     /// <para>value - odzywka np. 1C (string)</para>
     /// </summary>
-    public void AddBid(string player, string value)
+    /// Not used, rendering new bid was implemented in auction module (after contract confirmation)
+    /*public void AddBid(string player, string value)
     {
         player = player.ToUpper();
         GameObject textfield;   
         textfield = GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/"+ player + "PlayerDeclarations/" + player + "BidList");
         textfield.GetComponent<UnityEngine.UI.Text>().text += value + "\n";
-    }
+    }*/
 
     public void BidButton()
     {
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/NSPoints").SetActive(false);
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/EWPoints").SetActive(false);
-
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/Chat").SetActive(false);
-
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/NPlayerDeclarations/NBidList").SetActive(true);
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/SPlayerDeclarations/SBidList").SetActive(true);
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/EPlayerDeclarations/EBidList").SetActive(true);
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/WPlayerDeclarations/WBidList").SetActive(true);
-
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/EPlayer" +
-            "Declarations/EPlayerDeclarationsBackground/EPlayerDeclarationsHeader").GetComponent<UnityEngine.UI.Text>().text = "E";
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/SPlayer" +
-            "Declarations/SPlayerDeclarationsBackground/SPlayerDeclarationsHeader").GetComponent<UnityEngine.UI.Text>().text = "S";
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/Chat").SetActive(false);
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList").SetActive(true);
     }
 
     public void ChatButton()
     {
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/NSPoints").SetActive(false);
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/EWPoints").SetActive(false);
-
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/Chat").SetActive(true);
-
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/NPlayerDeclarations/NBidList").SetActive(false);
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/SPlayerDeclarations/SBidList").SetActive(false);
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/EPlayerDeclarations/EBidList").SetActive(false);
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/WPlayerDeclarations/WBidList").SetActive(false);
-
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList").SetActive(false);
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/Chat").SetActive(true);
     }
 
     /// <summary> 
@@ -136,10 +89,7 @@ public class TextManager : MonoBehaviour
     /// </summary>
     public void AddMessage(string message)
     {
-        Debug.Log("reeee");
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/Chat/Viewport/Content").GetComponent<UnityEngine.UI.Text>().text 
-            += message + "\n";
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/InputField/Text").GetComponent<UnityEngine.UI.Text>().text = "";
-        Debug.Log(GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/InputField/Text").GetComponent<UnityEngine.UI.Text>().text);
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/Chat/ChatViewport/ChatContent").GetComponent<Text>().text += message + "\n";
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/Chat/ChatInputField/Text").GetComponent<Text>().text = "";
     }
 }
