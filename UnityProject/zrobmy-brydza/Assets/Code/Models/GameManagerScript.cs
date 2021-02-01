@@ -31,10 +31,13 @@ public class GameManagerScript : MonoBehaviour
 
     void Start()
     {
+        GameObject.Find("TeamTakenHandsCounterLabel").GetComponent<Text>().text = "";
+        GameObject.Find("DeclaredContractLabel").GetComponent<Text>().text = "";
+
         // method assignment should be placed in GameManagerScript, because of reference to Game class instance (where is located info about teams' points)
         GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/ChatButton").GetComponent<Button>().onClick.AddListener(() => { TextManager.ChatButton(); });
         GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/AuctionButton").GetComponent<Button>().onClick.AddListener(() => { TextManager.BidButton(); });
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/PointsButton").GetComponent<Button>().onClick.AddListener(() => { TextManager.PointsButton("NS", "13", "20", "12"); }); // TODO
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/PointsButton").GetComponent<Button>().onClick.AddListener(() => { TextManager.PointsButton(Game); }); // TODO
         TextManager.ChatButton(); // ChatButton simulation
     }
 
@@ -156,6 +159,11 @@ public class GameManagerScript : MonoBehaviour
 
         GameObject.Find("TeamTakenHandsCounterLabelBackground").GetComponent<Image>().color = new Color32(219, 31, 35, 0);
         GameObject.Find("DeclaredContractLabelBackground").GetComponent<Image>().color = new Color32(219, 31, 35, 0);
+
+        if (GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/PointsPanel").activeInHierarchy)
+        {
+            TextManager.PointsButton(Game);
+        }
 
         AuctionModule.ReleaseListeners();
 
@@ -309,7 +317,7 @@ public class GameManagerScript : MonoBehaviour
             
             card.GetComponent<Card>().PlayerID = PlayerIdentifier;
             SpriteRenderer sr = card.GetComponent<SpriteRenderer>();
-            sr.sortingOrder = i;
+            sr.sortingOrder = i + 1;
         }
     }
 

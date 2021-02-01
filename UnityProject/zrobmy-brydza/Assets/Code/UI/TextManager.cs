@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Assets.Code.Models;
+
 public class TextManager : MonoBehaviour
 {
     Points NS;
@@ -15,23 +17,131 @@ public class TextManager : MonoBehaviour
     public static void ChatButton()
     {
         GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList").SetActive(false);
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/PointsPanel").SetActive(false);
         GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/Chat").SetActive(true);
-        // TODO hiding points window
     }
 
     public static void BidButton()
     {
         GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/Chat").SetActive(false);
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/PointsPanel").SetActive(false);
         GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList").SetActive(true);
-        // TODO hiding points window
     }
 
-    public static void PointsButton(string team, string above, string below, string rounds)
+    public static void PointsButton(Game CurrentGame)
     {
         GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/Chat").SetActive(false);
         GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList").SetActive(false);
-        // TODO showing points window
-        Debug.Log(team + " got " + above + " points above and " + below + " below in all " + rounds + " rounds");
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/PointsPanel").SetActive(true);
+
+        if(CurrentGame != null && CurrentGame.Match != null)
+        {
+            //test for debugging
+            /*List<string> testNS = new List<string>();
+            testNS.Add("0|30");
+            testNS.Add("0|0");
+            testNS.Add("0|0");
+            testNS.Add("0|0");
+            testNS.Add("0|0");
+            List<string> testEW = new List<string>();
+            testEW.Add("0|0");
+            testEW.Add("20|50");
+            testEW.Add("0|0");
+            testEW.Add("10|50");
+            testEW.Add("40|10");*/
+
+            string[] ShownTexts = CalculateShownText(CurrentGame.Match.History.NSHistory, CurrentGame.Match.History.WEHistory);
+            GameObject.Find("NSPoints").GetComponent<Text>().text = ShownTexts[0];
+            GameObject.Find("WEPoints").GetComponent<Text>().text = ShownTexts[1];
+        } else
+        {
+            GameObject.Find("NSPoints").GetComponent<Text>().text = "____________";
+            GameObject.Find("WEPoints").GetComponent<Text>().text = "____________";
+        }
+    }
+
+    private static string[] CalculateShownText(List<string> TeamNSPointsHistory, List<string> TeamEWPointsHistory)
+    {
+        // to return
+        string NSText = "", EWText = "";
+
+        string[] NSTmp, EWTmp;
+        char[] separators = { '|' };
+        List<string> EWAbovePoints = new List<string>();
+        List<string> NSAbovePoints = new List<string>();
+        List<string> EWUnderPoints = new List<string>();
+        List<string> NSUnderPoints = new List<string>();
+
+        for (int i = 0; i < TeamNSPointsHistory.Count; i++)
+        {
+            NSTmp = TeamNSPointsHistory[i].Split(separators);
+            EWTmp = TeamEWPointsHistory[i].Split(separators);
+
+            EWAbovePoints.Add(EWTmp[0]);
+            NSAbovePoints.Add(NSTmp[0]);
+            EWUnderPoints.Add(EWTmp[1]);
+            NSUnderPoints.Add(NSTmp[1]);
+        }
+
+        string NSAbovePrefix = "";
+        foreach(string AbovePoints in NSAbovePoints)
+        {
+            if(AbovePoints == "0")
+            {
+                NSAbovePrefix += "\n";
+            }
+            else
+            {
+                NSText = AbovePoints + "\n" + NSText;
+            }
+        }
+        NSText += "____________\n";
+        foreach (string UnderPoints in NSUnderPoints)
+        {
+            if (UnderPoints != "0")
+            {
+                NSText += UnderPoints + "\n";
+            }
+        }
+
+        string EWAbovePrefix = "";
+        foreach (string AbovePoints in EWAbovePoints)
+        {
+            if(AbovePoints == "0")
+            {
+                EWAbovePrefix += "\n";
+            }
+            else
+            {
+                EWText = AbovePoints + "\n" + EWText;
+            }
+        }
+        EWText += "____________\n";
+        foreach (string UnderPoints in EWUnderPoints)
+        {
+            if (UnderPoints != "0")
+            {
+                EWText += UnderPoints + "\n";
+            }
+        }
+
+        string FinalNSPrefixLines = "", FinalEWPrefixLines = "";
+        if (NSAbovePrefix.Length > EWAbovePrefix.Length)
+        {
+            for(int i = 0; i < NSAbovePrefix.Length - EWAbovePrefix.Length; i++)
+            {
+                FinalNSPrefixLines += "\n";
+            }
+        } 
+        else
+        {
+            for (int i = 0; i < EWAbovePrefix.Length - NSAbovePrefix.Length; i++)
+            {
+                FinalEWPrefixLines += "\n";
+            }
+        }
+        string[] RenderedStrings = { FinalNSPrefixLines + NSText, FinalEWPrefixLines + EWText };
+        return RenderedStrings;
     }
 
     /// <summary> 
