@@ -29,6 +29,14 @@ public class GameManagerScript : MonoBehaviour
     private List<GameObject> HiddenCardsOfPlayerS;
     private List<GameObject> HiddenCardsOfPlayerW;
 
+    /**
+     * -1 - neutral state
+     * 0  - take everything
+     * 1  - take nothing
+     */
+    private int ButtonPanelCanvasState = -1;
+    private bool RequestingForPause = false;
+
     void Start()
     {
         GameObject.Find("TeamTakenHandsCounterLabel").GetComponent<Text>().text = "";
@@ -39,6 +47,12 @@ public class GameManagerScript : MonoBehaviour
         GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/AuctionButton").GetComponent<Button>().onClick.AddListener(() => { TextManager.BidButton(); });
         GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/PointsButton").GetComponent<Button>().onClick.AddListener(() => { TextManager.PointsButton(Game); }); // TODO
         TextManager.ChatButton(); // ChatButton simulation
+
+        GameObject.Find("TakeEverythingButton").GetComponent<Button>().onClick.AddListener(() => { TakeEverythingHandler(); });
+        GameObject.Find("TakeNothingButton").GetComponent<Button>().onClick.AddListener(() => { TakeNothingHandler(); });
+        GameObject.Find("PauseRequestButton").GetComponent<Button>().onClick.AddListener(() => { PauseRequestHandler(); });
+        GameObject.Find("TauntButton").GetComponent<Button>().onClick.AddListener(() => { TauntHandler(); });
+        GameObject.Find("QuitButton").GetComponent<Button>().onClick.AddListener(() => { QuitHandler(); });
     }
 
     void OnDestroy()
@@ -46,6 +60,76 @@ public class GameManagerScript : MonoBehaviour
         /*GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/ChatButton").GetComponent<Button>().onClick.RemoveAllListeners();
         GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/AuctionButton").GetComponent<Button>().onClick.RemoveAllListeners();
         GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/PointsButton").GetComponent<Button>().onClick.RemoveAllListeners();*/
+    }
+
+    private void TakeEverythingHandler()
+    {
+        Debug.Log("I'm taking everything");
+        if (ButtonPanelCanvasState != 0)
+        {
+            ButtonPanelCanvasState = 0;
+        } 
+        else
+        {
+            ButtonPanelCanvasState = -1;
+        }
+        UpdateButtonPanelCanvas();
+    }
+
+    private void TakeNothingHandler()
+    {
+        Debug.Log("I take nothing");
+        if (ButtonPanelCanvasState != 1)
+        {
+            ButtonPanelCanvasState = 1;
+        }
+        else
+        {
+            ButtonPanelCanvasState = -1;
+        }
+        UpdateButtonPanelCanvas();
+    }
+
+    private void PauseRequestHandler()
+    {
+        Debug.Log("Pause request");
+        RequestingForPause = !RequestingForPause;
+        UpdateButtonPanelCanvas();
+    }
+
+    private void UpdateButtonPanelCanvas()
+    {
+        GameObject.Find("TakeEverythingButton").GetComponent<Button>().image.color = new Color32(255, 255, 255, 255);
+        GameObject.Find("TakeNothingButton").GetComponent<Button>().image.color = new Color32(255, 255, 255, 255);
+        if(ButtonPanelCanvasState == 0)
+        {
+            GameObject.Find("TakeEverythingButton").GetComponent<Button>().image.color = new Color32(0, 0, 0, 255);
+        } 
+        else if(ButtonPanelCanvasState == 1)
+        {
+            GameObject.Find("TakeNothingButton").GetComponent<Button>().image.color = new Color32(0, 0, 0, 255);
+        }
+
+        GameObject.Find("PauseRequestButton").GetComponent<Button>().image.color = new Color32(255, 255, 255, 255);
+        if (RequestingForPause)
+        {
+            GameObject.Find("PauseRequestButton").GetComponent<Button>().image.color = new Color32(0, 0, 0, 255);
+        } 
+        else
+        {
+            GameObject.Find("PauseRequestButton").GetComponent<Button>().image.color = new Color32(255, 255, 255, 255);
+        }
+    }
+
+    private void TauntHandler()
+    {
+        Debug.Log("Taunting...");
+    }
+
+    private void QuitHandler()
+    {
+        Debug.Log("Quit game...");
+        Application.Quit(); // TO CHANGE
     }
 
     private void CurrentPlayerLight()
