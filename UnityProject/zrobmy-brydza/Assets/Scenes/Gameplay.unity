@@ -661,8 +661,9 @@ GameObject:
   - component: {fileID: 48426170}
   - component: {fileID: 48426169}
   - component: {fileID: 48426168}
+  - component: {fileID: 48426171}
   m_Layer: 5
-  m_Name: SitOutPlayerEButton
+  m_Name: ESitOutPlayerButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -768,6 +769,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 48426166}
   m_CullTransparentMesh: 0
+--- !u!114 &48426171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 48426166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7c25580cabae514f8c1dcbb73b875b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ReferencedButton: {fileID: 48426168}
+  GameManager: {fileID: 783291823}
 --- !u!1 &64231849
 GameObject:
   m_ObjectHideFlags: 0
@@ -2954,7 +2969,7 @@ GameObject:
   - component: {fileID: 242716396}
   - component: {fileID: 242716395}
   m_Layer: 0
-  m_Name: ButtonScriptsObject
+  m_Name: ButtonPositionScriptsObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3211,6 +3226,51 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsOn: 1
+--- !u!1 &310798267
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 310798268}
+  - component: {fileID: 310798269}
+  m_Layer: 0
+  m_Name: ButtonPositionSitOutScriptsObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &310798268
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 310798267}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.7030826, y: 4.1701283, z: 580.3369}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 13
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &310798269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 310798267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7c25580cabae514f8c1dcbb73b875b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ReferencedButton: {fileID: 0}
+  GameManager: {fileID: 0}
 --- !u!1 &313715740
 GameObject:
   m_ObjectHideFlags: 0
@@ -8872,8 +8932,9 @@ GameObject:
   - component: {fileID: 946790737}
   - component: {fileID: 946790736}
   - component: {fileID: 946790735}
+  - component: {fileID: 946790738}
   m_Layer: 5
-  m_Name: SitOutPlayerSButton
+  m_Name: SSitOutPlayerButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8979,6 +9040,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 946790733}
   m_CullTransparentMesh: 0
+--- !u!114 &946790738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 946790733}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7c25580cabae514f8c1dcbb73b875b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ReferencedButton: {fileID: 946790735}
+  GameManager: {fileID: 783291823}
 --- !u!1 &948371267
 GameObject:
   m_ObjectHideFlags: 0
@@ -13729,8 +13804,9 @@ GameObject:
   - component: {fileID: 1501277698}
   - component: {fileID: 1501277697}
   - component: {fileID: 1501277696}
+  - component: {fileID: 1501277699}
   m_Layer: 5
-  m_Name: SitOutPlayerNButton
+  m_Name: NSitOutPlayerButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13836,6 +13912,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1501277694}
   m_CullTransparentMesh: 0
+--- !u!114 &1501277699
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1501277694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7c25580cabae514f8c1dcbb73b875b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ReferencedButton: {fileID: 1501277696}
+  GameManager: {fileID: 783291823}
 --- !u!1 &1509187148
 GameObject:
   m_ObjectHideFlags: 0
@@ -15899,8 +15989,9 @@ GameObject:
   - component: {fileID: 1703477666}
   - component: {fileID: 1703477665}
   - component: {fileID: 1703477664}
+  - component: {fileID: 1703477667}
   m_Layer: 5
-  m_Name: SitOutPlayerWButton
+  m_Name: WSitOutPlayerButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16006,6 +16097,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1703477662}
   m_CullTransparentMesh: 0
+--- !u!114 &1703477667
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1703477662}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7c25580cabae514f8c1dcbb73b875b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ReferencedButton: {fileID: 1703477664}
+  GameManager: {fileID: 783291823}
 --- !u!1 &1708815632
 GameObject:
   m_ObjectHideFlags: 0

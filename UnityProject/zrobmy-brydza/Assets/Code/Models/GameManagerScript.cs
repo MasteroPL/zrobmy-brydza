@@ -71,6 +71,18 @@ public class GameManagerScript : MonoBehaviour
         {
             label.GetComponent<Text>().text = PlayerNickname;
             SeatStates[Position] = false;
+            // TODO assign player position in user data container
+        }
+    }
+
+    public void SitOutPlayer(char Position)
+    {
+        GameObject label = GameObject.Find(Position + "PlayerLabel");
+        if (label != null)
+        {
+            label.GetComponent<Text>().text = "Oczekiwanie na gracza " + Position;
+            SeatStates[Position] = true;
+            // TODO assign player position in user data container
         }
     }
 
