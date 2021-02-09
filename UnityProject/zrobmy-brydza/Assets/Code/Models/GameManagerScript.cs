@@ -51,7 +51,6 @@ public class GameManagerScript : MonoBehaviour
         GameObject.Find("TakeEverythingButton").GetComponent<Button>().onClick.AddListener(() => { TakeEverythingHandler(); });
         GameObject.Find("TakeNothingButton").GetComponent<Button>().onClick.AddListener(() => { TakeNothingHandler(); });
         GameObject.Find("PauseRequestButton").GetComponent<Button>().onClick.AddListener(() => { PauseRequestHandler(); });
-        GameObject.Find("TauntButton").GetComponent<Button>().onClick.AddListener(() => { TauntHandler(); });
         GameObject.Find("QuitButton").GetComponent<Button>().onClick.AddListener(() => { QuitHandler(); });
     }
 
@@ -119,11 +118,6 @@ public class GameManagerScript : MonoBehaviour
         {
             GameObject.Find("PauseRequestButton").GetComponent<Button>().image.color = new Color32(255, 255, 255, 255);
         }
-    }
-
-    private void TauntHandler()
-    {
-        Debug.Log("Taunting...");
     }
 
     private void QuitHandler()
