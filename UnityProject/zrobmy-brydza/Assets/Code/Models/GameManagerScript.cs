@@ -37,6 +37,9 @@ public class GameManagerScript : MonoBehaviour
     private int ButtonPanelCanvasState = -1;
     private bool RequestingForPause = false;
 
+    // seat states mock TODO
+    public Dictionary<char, bool> SeatStates;
+
     void Start()
     {
         GameObject.Find("TeamTakenHandsCounterLabel").GetComponent<Text>().text = "";
@@ -52,6 +55,28 @@ public class GameManagerScript : MonoBehaviour
         GameObject.Find("TakeNothingButton").GetComponent<Button>().onClick.AddListener(() => { TakeNothingHandler(); });
         GameObject.Find("PauseRequestButton").GetComponent<Button>().onClick.AddListener(() => { PauseRequestHandler(); });
         GameObject.Find("QuitButton").GetComponent<Button>().onClick.AddListener(() => { QuitHandler(); });
+
+        SeatStates = new Dictionary<char, bool>();
+        // set all 4 seats as free (true)
+        SeatStates.Add('N', true);
+        SeatStates.Add('E', true);
+        SeatStates.Add('S', true);
+        SeatStates.Add('W', true);
+    }
+
+    public void SitPlayer(char Position, string PlayerNickname)
+    {
+        GameObject label = GameObject.Find(Position + "PlayerLabel");
+        if (label != null)
+        {
+            label.GetComponent<Text>().text = PlayerNickname;
+            SeatStates[Position] = false;
+        }
+    }
+
+    public bool CheckSeatAvailability(char Position)
+    {
+        return SeatStates[Position];
     }
 
     void OnDestroy()

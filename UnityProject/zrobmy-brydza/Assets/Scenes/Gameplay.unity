@@ -2973,6 +2973,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReferencedButton: {fileID: 0}
+  GameManager: {fileID: 0}
 --- !u!4 &242716396
 Transform:
   m_ObjectHideFlags: 0
@@ -5965,6 +5966,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReferencedButton: {fileID: 644452936}
+  GameManager: {fileID: 783291823}
 --- !u!1001 &647394011
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10771,6 +10773,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReferencedButton: {fileID: 1112591905}
+  GameManager: {fileID: 783291823}
 --- !u!1 &1114638558
 GameObject:
   m_ObjectHideFlags: 0
@@ -11056,6 +11059,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReferencedButton: {fileID: 1126440459}
+  GameManager: {fileID: 783291823}
 --- !u!1 &1135079661
 GameObject:
   m_ObjectHideFlags: 0
@@ -18582,6 +18586,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReferencedButton: {fileID: 1903645909}
+  GameManager: {fileID: 783291823}
 --- !u!1 &1923796003
 GameObject:
   m_ObjectHideFlags: 0
