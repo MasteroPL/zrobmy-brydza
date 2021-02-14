@@ -256,7 +256,7 @@ public class GameManagerScript : MonoBehaviour
 
         GameObject auctionObject = GameObject.Find("/Canvas/TableCanvas/AuctionDialog");
         auctionObject.SetActive(true);
-        GameObject startButtonObject = GameObject.Find("/Canvas/StartButton");
+        GameObject startButtonObject = GameObject.Find("StartButton");
         if (startButtonObject != null)
         {
             startButtonObject.SetActive(false);
@@ -380,7 +380,7 @@ public class GameManagerScript : MonoBehaviour
             {
                 float[] tmp = new float[3];
                 tmp[0] = myCardsX[i];
-                tmp[1] = -3.28f;
+                tmp[1] = -2.58f; // previous y value: -3.28f;
                 tmp[2] = -i;
                 coordinates.Add(tmp);
             }
@@ -390,8 +390,8 @@ public class GameManagerScript : MonoBehaviour
             for (int i = 0; i < 13; i++)
             {
                 float[] tmp = new float[3];
-                tmp[0] = -4.61f;
-                tmp[1] = opCardsY[i];
+                tmp[0] = -4.37f; // previous x value: -4.61f;
+                tmp[1] = opCardsY[i] + 0.2f;
                 tmp[2] = -i;
                 coordinates.Add(tmp);
             }
@@ -402,7 +402,7 @@ public class GameManagerScript : MonoBehaviour
             {
                 float[] tmp = new float[3];
                 tmp[0] = myCardsX[i];
-                tmp[1] = 3.07f;
+                tmp[1] = 2.78f; // previous y value: 3.07f;
                 tmp[2] = -i;
                 coordinates.Add(tmp);
             }
@@ -412,8 +412,8 @@ public class GameManagerScript : MonoBehaviour
             for (int i = 0; i < 13; i++)
             {
                 float[] tmp = new float[3];
-                tmp[0] = 4.61f;
-                tmp[1] = opCardsY[i];
+                tmp[0] = 4.37f; // previous x value: 4.61f;
+                tmp[1] = opCardsY[i] + 0.2f;
                 tmp[2] = -i;
                 coordinates.Add(tmp);
             }
@@ -595,7 +595,7 @@ public class GameManagerScript : MonoBehaviour
                 }
 
                 GameObject cardToPut = GameObject.Find(cardName);
-                cardToPut.transform.position = new Vector3(newPos[0], newPos[1]);
+                cardToPut.transform.localPosition = new Vector3(newPos[0], newPos[1]);
 
                 if (Game.Match.CurrentGame.TrickList.Count == 0 && Game.Match.CurrentGame.currentTrick.CardList.Count == 1 && !Game.DevMode)
                 {
@@ -671,20 +671,20 @@ public class GameManagerScript : MonoBehaviour
         switch (Position)
         {
             case 'U':
-                returned[0] = -3.02f;
-                returned[1] = 1.87f;
+                returned[0] = 0f;
+                returned[1] = 1.25f;
                 break;
             case 'D':
-                returned[0] = -3.02f;
-                returned[1] = -1.03f;
+                returned[0] = 0f;
+                returned[1] = -1.15f;
                 break;
             case 'L':
-                returned[0] = -4.19f;
-                returned[1] = 0.41f;
+                returned[0] = -1.0f;
+                returned[1] = 0f;
                 break;
             case 'R':
-                returned[0] = -1.8f;
-                returned[1] = 0.41f;
+                returned[0] = 1.0f;
+                returned[1] = 0f;
                 break;
         }
         return returned;
