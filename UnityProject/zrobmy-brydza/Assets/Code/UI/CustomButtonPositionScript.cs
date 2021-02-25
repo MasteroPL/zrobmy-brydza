@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using GameManagerLib.Models;
 
 namespace Assets.Code.UI
 {
@@ -8,11 +9,13 @@ namespace Assets.Code.UI
     {
         [SerializeField] Button ReferencedButton;
         [SerializeField] GameManagerScript GameManager;
+        [SerializeField] SeatsManagerScript SeatManager;
 
         public void OnPointerEnter(PointerEventData data)
         {
-            bool available = GameManager.CheckSeatAvailability(ReferencedButton.gameObject.name[0]);
-            if (available)
+            PlayerTag buttonID = CastCharForPlayerTag(ReferencedButton.gameObject.name[0]);
+            bool available = SeatManager.CheckSeatAvailability(buttonID);
+            if (available && !GameManager.UserData.Sitting)
             {
                 ReferencedButton.image.color = new Color32(255, 221, 0, 255);
             }
@@ -25,10 +28,28 @@ namespace Assets.Code.UI
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            bool available = GameManager.CheckSeatAvailability(ReferencedButton.gameObject.name[0]);
-            if (available)
+            PlayerTag buttonID = CastCharForPlayerTag(ReferencedButton.gameObject.name[0]);
+            bool available = SeatManager.CheckSeatAvailability(buttonID);
+            if (available && !GameManager.UserData.Sitting)
             {
-                GameManager.SitPlayer(ReferencedButton.gameObject.name[0], "nickname");
+                SeatManager.SitPlayer(buttonID, "nickname");
+            }
+        }
+
+        private PlayerTag CastCharForPlayerTag(char Char)
+        {
+            switch (Char)
+            {
+                case 'N':
+                    return PlayerTag.N;
+                case 'E':
+                    return PlayerTag.E;
+                case 'S':
+                    return PlayerTag.S;
+                case 'W':
+                    return PlayerTag.W;
+                default:
+                    return PlayerTag.NOBODY;
             }
         }
     }
