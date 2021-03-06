@@ -1,0 +1,55 @@
+
+.csharpdocs-class-node {
+    
+}
+
+.csharpdocs-class-definition-node {
+    position: relative;
+
+    background-color: rgba(78,192,233,0.2);
+    border-top: solid 3px rgba(78,192,233,0.4);
+    padding: 5px;
+    padding-top: 14px;
+
+    display: inline-block;
+}
+
+.csharpdocs-class-definition-namespace {
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 12px;
+    margin-top: 0;
+    margin-bottom: 0;
+    color: rgba(255,255,255,0.5);
+}
+
+.csharpdocs-class-definition-class {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.csharpdocs-class-definition-access{
+    color: #70A5FF;
+}
+
+.csharpdocs-class-definition-class-text{
+    color: #70A5FF;
+    
+}
+
+.csharpdocs-class-definition-classname {
+    color: #66FFB2;
+}
+
+.csharpdocs-class-definition-base-class{
+    color: #66FFB2;
+}
+.csharpdocs-class-definition-node .csharpdocs-class-definition-base-class-full-namespace{
+    display: none;
+}
+.csharpdocs-class-definition-node:hover .csharpdocs-class-definition-base-class-full-namespace{
+    display: inline;
+}
