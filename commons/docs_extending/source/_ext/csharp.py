@@ -314,13 +314,40 @@ class ClassDirective(Directive):
     final_argument_whitespace = True
     option_spec = {
         "access": directives.unchanged,
-        "namespace": directives.unchanged,
-        "baseclassname": directives.unchanged,
-        "baseclassnamespace": directives.unchanged,
+        "baseclass": directives.unchanged,
     }
 
     has_content = True
     add_index = True
+
+    def _append_type(self, parent_node, xtype:CSharpType):
+        if xtype.namespace is not None:
+            parent_node += nodes.inline(text=xtype.namespace + ".", classes=["csharpdocs-type-hidden"])
+        parent_node += nodes.inline(text=xtype.name, classes=["csharpdocs-type"])
+
+        if xtype.generics is not None:
+            if len(xtype.generics) > 0:
+                parent_node += nodes.inline(text="<", classes=["csharpdocs-generic-symbol"])
+
+                first = True
+                for generic in xtype.generics:
+                    if not first:
+                        parent_node += nodes.inline(text=",", classes=["csharpdocs-separator"])
+
+                    self._append_type(parent_node, generic)
+                    first = False
+
+                parent_node += nodes.inline(text=">", classes=["csharpdocs-generic-symbol"])
+
+    def _append_name(self, parent_node, name:str, default:str=None, classes=None):
+        if classes is None:
+            classes=["csharpdocs-name"]
+        parent_node += nodes.inline(text=name, classes=classes)
+
+        if default is not None:
+            parent_node += nodes.inline(text="=", classes=["csharpdocs-default-value-sign"])
+            parent_node += nodes.inline(text=default, classes=["csharpdocs-default-value"])
+
 
     def run(self):
         sett = self.state.document.settings
@@ -330,15 +357,21 @@ class ClassDirective(Directive):
 
         options = self.options
 
-        namespace = options["namespace"]
-
-        idb = nodes.make_id("csharpdocs-class-" + namespace + "-" + self.name)
+        idb = nodes.make_id("csharpdocs-class-" + self.content[0].replace(" ", "_"))
         node = csharpdocs_class_node(ids=[idb], classes=["csharpdocs-class-node"])
 
         def_node = csharpdocs_class_definition_node(classes=["csharpdocs-class-definition-node"])
 
-        if namespace != "":
-            def_node += nodes.paragraph(text=namespace, classes=["csharpdocs-class-definition-namespace"])
+        reader = DefinitionReader(self.content[0])
+        class_type = reader.read_next_type()
+        if options.__contains__("baseclass"):
+            reader = DefinitionReader(options["baseclass"])
+            baseclass_type = reader.read_next_type()
+        else:
+            baseclass_type = None
+
+        if class_type.namespace is not None:
+            def_node += nodes.paragraph(text=class_type.namespace, classes=["csharpdocs-class-definition-namespace"])
 
         # Class node
         class_node = nodes.paragraph(classes=["csharpdocs-class-definition-class"])
@@ -348,29 +381,18 @@ class ClassDirective(Directive):
             class_node += nodes.inline(text=access + " ", classes=["csharpdocs-class-definition-access"])
 
         class_node += nodes.inline(text="class ", classes=["csharpdocs-class-definition-class-text"])
-        class_node += nodes.inline(text=self.content[0], classes=["csharpdocs-class-definition-classname"])
+        
+        class_type_node = nodes.inline(classes=["csharpdocs-class-definition-class-type-node"])
+        self._append_type(class_type_node, class_type)
+        class_node += class_type_node
 
         # Base class node
-        base_class = options["baseclassname"]
-        base_class_namespace = options["baseclassnamespace"]
-        if base_class != "" and base_class != None:
+        if baseclass_type != None:
             class_node += nodes.inline(
                 text=" : ",
             )
 
-            base_class_node = nodes.inline(classes=["csharpdocs-class-definition-base-class"])
-
-            if base_class_namespace != "" and base_class_namespace is not None:
-                base_class_node += nodes.inline(
-                    text=base_class_namespace + ".",
-                    classes=["csharpdocs-class-definition-base-class-full-namespace"]
-                )
-                base_class_node += nodes.inline(
-                    text=base_class,
-                    classes=["csharpdocs-class-definition-base-class-short-name"]
-                )
-
-            class_node += base_class_node
+            self._append_type(class_node, baseclass_type)
 
         def_node += class_node
 

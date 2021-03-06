@@ -96,16 +96,27 @@
 .csharpdocs-type{
     color: #66FFB2;
 }
+.csharpdocs-class-definition-class-type-node > .csharpdocs-type{
+    color: #daff74;
+}
+.csharpdocs-class-definition-class-type-node > .csharpdocs-type:nth-child(2){
+    color: #66FFB2;
+}
 
 .csharpdocs-method-name {
     color: #daff74;
 }
 
-.csharpdocs-method-definition-method .csharpdocs-type-hidden, .csharpdocs-type-node .csharpdocs-type-hidden, .csharpdocs-property-definition-node .csharpdocs-type-hidden {
+.csharpdocs-method-definition-method .csharpdocs-type-hidden, .csharpdocs-type-node .csharpdocs-type-hidden, .csharpdocs-property-definition-node .csharpdocs-type-hidden,
+.csharpdocs-class-definition-node .csharpdocs-type-hidden {
     display: none;
 }
-.csharpdocs-method-definition-method:hover .csharpdocs-type-hidden, .csharpdocs-type-node:hover .csharpdocs-type-hidden, .csharpdocs-property-definition-node:hover .csharpdocs-type-hidden {
+.csharpdocs-method-definition-method:hover .csharpdocs-type-hidden, .csharpdocs-type-node:hover .csharpdocs-type-hidden, .csharpdocs-property-definition-node:hover .csharpdocs-type-hidden, .csharpdocs-class-definition-node:hover .csharpdocs-type-hidden {
     display: inline;
+}
+
+.csharpdocs-class-definition-node:hover .csharpdocs-class-definition-class-type-node .csharpdocs-type-hidden{
+    display: none;
 }
 
 .csharpdocs-method-description{

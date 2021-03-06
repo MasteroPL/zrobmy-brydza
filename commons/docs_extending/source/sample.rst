@@ -20,12 +20,10 @@ Some more text here...
 FUUUUU
 
 
-.. csharpdocsclass:: SampleClassName
+.. csharpdocsclass:: sample.namespace.SampleClassName<T1,T2>
     :access: public
-    :namespace: sample.namespace
-    :baseclassname: BaseClassName
-    :baseclassnamespace: another.namespace.but.it.is.very.very.very.very.very.very.very.very.long
-    
+    :baseclass: another.namespace.BaseClassName<int,string>
+
     Przykladowy opis
 
 
