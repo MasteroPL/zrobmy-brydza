@@ -593,6 +593,89 @@ class ConstructorDirective(MethodDirective):
 
         return [node]
 
+class csharpdocs_property_node(nodes.Structural, nodes.Element):
+    pass
+
+class csharpdocs_property_definition_node(nodes.Structural, nodes.Element):
+    pass
+
+class PropertyDirective(Directive):
+    required_arguments = 0
+    optional_arguments = 0
+    final_argument_whitespace = True
+    option_spec = {
+        "returns": directives.unchanged,
+        "access": directives.unchanged,
+        **dict(zip([('param(' + str(i) + ')') for i in range(1, 20)], [directives.unchanged] * 20)),
+        **dict(zip([('throws(' + str(i) + ')') for i in range(1, 20)], [directives.unchanged] * 20)),
+    }
+
+    has_content = True
+    add_index = True
+
+    def _append_type(self, parent_node, xtype:CSharpType):
+        if xtype.namespace is not None:
+            parent_node += nodes.inline(text=xtype.namespace + ".", classes=["csharpdocs-type-hidden"])
+        parent_node += nodes.inline(text=xtype.name, classes=["csharpdocs-type"])
+
+        if len(xtype.generics) > 0:
+            parent_node += nodes.inline(text="<", classes=["csharpdocs-generic-symbol"])
+
+            first = True
+            for generic in xtype.generics:
+                if not first:
+                    parent_node += nodes.inline(text=",", classes=["csharpdocs-separator"])
+
+                self._append_type(parent_node, generic)
+                first = False
+
+            parent_node += nodes.inline(text=">", classes=["csharpdocs-generic-symbol"])
+
+    def _append_name(self, parent_node, name:str, default:str=None, classes=None):
+        if classes is None:
+            classes=["csharpdocs-name"]
+        parent_node += nodes.inline(text=name, classes=classes)
+
+        if default is not None:
+            parent_node += nodes.inline(text="=", classes=["csharpdocs-default-value-sign"])
+            parent_node += nodes.inline(text=default, classes=["csharpdocs-default-value"])
+
+    def run(self):
+        sett = self.state.document.settings
+        language_code = sett.language_code
+        env = self.state.document.settings.env
+        config = env.config
+
+        options = self.options
+
+        idb = nodes.make_id("csharpdocs-class-" + self.content[0].replace(" ", "_"))
+        node = csharpdocs_class_node(ids=[idb], classes=["csharpdocs-class-node"])
+
+        node = csharpdocs_method_node(ids=[idb], classes=["csharpdocs-property-node"])
+
+        def_node = csharpdocs_property_definition_node(classes=["csharpdocs-property-definition-node"])
+
+        property_node = nodes.paragraph(classes=["csharpdocs-property-definition-property"])
+
+        if options["access"] != "":
+            property_node += nodes.inline(text=options["access"] + " ", classes=["csharpdocs-property-definition-access"])
+
+        reader = DefinitionReader(self.content[0])
+        xtype = reader.read_next_type()
+        name = reader.read_next_name()
+
+        self._append_type(property_node, xtype)
+        property_node += nodes.inline(text=" ")
+        self._append_name(property_node, name)
+
+        def_node += property_node
+        node += def_node
+
+        node += nodes.paragraph(text="\n".join(self.content[1:]), classes=["csharpdocs-property-description"])
+
+        return [node]
+
+
 
 def setup(app):
     # Class
@@ -628,8 +711,23 @@ def setup(app):
         )
     )
     app.add_directive("csharpdocsmethod", MethodDirective)
-
     app.add_directive("csharpdocsconstructor", ConstructorDirective)
+
+    app.add_node(
+        csharpdocs_property_node,
+        html=(
+            visit_csharpdocs_generic,
+            depart_csharpdocs_generic
+        )
+    )
+    app.add_node(
+        csharpdocs_property_definition_node,
+        html=(
+            visit_csharpdocs_generic,
+            depart_csharpdocs_generic
+        )
+    )
+    app.add_directive("csharpdocsproperty", PropertyDirective)
 
     return {
         "version": "0.1",

@@ -68,8 +68,8 @@
 .csharpdocs-method-definition-node {
     position: relative;
 
-    background-color: rgba(184, 235, 253, 0.1);
-    border-top: solid 3px rgba(184, 235, 253,0.3);
+    background-color: rgba(244, 252, 207, 0.1);
+    border-top: solid 3px rgba(244, 252, 207,0.3);
     padding: 5px;
 
     display: inline-block;
@@ -101,10 +101,10 @@
     color: #daff74;
 }
 
-.csharpdocs-method-definition-method .csharpdocs-type-hidden, .csharpdocs-type-node .csharpdocs-type-hidden {
+.csharpdocs-method-definition-method .csharpdocs-type-hidden, .csharpdocs-type-node .csharpdocs-type-hidden, .csharpdocs-property-definition-node .csharpdocs-type-hidden {
     display: none;
 }
-.csharpdocs-method-definition-method:hover .csharpdocs-type-hidden, .csharpdocs-type-node:hover .csharpdocs-type-hidden {
+.csharpdocs-method-definition-method:hover .csharpdocs-type-hidden, .csharpdocs-type-node:hover .csharpdocs-type-hidden, .csharpdocs-property-definition-node:hover .csharpdocs-type-hidden {
     display: inline;
 }
 
@@ -172,4 +172,38 @@
 }
 .csharpdocs-method-node {
     margin-bottom: 20px;
+}
+
+
+/*
+    PROPERTY
+*/
+.csharpdocs-property-node {
+    margin-bottom: 20px;
+}
+
+.csharpdocs-property-definition-node {
+    position: relative;
+
+    background-color: rgba(184, 235, 253, 0.1);
+    border-top: solid 3px rgba(184, 235, 253,0.3);
+    padding: 5px;
+
+    display: inline-block;
+}
+
+.csharpdocs-property-definition-property {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 14px;
+}
+
+.csharpdocs-property-definition-access {
+    color: #70A5FF;   
+}
+
+.csharpdocs-property-description {
+    margin-bottom: 10px;
+    margin-top: 10px;
+    padding-left: 10px;
 }

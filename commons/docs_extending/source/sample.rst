@@ -47,3 +47,9 @@ FUUUUU
     :throws(2): {OtherException} Inny wyjątek co się rzuca
     
     Wykonuje pojedynczą akcję
+
+.. csharpdocsproperty:: namespace.some.JObject Property1
+    :access: public event
+	
+	Jakiś opis tej właściwości
+
