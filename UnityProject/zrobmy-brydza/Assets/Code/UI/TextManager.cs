@@ -74,13 +74,29 @@ public class TextManager : MonoBehaviour
 
         for (int i = 0; i < TeamNSPointsHistory.Count; i++)
         {
-            NSTmp = TeamNSPointsHistory[i].Split(separators);
-            EWTmp = TeamEWPointsHistory[i].Split(separators);
+            if (TeamNSPointsHistory[i] == "Round" || TeamEWPointsHistory[i] == "Round")
+            {
+                if (EWUnderPoints[EWUnderPoints.Count - 1] != "0") // NS team got the round
+                {
+                    NSUnderPoints[NSUnderPoints.Count - 1] = "\n";
+                }
+                else
+                {
+                    EWUnderPoints[EWUnderPoints.Count - 1] = "\n";
+                }
+                EWUnderPoints.Add("Round");
+                NSUnderPoints.Add("Round");
+            }
+            else
+            {
+                NSTmp = TeamNSPointsHistory[i].Split(separators);
+                EWTmp = TeamEWPointsHistory[i].Split(separators);
 
-            EWAbovePoints.Add(EWTmp[0]);
-            NSAbovePoints.Add(NSTmp[0]);
-            EWUnderPoints.Add(EWTmp[1]);
-            NSUnderPoints.Add(NSTmp[1]);
+                EWAbovePoints.Add(EWTmp[0]);
+                NSAbovePoints.Add(NSTmp[0]);
+                EWUnderPoints.Add(EWTmp[1]);
+                NSUnderPoints.Add(NSTmp[1]);
+            }
         }
 
         string NSAbovePrefix = "";
@@ -98,9 +114,13 @@ public class TextManager : MonoBehaviour
         NSText += "____________\n";
         foreach (string UnderPoints in NSUnderPoints)
         {
-            if (UnderPoints != "0")
+            if (UnderPoints != "0" && UnderPoints != "Round")
             {
                 NSText += UnderPoints + "\n";
+            } 
+            else if (UnderPoints == "Round")
+            {
+                NSText += "____________\n";
             }
         }
 
@@ -119,9 +139,13 @@ public class TextManager : MonoBehaviour
         EWText += "____________\n";
         foreach (string UnderPoints in EWUnderPoints)
         {
-            if (UnderPoints != "0")
+            if (UnderPoints != "0" && UnderPoints != "Round")
             {
                 EWText += UnderPoints + "\n";
+            }
+            else if (UnderPoints == "Round")
+            {
+                EWText += "____________\n";
             }
         }
 
@@ -140,6 +164,7 @@ public class TextManager : MonoBehaviour
                 FinalEWPrefixLines += "\n";
             }
         }
+
         string[] RenderedStrings = { FinalNSPrefixLines + NSText, FinalEWPrefixLines + EWText };
         return RenderedStrings;
     }

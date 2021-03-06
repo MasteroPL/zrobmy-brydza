@@ -6,6 +6,7 @@ using UnityEngine.Events;
 using Assets.Code.Models;
 using Assets.Code.UI;
 using GameManagerLib.Models;
+using Assets.Code.Utils;
 
 public class GameManagerScript : MonoBehaviour
 {
@@ -22,6 +23,8 @@ public class GameManagerScript : MonoBehaviour
      */
     [SerializeField] GameObject hiddenCard;
     [SerializeField] AuctionModule AuctionModule;
+    public UserData UserData;
+    [SerializeField] public SeatsManagerScript SeatManager;
 
     public Game Game;
     private List<GameObject> HiddenCardsOfPlayerN;
@@ -37,11 +40,12 @@ public class GameManagerScript : MonoBehaviour
     private int ButtonPanelCanvasState = -1;
     private bool RequestingForPause = false;
 
-    // seat states mock TODO
-    public Dictionary<char, bool> SeatStates;
-
     void Start()
     {
+        if (UserData == null)
+        {
+            UserData = new UserData();
+        }
         GameObject.Find("TeamTakenHandsCounterLabel").GetComponent<Text>().text = "";
         GameObject.Find("DeclaredContractLabel").GetComponent<Text>().text = "";
 
@@ -56,39 +60,34 @@ public class GameManagerScript : MonoBehaviour
         GameObject.Find("PauseRequestButton").GetComponent<Button>().onClick.AddListener(() => { PauseRequestHandler(); });
         GameObject.Find("QuitButton").GetComponent<Button>().onClick.AddListener(() => { QuitHandler(); });
 
-        SeatStates = new Dictionary<char, bool>();
-        // set all 4 seats as free (true)
-        SeatStates.Add('N', true);
-        SeatStates.Add('E', true);
-        SeatStates.Add('S', true);
-        SeatStates.Add('W', true);
-    }
-
-    public void SitPlayer(char Position, string PlayerNickname)
-    {
-        GameObject label = GameObject.Find(Position + "PlayerLabel");
-        if (label != null)
+        // at the beginning wait till all player will have a seat
+        GameObject startButtonObject = GameObject.Find("/Canvas/TableCanvas/StartButton");
+        if (startButtonObject != null)
         {
-            label.GetComponent<Text>().text = PlayerNickname;
-            SeatStates[Position] = false;
-            // TODO assign player position in user data container
+            startButtonObject.SetActive(false);
         }
+
+        SeatManager.SitPlayer(PlayerTag.N, "NCustomPlayer");
+        SeatManager.SitPlayer(PlayerTag.W, "WCustomPlayer");
+        SeatManager.SitPlayer(PlayerTag.S, "SCustomPlayer");
     }
 
-    public void SitOutPlayer(char Position)
+    public void ShowHideStartGameButton(bool AllPlayersPresent)
     {
-        GameObject label = GameObject.Find(Position + "PlayerLabel");
-        if (label != null)
+        GameObject startButtonObject = GameObject.Find("/Canvas/TableCanvas/StartButton");
+        if (AllPlayersPresent)
         {
-            label.GetComponent<Text>().text = "Oczekiwanie na gracza " + Position;
-            SeatStates[Position] = true;
-            // TODO assign player position in user data container
+            if (startButtonObject != null)
+            {
+                startButtonObject.SetActive(true);
+            }
+        } else
+        {
+            if (startButtonObject != null)
+            {
+                startButtonObject.SetActive(false);
+            }
         }
-    }
-
-    public bool CheckSeatAvailability(char Position)
-    {
-        return SeatStates[Position];
     }
 
     void OnDestroy()
@@ -203,17 +202,17 @@ public class GameManagerScript : MonoBehaviour
 
     public void UpdateTableCenter(Game Game)
     {
-        GameObject.Find("Player3IndicatorText").GetComponent<Text>().text = Game.UserData.position.ToString();
-        GameObject.Find("Player4IndicatorText").GetComponent<Text>().text = ((PlayerTag)(((int)Game.UserData.position + 1) % 4)).ToString();
-        GameObject.Find("Player1IndicatorText").GetComponent<Text>().text = ((PlayerTag)(((int)Game.UserData.position + 2) % 4)).ToString();
-        GameObject.Find("Player2IndicatorText").GetComponent<Text>().text = ((PlayerTag)(((int)Game.UserData.position + 3) % 4)).ToString();
+        GameObject.Find("Player3IndicatorText").GetComponent<Text>().text = UserData.position.ToString();
+        GameObject.Find("Player4IndicatorText").GetComponent<Text>().text = ((PlayerTag)(((int)UserData.position + 1) % 4)).ToString();
+        GameObject.Find("Player1IndicatorText").GetComponent<Text>().text = ((PlayerTag)(((int)UserData.position + 2) % 4)).ToString();
+        GameObject.Find("Player2IndicatorText").GetComponent<Text>().text = ((PlayerTag)(((int)UserData.position + 3) % 4)).ToString();
     }
 
     // this method is implemented in case concrete user switches his place - currently not used
     public void UpdateTable(Game Game, GameManagerLib.Models.Card[] PlayerHand)
     {
         UpdateTableCenter(Game);
-        switch (Game.UserData.position)
+        switch (UserData.position)
         {
             case PlayerTag.N:
                 GiveCardsToPlayer(PlayerTag.N, PlayerHand);
@@ -228,7 +227,7 @@ public class GameManagerScript : MonoBehaviour
                 GiveCardsToPlayer(PlayerTag.W, PlayerHand);
                 break;
         }
-        GiveHiddenCardsToPlayers(Game.UserData.position);
+        GiveHiddenCardsToPlayers(UserData.position);
     }
 
     public void StartGame(Game Game, GameManagerLib.Models.Card[] PlayerHand)
@@ -240,7 +239,7 @@ public class GameManagerScript : MonoBehaviour
         HiddenCardsOfPlayerW = new List<GameObject>();
 
         // for dev mode
-        if (Game.DevMode)
+        if (GameConfig.DevMode)
         {
             GiveCardsToPlayer(PlayerTag.N, Game.Match.PlayerList[0].Hand);
             GiveCardsToPlayer(PlayerTag.S, Game.Match.PlayerList[2].Hand);
@@ -252,7 +251,7 @@ public class GameManagerScript : MonoBehaviour
         }
 
         PlayerTag StartingPlayer = Game.Match.CurrentBidding.CurrentPlayer;
-        AuctionModule.InitAuctionModule(Game, Game.UserData, StartingPlayer);
+        AuctionModule.InitAuctionModule(Game, UserData, StartingPlayer);
 
         GameObject auctionObject = GameObject.Find("/Canvas/TableCanvas/AuctionDialog");
         auctionObject.SetActive(true);
@@ -267,9 +266,9 @@ public class GameManagerScript : MonoBehaviour
     public void RestartGame()
     {
         Game.Match.GameState = GameState.BIDDING;
-        if (Game.DevMode)
+        if (GameConfig.DevMode)
         {
-            Game.UserData.position = Game.UserData.positionStart;
+            UserData.position = UserData.positionStart;
         }
 
         GameObject.Find("TeamTakenHandsCounterLabelBackground").GetComponent<Image>().color = new Color32(219, 31, 35, 0);
@@ -374,7 +373,7 @@ public class GameManagerScript : MonoBehaviour
         float[] opCardsY = { 1.72f, 1.4334f, 1.1468f, 0.86f, 0.5736f, 0.287f, 0.0f, -0.2862f, -0.5728f, -0.8594f, -1.146f, -1.43f, -1.72f };
 
         List<float[]> coordinates = new List<float[]>();
-        if ((int)Position == (int)Game.UserData.position) // down
+        if ((int)Position == (int)UserData.position) // down
         {
             for(int i = 0; i < 13; i++)
             {
@@ -385,7 +384,7 @@ public class GameManagerScript : MonoBehaviour
                 coordinates.Add(tmp);
             }
         }
-        else if ((int)Position == (((int)Game.UserData.position + 1) % 4)) // left
+        else if ((int)Position == (((int)UserData.position + 1) % 4)) // left
         {
             for (int i = 0; i < 13; i++)
             {
@@ -396,7 +395,7 @@ public class GameManagerScript : MonoBehaviour
                 coordinates.Add(tmp);
             }
         }
-        else if ((int)Position == (((int)Game.UserData.position + 2) % 4)) // up
+        else if ((int)Position == (((int)UserData.position + 2) % 4)) // up
         {
             for (int i = 0; i < 13; i++)
             {
@@ -407,7 +406,7 @@ public class GameManagerScript : MonoBehaviour
                 coordinates.Add(tmp);
             }
         }
-        else if ((int)Position == (((int)Game.UserData.position + 3) % 4)) // right
+        else if ((int)Position == (((int)UserData.position + 3) % 4)) // right
         {
             for (int i = 0; i < 13; i++)
             {
@@ -577,19 +576,19 @@ public class GameManagerScript : MonoBehaviour
 
                 float[] newPos = new float[2];
                 // WARNING! For production 'positionStart' should be replaced with 'position' 
-                if (card.PlayerID == Game.UserData.positionStart)
+                if (card.PlayerID == UserData.positionStart)
                 {
                     newPos = CalculatePutCardPosition('D');
                 } 
-                else if(card.PlayerID == (PlayerTag)(( (int)Game.UserData.positionStart + 1) % 4 ))
+                else if(card.PlayerID == (PlayerTag)(( (int)UserData.positionStart + 1) % 4 ))
                 {
                     newPos = CalculatePutCardPosition('L');
                 }
-                else if (card.PlayerID == (PlayerTag)(((int)Game.UserData.positionStart + 2) % 4))
+                else if (card.PlayerID == (PlayerTag)(((int)UserData.positionStart + 2) % 4))
                 {
                     newPos = CalculatePutCardPosition('U');
                 }
-                else if (card.PlayerID == (PlayerTag)(((int)Game.UserData.positionStart + 3) % 4))
+                else if (card.PlayerID == (PlayerTag)(((int)UserData.positionStart + 3) % 4))
                 {
                     newPos = CalculatePutCardPosition('R');
                 }
@@ -597,13 +596,13 @@ public class GameManagerScript : MonoBehaviour
                 GameObject cardToPut = GameObject.Find(cardName);
                 cardToPut.transform.localPosition = new Vector3(newPos[0], newPos[1]);
 
-                if (Game.Match.CurrentGame.TrickList.Count == 0 && Game.Match.CurrentGame.currentTrick.CardList.Count == 1 && !Game.DevMode)
+                if (Game.Match.CurrentGame.TrickList.Count == 0 && Game.Match.CurrentGame.currentTrick.CardList.Count == 1 && !GameConfig.DevMode)
                 {
                     Game.ShowGrandCards();
                 }
-                if (Game.DevMode)
+                if (GameConfig.DevMode)
                 {
-                    Game.UserData.position = (PlayerTag)(((int)Game.UserData.position + 1) % 4); // for dev mode
+                    UserData.position = (PlayerTag)(((int)UserData.position + 1) % 4); // for dev mode
                 }
 
                 if (Game.IsTrickComplete())
@@ -634,9 +633,9 @@ public class GameManagerScript : MonoBehaviour
                         PaintContractLabel(EWTaken, NSTaken);
                     }
 
-                    if (Game.DevMode)
+                    if (GameConfig.DevMode)
                     {
-                        Game.UserData.position = lastTrick.Winner; // for dev mode
+                        UserData.position = lastTrick.Winner; // for dev mode
                     }
 
                     if (Game.Match.CurrentGame.IsEnd())

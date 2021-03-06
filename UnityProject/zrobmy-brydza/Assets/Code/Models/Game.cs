@@ -14,20 +14,28 @@ namespace Assets.Code.Models
         public GameManagerScript GameManagerScript;
         public GameState GameState;
         public Match Match;
-        public UserData UserData;
-        public bool DevMode = true; // change for 'true' in case you are dev
 
         public Game(GameManagerScript GameManagerScript)
         {
             this.GameManagerScript = GameManagerScript;
             GameState = GameState.AWAITING_PLAYERS;
             Match = new Match();
-            UserData = new UserData();
             this.GameManagerScript.UpdateTableCenter(this);
+            //this.GameManagerScript.UseSharedPlayerData(UserData);
         }
+
+        /*public Game(UserData Data)
+        {
+            this.UserData = Data;
+        }*/
 
         public void StartGame()
         {
+            if (!GameManagerScript.SeatManager.AllFourPlayersPresent())
+            {
+                return; // if there aren't 4 players to player the game cannot be started
+            }
+
             Match.AddPlayer(new Player(PlayerTag.N, "gracz1"));
             Match.AddPlayer(new Player(PlayerTag.E, "gracz2"));
             Match.AddPlayer(new Player(PlayerTag.S, "gracz3"));
@@ -38,7 +46,7 @@ namespace Assets.Code.Models
 
             //Match.PlayerList[0].Hand, Match.PlayerList[1].Hand, Match.PlayerList[2].Hand, Match.PlayerList[3].Hand
             GameManagerLib.Models.Card[] MyHand = { };
-            switch (UserData.position)
+            switch (GameManagerScript.UserData.position)
             {
                 case PlayerTag.N:
                     MyHand = Match.PlayerList[0].Hand;
@@ -62,7 +70,7 @@ namespace Assets.Code.Models
 
             //Match.PlayerList[0].Hand, Match.PlayerList[1].Hand, Match.PlayerList[2].Hand, Match.PlayerList[3].Hand
             GameManagerLib.Models.Card[] MyHand = { };
-            switch (UserData.position)
+            switch (GameManagerScript.UserData.position)
             {
                 case PlayerTag.N:
                     MyHand = Match.PlayerList[0].Hand;
@@ -108,7 +116,7 @@ namespace Assets.Code.Models
         public bool PutCard(CardFigure Figure, CardColor Color, PlayerTag owner)
         {
             PlayerTag ownerPartner = (PlayerTag)(((int)owner + 2) % 4);
-            if (UserData.position != owner && UserData.position != ownerPartner)
+            if (GameManagerScript.UserData.position != owner && GameManagerScript.UserData.position != ownerPartner)
             {
                 return false;
             }
