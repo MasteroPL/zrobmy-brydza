@@ -1,6 +1,8 @@
 from source._ext.csharp import DefinitionReader
 
-reader = DefinitionReader("some.namespace.JObject<MyType1<this.one.has.namespace.MyType3>, MyType2>")
-result = reader.read_next_type()
+reader = DefinitionReader("some.namespace.JObject<MyType1, MyType2> PerformActions(some.namespace.ClientConnection conn, another.namespace.JObject actionsData)")
+t = reader.read_next_type()
+n = reader.read_next_name()
+p = reader.read_next_method_params()
 
-print(result.name)
+print("OK")

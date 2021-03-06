@@ -29,14 +29,21 @@ FUUUUU
     Przykladowy opis
 
 
-FFUUU
-
-.. csharpdocsmethod:: some.namespace.JObject<MyType1, MyType2> PerformActions(some.namespace.ClientConnection conn, another.namespace.JObject actionsData)
+.. csharpdocsconstructor:: SimpleClassName(some.namespace.ClientConnection conn, another.namespace.JObject actionsData=None)
     :access: public
-	:param(1): Połączenie użytkownika
-	:param(2): Nazwa akcji
-	:param(3): Dane akcji
-	:returns: Zwraca odpowiedź od akcji
-	:throws(1): Exception|Wyjątek od tak sobie a co
+    :param(1): Połączenie użytkownika
+    :param(2): Nazwa akcji
+    :throws(1): {some.namespace.Exception} Wyjątek od tak sobie a co
+    :throws(2): {OtherException} Inny wyjątek co się rzuca
+    
+    Wykonuje pojedynczą akcję
 
-	Wykonuje pojedynczą akcję
+.. csharpdocsmethod:: some.namespace.JObject<namespace.for.generic.MyType1, MyType2> PerformActions(some.namespace.ClientConnection conn, another.namespace.JObject actionsData=None)
+    :access: public
+    :param(1): Połączenie użytkownika
+    :param(2): Nazwa akcji
+    :returns: Zwraca odpowiedź od akcji
+    :throws(1): {some.namespace.Exception} Wyjątek od tak sobie a co
+    :throws(2): {OtherException} Inny wyjątek co się rzuca
+    
+    Wykonuje pojedynczą akcję
