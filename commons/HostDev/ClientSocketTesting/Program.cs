@@ -19,13 +19,13 @@ namespace ClientSocketTesting
 
 			var clientSocket = new ClientSocket("127.0.0.1");
 
-			var auth = new AuthData();
-			auth.Login = "Maciuś";
-			auth.LobbyId = "DEFAULT";
-			auth.LobbyPassword = "";
-			clientSocket.Send(auth.GetApiObject());
+			var authData = new AuthData() {
+				LobbyId = "DEFAULT",
+				Login = "Macius",
+				LobbyPassword = ""
+			};
 
-			Console.WriteLine("OK");
+			clientSocket.Send(authData.GetApiObject());
 		}
 	}
 

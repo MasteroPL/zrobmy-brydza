@@ -1,0 +1,220 @@
+/*
+ CLASS
+*/
+
+.csharpdocs-class-definition-node {
+    position: relative;
+
+    background-color: rgba(78,192,233,0.2);
+    border-top: solid 3px rgba(78,192,233,0.4);
+    padding: 5px;
+    padding-top: 14px;
+
+    display: inline-block;
+}
+
+.csharpdocs-class-summary {
+    padding: 10px;
+}
+
+.csharpdocs-class-definition-namespace {
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 12px;
+    margin-top: 0;
+    margin-bottom: 0;
+    color: rgba(255,255,255,0.5);
+}
+
+.csharpdocs-class-definition-class {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.csharpdocs-class-definition-access{
+    color: #70A5FF;
+}
+
+.csharpdocs-class-definition-class-text{
+    color: #70A5FF;
+    
+}
+
+.csharpdocs-class-definition-classname {
+    color: #66FFB2;
+}
+
+.csharpdocs-class-definition-base-class{
+    color: #66FFB2;
+}
+.csharpdocs-class-definition-base-class-full-namespace {
+    color: rgba(255,255,255,0.5);
+}
+
+.csharpdocs-class-definition-node .csharpdocs-class-definition-base-class-full-namespace{
+    display: none;
+}
+.csharpdocs-class-definition-node:hover .csharpdocs-class-definition-base-class-full-namespace{
+    display: inline;
+}
+
+/*
+    METHOD
+*/
+
+.csharpdocs-method-definition-node {
+    position: relative;
+
+    background-color: rgba(244, 252, 207, 0.1);
+    border-top: solid 3px rgba(244, 252, 207,0.3);
+    padding: 5px;
+
+    display: inline-block;
+}
+
+.csharpdocs-method-definition-method {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 14px;
+}
+
+.csharpdocs-method-definition-access{
+    color: #70A5FF;
+}
+
+.csharpdocs-method-definition-method-text{
+    color: #70A5FF;
+    
+}
+
+.csharpdocs-type-hidden {
+    color: rgba(255,255,255,0.5);
+}
+.csharpdocs-type{
+    color: #66FFB2;
+}
+.csharpdocs-class-definition-class-type-node > .csharpdocs-type{
+    color: #daff74;
+}
+.csharpdocs-class-definition-class-type-node > .csharpdocs-type:nth-child(2){
+    color: #66FFB2;
+}
+
+.csharpdocs-method-name {
+    color: #daff74;
+}
+
+.csharpdocs-method-definition-method .csharpdocs-type-hidden, .csharpdocs-type-node .csharpdocs-type-hidden, .csharpdocs-property-definition-node .csharpdocs-type-hidden,
+.csharpdocs-class-definition-node .csharpdocs-type-hidden {
+    display: none;
+}
+.csharpdocs-method-definition-method:hover .csharpdocs-type-hidden, .csharpdocs-type-node:hover .csharpdocs-type-hidden, .csharpdocs-property-definition-node:hover .csharpdocs-type-hidden, .csharpdocs-class-definition-node:hover .csharpdocs-type-hidden {
+    display: inline;
+}
+
+.csharpdocs-class-definition-node:hover .csharpdocs-class-definition-class-type-node .csharpdocs-type-hidden{
+    display: none;
+}
+
+.csharpdocs-method-description{
+    margin-bottom: 10px;
+    margin-top: 10px;
+    padding-left: 10px;
+}
+.csharpdocs-method-node ul.csharpdocs-method-params-ul, .csharpdocs-constructor-node ul.csharpdocs-method-params-ul {
+    list-style-type: none;
+    margin-bottom: 0;
+}
+.csharpdocs-method-node ul.csharpdocs-method-params-ul > li, .csharpdocs-constructor-node ul.csharpdocs-method-params-ul > li {
+    list-style: none;
+    margin-left: 10px;
+}
+
+.csharpdocs-method-param-name{
+    font-weight: bold;
+}
+.csharpdocs-method-param-description, .csharpdocs-method-returns-description, .csharpdocs-method-exception-description {
+    color: rgba(255,255,255,0.7);
+}
+
+
+.csharpdocs-method-node ul.csharpdocs-method-returns-ul, .csharpdocs-constructor-node ul.csharpdocs-method-returns-ul {
+    list-style-type: none;
+    margin-bottom: 0;
+}
+.csharpdocs-method-node ul.csharpdocs-method-returns-ul > li, .csharpdocs-constructor-node ul.csharpdocs-method-returns-ul > li {
+    list-style: none;
+    margin-left: 10px;
+}
+.csharpdocs-method-returns {
+    font-weight: bold;
+    color: #66FFB2;
+}
+
+
+.csharpdocs-method-node ul.csharpdocs-method-throws-ul, .csharpdocs-constructor-node ul.csharpdocs-method-throws-ul {
+    list-style-type: none;
+    margin-bottom: 0;
+}
+.csharpdocs-method-node ul.csharpdocs-method-throws-ul > li, .csharpdocs-constructor-node ul.csharpdocs-method-throws-ul > li {
+    list-style: none;
+    margin-left: 10px;
+}
+.csharpdocs-method-node ul.csharpdocs-method-throws-ul > li .csharpdocs-type, .csharpdocs-constructor-node ul.csharpdocs-method-throws-ul > li .csharpdocs-type {
+    color: #ff9999;
+    font-weight: bold;
+}
+
+
+.csharpdocs-constructor-node .csharpdocs-method-name {
+    color: #66FFB2;
+}
+
+.csharpdocs-constructor-node .csharpdocs-method-definition-node {
+    background-color: rgba(78,192,233,0.1);
+    border-top: solid 3px rgba(78,192,233,0.3);
+}
+
+.csharpdocs-constructor-node {
+    margin-bottom: 20px;
+}
+.csharpdocs-method-node {
+    margin-bottom: 20px;
+}
+
+
+/*
+    PROPERTY
+*/
+.csharpdocs-property-node {
+    margin-bottom: 20px;
+}
+
+.csharpdocs-property-definition-node {
+    position: relative;
+
+    background-color: rgba(184, 235, 253, 0.1);
+    border-top: solid 3px rgba(184, 235, 253,0.3);
+    padding: 5px;
+
+    display: inline-block;
+}
+
+.csharpdocs-property-definition-property {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 14px;
+}
+
+.csharpdocs-property-definition-access {
+    color: #70A5FF;   
+}
+
+.csharpdocs-property-description {
+    margin-bottom: 10px;
+    margin-top: 10px;
+    padding-left: 10px;
+}
