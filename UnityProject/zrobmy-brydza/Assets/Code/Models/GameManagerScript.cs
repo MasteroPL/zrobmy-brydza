@@ -7,6 +7,7 @@ using Assets.Code.Models;
 using Assets.Code.UI;
 using GameManagerLib.Models;
 using Assets.Code.Utils;
+using UnityEngine.SceneManagement;
 
 public class GameManagerScript : MonoBehaviour
 {
@@ -67,9 +68,9 @@ public class GameManagerScript : MonoBehaviour
             startButtonObject.SetActive(false);
         }
 
-        SeatManager.SitPlayer(PlayerTag.N, "NCustomPlayer");
+        /*SeatManager.SitPlayer(PlayerTag.N, "NCustomPlayer");
         SeatManager.SitPlayer(PlayerTag.W, "WCustomPlayer");
-        SeatManager.SitPlayer(PlayerTag.S, "SCustomPlayer");
+        SeatManager.SitPlayer(PlayerTag.S, "SCustomPlayer");*/
     }
 
     public void ShowHideStartGameButton(bool AllPlayersPresent)
@@ -158,8 +159,7 @@ public class GameManagerScript : MonoBehaviour
 
     private void QuitHandler()
     {
-        Debug.Log("Quit game...");
-        Application.Quit(); // TO CHANGE
+        SceneManager.LoadScene(0);
     }
 
     private void CurrentPlayerLight()
