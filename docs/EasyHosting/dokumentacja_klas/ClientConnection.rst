@@ -2,16 +2,19 @@
 ClientConnection
 ****************
 
-.. sphinxsharp:type:: public class ClientConnection
+.. csharpdocsclass:: EasyHosting.Models.Server.ClientConnection
+    :access: public
+    :baseclass: System.Object
 	
 	
 
 Konstruktory
 ============
 
-.. sphinxsharp:method:: public ClientConnection(TcpClient tcpClient, ServerSocket serverSocket=null)
-	:param(1): 
-	:param(2): 
+.. csharpdocsconstructor:: ClientConnection(System.Net.Sockets.TcpClient tcpClient, EasyHosting.Models.Server.ServerSocket serverSocket=null)
+    :access: public
+    :param(1): 
+    :param(2): 
 	
 	
 
@@ -19,83 +22,191 @@ Konstruktory
 Metody
 ======
 
-.. sphinxsharp:method:: public ServerSocket get_ServerSocket()
+.. csharpdocsmethod:: EasyHosting.Models.Server.ServerSocket get_ServerSocket()
+    :access: public
 	
 	
 
 
-.. sphinxsharp:method:: private Void set_ServerSocket(ServerSocket value)
-	:param(1): 
+.. csharpdocsmethod:: System.Void set_ServerSocket(EasyHosting.Models.Server.ServerSocket value)
+    :access: private
+    :param(1): 
 	
 	
 
 
-.. sphinxsharp:method:: public Session get_Session()
+.. csharpdocsmethod:: EasyHosting.Models.Server.Session get_Session()
+    :access: public
 	
 	
 
 
-.. sphinxsharp:method:: protected Void set_Session(Session value)
-	:param(1): 
+.. csharpdocsmethod:: System.Void set_Session(EasyHosting.Models.Server.Session value)
+    :access: protected
+    :param(1): 
 	
 	
 
 
-.. sphinxsharp:method:: protected BsonDataWriter get_BsonWriter()
+.. csharpdocsmethod:: Newtonsoft.Json.Bson.BsonDataWriter get_BsonWriter()
+    :access: protected
 	
 	
 
 
-.. sphinxsharp:method:: protected BsonDataReader get_BsonReader()
+.. csharpdocsmethod:: Newtonsoft.Json.Bson.BsonDataReader get_BsonReader()
+    :access: protected
 	
 	
 
 
-.. sphinxsharp:method:: public TimeSpan GetConnectionTime()
+.. csharpdocsmethod:: System.TimeSpan GetConnectionTime()
+    :access: public
 	
 	
 
 
-.. sphinxsharp:method:: public TcpClient get_TcpClient()
+.. csharpdocsmethod:: System.Net.Sockets.TcpClient get_TcpClient()
+    :access: public
 	
 	
 
 
-.. sphinxsharp:method:: protected Void set_TcpClient(TcpClient value)
-	:param(1): 
+.. csharpdocsmethod:: System.Void set_TcpClient(System.Net.Sockets.TcpClient value)
+    :access: protected
+    :param(1): 
 	
 	
 
 
-.. sphinxsharp:method:: public Boolean get_DataAvailable()
+.. csharpdocsmethod:: System.Boolean get_DataAvailable()
+    :access: public
 	
 	
 
 
-.. sphinxsharp:method:: public JObject GetData()
+.. csharpdocsmethod:: Newtonsoft.Json.Linq.JObject GetData()
+    :access: public
 	
 	
 
 
-.. sphinxsharp:method:: public Void WriteData(JObject data)
-	:param(1): 
+.. csharpdocsmethod:: System.Void WriteData(Newtonsoft.Json.Linq.JObject data)
+    :access: public
+    :param(1): 
 	
 	
 
 
-.. sphinxsharp:method:: public Void AddCommunicate(JObject communicate)
-	:param(1): Komunikat
+.. csharpdocsmethod:: System.Void AddCommunicate(Newtonsoft.Json.Linq.JObject communicate)
+    :access: public
+    :param(1): Komunikat
 	
 	Dodaje nowy komunikat do kolejki. Po przetworzeniu zapytań wszystkie komunikaty z kolejki są wysyłane do użytkownika
 
 
-.. sphinxsharp:method:: public Void SendCommunicates()
+.. csharpdocsmethod:: System.Void SendCommunicates()
+    :access: public
 	
 	
 
 
-.. sphinxsharp:method:: public Void Flush()
+.. csharpdocsmethod:: System.Void Flush()
+    :access: public
 	
 	
 
+
+Własności
+=========
+
+.. csharpdocsproperty:: EasyHosting.Models.Server.ServerSocket ServerSocket
+    :access: public
+	
+	
+
+
+.. csharpdocsproperty:: EasyHosting.Models.Server.Session Session
+    :access: public
+	
+	
+
+
+.. csharpdocsproperty:: Newtonsoft.Json.Bson.BsonDataWriter BsonWriter
+    :access: protected
+	
+	
+
+
+.. csharpdocsproperty:: Newtonsoft.Json.Bson.BsonDataReader BsonReader
+    :access: protected
+	
+	
+
+
+.. csharpdocsproperty:: System.Net.Sockets.TcpClient TcpClient
+    :access: public
+	
+	
+
+
+.. csharpdocsproperty:: System.Boolean DataAvailable
+    :access: public
+	
+	
+
+
+Pola
+====
+
+.. csharpdocsproperty:: System.Collections.Generic.LinkedList<Newtonsoft.Json.Linq.JObject> CommunicatesQueue
+    :access: private
+	
+	Komunikaty typu "PUSH", czyli wysałane z serwera do użytkownika. Nie są to odpowiedzi do zapytań
+
+
+.. csharpdocsproperty:: EasyHosting.Models.Server.ServerSocket _ServerSocket
+    :access: private
+	
+	
+
+
+.. csharpdocsproperty:: EasyHosting.Models.Server.Session _Session
+    :access: private
+	
+	
+
+
+.. csharpdocsproperty:: Newtonsoft.Json.JsonSerializer JsonSerializer
+    :access: private
+	
+	
+
+
+.. csharpdocsproperty:: Newtonsoft.Json.Bson.BsonDataWriter _BsonWriter
+    :access: private
+	
+	
+
+
+.. csharpdocsproperty:: Newtonsoft.Json.Bson.BsonDataReader _BsonReader
+    :access: private
+	
+	
+
+
+.. csharpdocsproperty:: System.DateTime ConnectedAt
+    :access: private
+	
+	
+
+
+.. csharpdocsproperty:: System.Net.Sockets.TcpClient _TcpClient
+    :access: private
+	
+	
+
+
+Wydarzenia
+==========
 

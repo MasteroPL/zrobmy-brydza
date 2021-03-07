@@ -17,19 +17,19 @@ namespace DocsGenerator.Utils {
             filePath = Path.Combine(destDir, "_index.rst");
 
             using (StreamWriter wr = new StreamWriter(filePath)) {
-                wr.WriteLine("#################");
-                wr.WriteLine("Dokumentacja klas");
-                wr.WriteLine("#################");
-                wr.WriteLine();
-                wr.WriteLine(".. toctree::");
-                wr.WriteLine("\t:max-depth: 2");
-                wr.WriteLine();
+                wr.Write("#################\n");
+                wr.Write("Dokumentacja klas\n");
+                wr.Write("#################\n");
+                wr.Write("\n");
+                wr.Write(".. toctree::\n");
+                wr.Write("    :maxdepth: 2\n");
+                wr.Write("    \n");
 
                 foreach (var classDef in assemblyDef.ClassDefs.Values) {
                     if (classDef.TypeDef.Name == "<>c")
                         continue;
 
-                    wr.WriteLine("\t" + classDef.TypeDef.Name);
+                    wr.Write("    " + classDef.TypeDef.Name + "\n");
                 }
             }
 
@@ -58,11 +58,19 @@ namespace DocsGenerator.Utils {
                 headerS + "\n" +
                 title + "\n" +
                 headerS + "\n\n" +
-                ".. sphinxsharp:type:: " +
-                AccessTypeM.GetName(classDef.AccessType) + " class " +
-                classDef.TypeDef.Name + "\n\t\n\t" +
-                classDef.Summary + "\n\n"
+                ".. csharpdocsclass:: " +
+                //AccessTypeM.GetName(classDef.AccessType) + " class " +
+                classDef.TypeDef.GetDocFullName() + "\n" +
+                "    :access: " + AccessTypeM.GetName(classDef.AccessType)
             );
+
+            if(classDef.BaseClass != null) {
+                writeTo.Write(
+                    "\n    :baseclass: " + classDef.BaseClass.GetDocFullName()
+                );
+            }
+
+            writeTo.Write("\n\t\n\t" + classDef.Summary + "\n\n");
 
             // Konstruktory
             writeTo.Write(
@@ -83,12 +91,41 @@ namespace DocsGenerator.Utils {
             foreach(var methodDef in classDef.Methods.Values) {
                 WriteMethod(writeTo, methodDef);
             }
+
+            // Własności
+            writeTo.Write(
+                "Własności\n" +
+                "=========\n\n"
+            );
+
+            foreach(var propertyDef in classDef.Properties.Values) {
+                WriteProperty(writeTo, propertyDef);
+            }
+
+            // Pola
+            writeTo.Write(
+                "Pola\n" +
+                "====\n\n"
+            );
+
+            foreach (var fieldDef in classDef.Fields.Values) {
+                WriteField(writeTo, fieldDef);
+            }
+
+            // Wydarzenia
+            writeTo.Write(
+                "Wydarzenia\n" +
+                "==========\n\n"
+            );
+
+            foreach(var eventDef in classDef.Events.Values) {
+                WriteEvent(writeTo, eventDef);
+            }
         }
 
         public static void WriteConstructor(StreamWriter writeTo, ConstructorDef constructorDef) {
             writeTo.Write(
-                ".. sphinxsharp:method:: "
-                + AccessTypeM.GetName(constructorDef.AccessType) + " "
+                ".. csharpdocsconstructor:: "
                 + constructorDef.ParentClass.TypeDef.GetDocName() + "("
             );
 
@@ -99,7 +136,7 @@ namespace DocsGenerator.Utils {
                     writeTo.Write(", ");
                 }
 
-                writeTo.Write(param.TypeDef.GetDocName() + " " + param.Name);
+                writeTo.Write(param.TypeDef.GetDocFullName() + " " + param.Name);
 
                 if (param.HasDefault) {
                     writeTo.Write("=" + param.DefaultValue);
@@ -110,9 +147,13 @@ namespace DocsGenerator.Utils {
 
             writeTo.Write(")");
 
+            writeTo.Write(
+                "\n    :access: " + AccessTypeM.GetName(constructorDef.AccessType)
+            );
+
             for (int i = 0; i < constructorDef.Params.Count; i++) {
                 writeTo.Write(
-                    "\n\t:param(" + (i + 1) + "): "
+                    "\n    :param(" + (i + 1) + "): "
                     + constructorDef.Params[i].Description
                 );
             }
@@ -126,9 +167,8 @@ namespace DocsGenerator.Utils {
 
         public static void WriteMethod(StreamWriter writeTo, MethodDef methodDef) {
             writeTo.Write(
-                ".. sphinxsharp:method:: "
-                + AccessTypeM.GetName(methodDef.AccessType) + " "
-                + methodDef.Returns.TypeDef.GetDocName() + " "
+                ".. csharpdocsmethod:: "
+                + methodDef.Returns.TypeDef.GetDocFullName() + " "
                 + methodDef.Name + "("
             );
 
@@ -139,7 +179,7 @@ namespace DocsGenerator.Utils {
                     writeTo.Write(", ");
                 }
 
-                writeTo.Write(param.TypeDef.GetDocName() + " " + param.Name);
+                writeTo.Write(param.TypeDef.GetDocFullName() + " " + param.Name);
 
                 if (param.HasDefault) {
                     writeTo.Write("=" + param.DefaultValue);
@@ -150,15 +190,78 @@ namespace DocsGenerator.Utils {
 
             writeTo.Write(")");
 
+            writeTo.Write("\n    :access: " + AccessTypeM.GetName(methodDef.AccessType));
+            if (methodDef.IsStatic) {
+                writeTo.Write(" static");
+            }
+
             for(int i = 0; i < methodDef.Params.Count; i++) {
                 writeTo.Write(
-                    "\n\t:param(" + (i + 1) + "): "
+                    "\n    :param(" + (i + 1) + "): "
                     + methodDef.Params[i].Description
                 );
             }
 
             // Podsumowanie
             writeTo.Write("\n\t\n\t" + methodDef.Summary);
+
+            // Końcowy odstęp
+            writeTo.Write("\n\n\n");
+        }
+
+        public static void WriteProperty(StreamWriter writeTo, PropertyDef propertyDef) {
+            writeTo.Write(
+                ".. csharpdocsproperty:: "
+                + propertyDef.TypeDef.GetDocFullName() + " "
+                + propertyDef.Name
+            );
+
+            writeTo.Write("\n    :access: " + AccessTypeM.GetName(propertyDef.AccessType));
+            if (propertyDef.IsStatic) {
+                writeTo.Write(" static");
+            }
+
+            // Podsumowanie
+            writeTo.Write("\n\t\n\t" + propertyDef.Summary);
+
+            // Końcowy odstęp
+            writeTo.Write("\n\n\n");
+        }
+
+        public static void WriteField(StreamWriter writeTo, FieldDef fieldDef) {
+            writeTo.Write(
+                ".. csharpdocsproperty:: "
+                + fieldDef.TypeDef.GetDocFullName() + " "
+                + fieldDef.Name
+            );
+
+            writeTo.Write("\n    :access: " + AccessTypeM.GetName(fieldDef.AccessType));
+            if (fieldDef.IsStatic) {
+                writeTo.Write(" static");
+            }
+
+            // Podsumowanie
+            writeTo.Write("\n\t\n\t" + fieldDef.Summary);
+
+            // Końcowy odstęp
+            writeTo.Write("\n\n\n");
+        }
+
+        public static void WriteEvent(StreamWriter writeTo, EventDef eventDef) {
+            writeTo.Write(
+                ".. csharpdocsproperty:: "
+                + eventDef.EventHandlerTypeDef.GetDocFullName() + " "
+                + eventDef.Name
+            );
+
+            writeTo.Write("\n    :access: " + AccessTypeM.GetName(eventDef.AccessType));
+            if (eventDef.IsStatic) {
+                writeTo.Write(" static");
+            }
+            writeTo.Write(" event");
+
+            // Podsumowanie
+            writeTo.Write("\n\t\n\t" + eventDef.Summary);
 
             // Końcowy odstęp
             writeTo.Write("\n\n\n");

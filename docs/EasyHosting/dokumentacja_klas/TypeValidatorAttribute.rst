@@ -2,15 +2,18 @@
 TypeValidatorAttribute
 **********************
 
-.. sphinxsharp:type:: public class TypeValidatorAttribute
+.. csharpdocsclass:: EasyHosting.Meta.Validators.TypeValidatorAttribute
+    :access: public
+    :baseclass: EasyHosting.Meta.Validators.FieldValidatorAttribute
 	
 	
 
 Konstruktory
 ============
 
-.. sphinxsharp:method:: public TypeValidatorAttribute(Type type)
-	:param(1): 
+.. csharpdocsconstructor:: TypeValidatorAttribute(System.Type type)
+    :access: public
+    :param(1): 
 	
 	
 
@@ -18,15 +21,62 @@ Konstruktory
 Metody
 ======
 
-.. sphinxsharp:method:: public Type get_Type()
+.. csharpdocsmethod:: System.Type get_Type()
+    :access: public
 	
 	
 
 
-.. sphinxsharp:method:: public Object Validate(Object o, Boolean throwException=True)
-	:param(1): 
-	:param(2): 
+.. csharpdocsmethod:: System.Object Validate(System.Object o, System.Boolean throwException=True)
+    :access: public
+    :param(1): 
+    :param(2): 
 	
 	
 
+
+Własności
+=========
+
+.. csharpdocsproperty:: System.Type Type
+    :access: public
+	
+	
+
+
+.. csharpdocsproperty:: System.Collections.Generic.List<Newtonsoft.Json.Linq.JObject> Errors
+    :access: public
+	
+	
+
+
+.. csharpdocsproperty:: System.String ErrorsText
+    :access: public
+	
+	Konwertuje listę błędów na tekst
+
+
+.. csharpdocsproperty:: System.Int32 ErrorsCount
+    :access: public
+	
+	Liczba błędów
+
+
+.. csharpdocsproperty:: System.Object TypeId
+    :access: public
+	
+	
+
+
+Pola
+====
+
+.. csharpdocsproperty:: System.Type _Type
+    :access: private
+	
+	
+
+
+Wydarzenia
+==========
 

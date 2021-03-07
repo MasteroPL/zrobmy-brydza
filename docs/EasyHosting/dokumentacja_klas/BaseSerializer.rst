@@ -2,115 +2,161 @@
 BaseSerializer
 **************
 
-.. sphinxsharp:type:: public class BaseSerializer
+.. csharpdocsclass:: EasyHosting.Models.Serialization.BaseSerializer
+    :access: public
+    :baseclass: System.Object
 	
 	
 
 Konstruktory
 ============
 
-.. sphinxsharp:method:: public BaseSerializer()
+.. csharpdocsconstructor:: BaseSerializer()
+    :access: public
 	
 	
 
 
-.. sphinxsharp:method:: public BaseSerializer(JObject data)
-	:param(1): 
+.. csharpdocsconstructor:: BaseSerializer(Newtonsoft.Json.Linq.JObject data)
+    :access: public
+    :param(1): 
 	
-	
+	User -> Server   Serializer constructor
 
 
 Metody
 ======
 
-.. sphinxsharp:method:: public JObject get_DataOrigin()
+.. csharpdocsmethod:: Newtonsoft.Json.Linq.JObject get_DataOrigin()
+    :access: public
 	
 	
 
 
-.. sphinxsharp:method:: private Void set_DataOrigin(JObject value)
-	:param(1): 
+.. csharpdocsmethod:: System.Void set_DataOrigin(Newtonsoft.Json.Linq.JObject value)
+    :access: private
+    :param(1): 
 	
 	
 
 
-.. sphinxsharp:method:: public Dictionary<FieldInfo,List<ValidationError>> get_Errors()
+.. csharpdocsmethod:: System.Collections.Generic.Dictionary<System.String, EasyHosting.Models.Actions.BaseAction> get_Errors()
+    :access: public
 	
 	
 
 
-.. sphinxsharp:method:: private Void set_Errors(Dictionary<FieldInfo, List<ValidationError>> value)
-	:param(1): 
+.. csharpdocsmethod:: System.Void set_Errors(System.Collections.Generic.Dictionary<System.String, EasyHosting.Models.Actions.BaseAction> value)
+    :access: private
+    :param(1): 
 	
 	
 
 
-.. sphinxsharp:method:: private Void AddError(FieldInfo field, ValidationError error)
-	:param(1): 
-	:param(2): 
+.. csharpdocsmethod:: System.Void AddError(System.Reflection.FieldInfo field, EasyHosting.Meta.Validators.ValidationError error)
+    :access: private
+    :param(1): 
+    :param(2): 
 	
 	
 
 
-.. sphinxsharp:method:: protected Void AddError(String fieldName, ValidationError error)
-	:param(1): 
-	:param(2): 
+.. csharpdocsmethod:: System.Void AddError(System.String fieldName, EasyHosting.Meta.Validators.ValidationError error)
+    :access: protected
+    :param(1): 
+    :param(2): 
 	
 	
 
 
-.. sphinxsharp:method:: public Void AddError(String fieldName, String errorCode, String errorMessage)
-	:param(1): Nazwa pola
-	:param(2): Kod błędu
-	:param(3): Treść błędu
+.. csharpdocsmethod:: System.Void AddError(System.String fieldName, System.String errorCode, System.String errorMessage)
+    :access: public
+    :param(1): Nazwa pola
+    :param(2): Kod błędu
+    :param(3): Treść błędu
 	
 	Dodaje błąd do listy błędów dla wybranego pola
 
 
-.. sphinxsharp:method:: private Void AddErrors(FieldInfo field, IEnumerable<ValidationError> errors)
-	:param(1): 
-	:param(2): 
+.. csharpdocsmethod:: System.Void AddErrors(System.Reflection.FieldInfo field, System.Collections.Generic.IEnumerable<Newtonsoft.Json.Linq.JObject> errors)
+    :access: private
+    :param(1): 
+    :param(2): 
 	
 	
 
 
-.. sphinxsharp:method:: protected Void AddErrors(String fieldName, IEnumerable<ValidationError> errors)
-	:param(1): 
-	:param(2): 
+.. csharpdocsmethod:: System.Void AddErrors(System.String fieldName, System.Collections.Generic.IEnumerable<Newtonsoft.Json.Linq.JObject> errors)
+    :access: protected
+    :param(1): 
+    :param(2): 
 	
 	
 
 
-.. sphinxsharp:method:: protected Void AddErrors(Dictionary<FieldInfo, List<ValidationError>> errors)
-	:param(1): 
+.. csharpdocsmethod:: System.Void AddErrors(System.Collections.Generic.Dictionary<System.String, EasyHosting.Models.Actions.BaseAction> errors)
+    :access: protected
+    :param(1): 
 	
 	
 
 
-.. sphinxsharp:method:: public Void ThrowException()
+.. csharpdocsmethod:: System.Void ThrowException()
+    :access: public
 	
 	
 
 
-.. sphinxsharp:method:: private Void Init()
+.. csharpdocsmethod:: System.Void Init()
+    :access: private
 	
 	
 
 
-.. sphinxsharp:method:: public Void SetData(JObject data)
-	:param(1): Dane źródłowe dla serializatora
+.. csharpdocsmethod:: System.Void SetData(Newtonsoft.Json.Linq.JObject data)
+    :access: public
+    :param(1): Dane źródłowe dla serializatora
 	
 	Ustawia dane źródłowe dla serializatora
 
 
-.. sphinxsharp:method:: public Void Validate(Boolean throwException=True)
-	:param(1): 
+.. csharpdocsmethod:: System.Void Validate(System.Boolean throwException=True)
+    :access: public
+    :param(1): 
 	
 	
 
 
-.. sphinxsharp:method:: public JObject GetApiObject()
+.. csharpdocsmethod:: Newtonsoft.Json.Linq.JObject GetApiObject()
+    :access: public
 	
 	
 
+
+Własności
+=========
+
+.. csharpdocsproperty:: Newtonsoft.Json.Linq.JObject DataOrigin
+    :access: public
+	
+	Przechowuje oryginalny obiekt JSONa przekazany do serializatora
+
+
+.. csharpdocsproperty:: System.Collections.Generic.Dictionary<System.String, EasyHosting.Models.Actions.BaseAction> Errors
+    :access: public
+	
+	Słownik błędów, które wystąpiły podczas walidacji (nazwa pola -> lista błędów dla pola)
+
+
+Pola
+====
+
+.. csharpdocsproperty:: System.Collections.Generic.Dictionary<System.String, EasyHosting.Models.Actions.BaseAction> _Errors
+    :access: private
+	
+	
+
+
+Wydarzenia
+==========
 

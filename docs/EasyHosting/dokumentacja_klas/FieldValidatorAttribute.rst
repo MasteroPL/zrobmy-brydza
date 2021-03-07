@@ -2,14 +2,17 @@
 FieldValidatorAttribute
 ***********************
 
-.. sphinxsharp:type:: public class FieldValidatorAttribute
+.. csharpdocsclass:: EasyHosting.Meta.Validators.FieldValidatorAttribute
+    :access: public
+    :baseclass: System.Attribute
 	
 	Bazowa klasa definiowania atrybutów walidacji danych serializatora
 
 Konstruktory
 ============
 
-.. sphinxsharp:method:: protected FieldValidatorAttribute()
+.. csharpdocsconstructor:: FieldValidatorAttribute()
+    :access: protected
 	
 	
 
@@ -17,43 +20,89 @@ Konstruktory
 Metody
 ======
 
-.. sphinxsharp:method:: public List<ValidationError> get_Errors()
+.. csharpdocsmethod:: System.Collections.Generic.List<Newtonsoft.Json.Linq.JObject> get_Errors()
+    :access: public
 	
 	
 
 
-.. sphinxsharp:method:: public String get_ErrorsText()
+.. csharpdocsmethod:: System.String get_ErrorsText()
+    :access: public
 	
 	
 
 
-.. sphinxsharp:method:: public Int32 get_ErrorsCount()
+.. csharpdocsmethod:: System.Int32 get_ErrorsCount()
+    :access: public
 	
 	
 
 
-.. sphinxsharp:method:: protected Void AddError(String errorCode, String errorMessage)
-	:param(1): Kod błędu
-	:param(2): Treść błędu
+.. csharpdocsmethod:: System.Void AddError(System.String errorCode, System.String errorMessage)
+    :access: protected
+    :param(1): Kod błędu
+    :param(2): Treść błędu
 	
 	Dodaje treść błędu do listy wszystkich błędów które wystąpiły podczas walidacji
 
 
-.. sphinxsharp:method:: protected Void AddErrors(IEnumerable<ValidationError> errors)
-	:param(1): 
+.. csharpdocsmethod:: System.Void AddErrors(System.Collections.Generic.IEnumerable<Newtonsoft.Json.Linq.JObject> errors)
+    :access: protected
+    :param(1): 
 	
 	
 
 
-.. sphinxsharp:method:: protected Void ThrowException()
+.. csharpdocsmethod:: System.Void ThrowException()
+    :access: protected
 	
 	
 
 
-.. sphinxsharp:method:: public Object Validate(Object o, Boolean throwException=True)
-	:param(1): Obiekt do zwalidowania
-	:param(2): Określa czy wyrzucić wyjątek, jeśli walidacja się nie powiedzie
+.. csharpdocsmethod:: System.Object Validate(System.Object o, System.Boolean throwException=True)
+    :access: public
+    :param(1): Obiekt do zwalidowania
+    :param(2): Określa czy wyrzucić wyjątek, jeśli walidacja się nie powiedzie
 	
 	Wykonuje walidację danych
 
+
+Własności
+=========
+
+.. csharpdocsproperty:: System.Collections.Generic.List<Newtonsoft.Json.Linq.JObject> Errors
+    :access: public
+	
+	
+
+
+.. csharpdocsproperty:: System.String ErrorsText
+    :access: public
+	
+	Konwertuje listę błędów na tekst
+
+
+.. csharpdocsproperty:: System.Int32 ErrorsCount
+    :access: public
+	
+	Liczba błędów
+
+
+.. csharpdocsproperty:: System.Object TypeId
+    :access: public
+	
+	
+
+
+Pola
+====
+
+.. csharpdocsproperty:: System.Collections.Generic.List<Newtonsoft.Json.Linq.JObject> _Errors
+    :access: private
+	
+	
+
+
+Wydarzenia
+==========
 

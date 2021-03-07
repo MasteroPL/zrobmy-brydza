@@ -19,27 +19,14 @@ namespace DocsGenerator.Models {
 
         public Dictionary<ConstructorInfo, ConstructorDef> Constructors = new Dictionary<ConstructorInfo, ConstructorDef>();
         public Dictionary<MethodInfo, MethodDef> Methods = new Dictionary<MethodInfo, MethodDef>();
+        public Dictionary<PropertyInfo, PropertyDef> Properties = new Dictionary<PropertyInfo, PropertyDef>();
+        public Dictionary<EventInfo, EventDef> Events = new Dictionary<EventInfo, EventDef>();
+        public Dictionary<FieldInfo, FieldDef> Fields = new Dictionary<FieldInfo, FieldDef>();
 
         public string GetDocRepresentation() {
             StringBuilder output = new StringBuilder();
 
-            if (AccessType != AccessType.INNER) {
-                output.Append(AccessTypeM.GetName(AccessType) + " ");
-            }
-            output.Append(TypeDef.Name);
-            output.Append(" : ");
-            output.Append(BaseClass.Name);
-            output.Append("\n");
-            output.Append("Summary: ");
-            output.Append(Summary);
-            output.Append("\n");
-            output.Append("Remarks: ");
-            output.Append(Remarks);
-
-            foreach (var m in Methods.Values) {
-                output.Append("\n");
-                output.Append(m.GetDocRepresentation());
-            }
+            output.Append(TypeDef.GetDocFullName());
 
             return output.ToString();
         }
@@ -77,8 +64,11 @@ namespace DocsGenerator.Models {
             }
 
             // Sczytywanie metod klasy
-            var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Static);
             var constructors = type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+            var properties = type.GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+            var events = type.GetEvents(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+            var fields = type.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
 
             MethodDef mdef;
             foreach(var method in methods) {
@@ -87,8 +77,25 @@ namespace DocsGenerator.Models {
             }
             ConstructorDef cdef;
             foreach(var constr in constructors) {
-                cdef = ConstructorDef.FromConstructorInfo(def, constr);
+                cdef = ConstructorDef.FromConstructorInfo(def, constr, doc);
                 def.Constructors.Add(constr, cdef);
+            }
+            PropertyDef pdef;
+            foreach(var prpt in properties) {
+                pdef = PropertyDef.FromPropertyInfo(def, prpt, doc);
+                def.Properties.Add(prpt, pdef);
+            }
+            EventDef edef;
+            foreach(var evt in events) {
+                edef = EventDef.FromEventInfo(def, evt, doc);
+                def.Events.Add(evt, edef);
+            }
+            FieldDef fdef;
+            foreach(var fld in fields) {
+                if (!fld.Name.Contains("k__BackingField")) {
+                    fdef = FieldDef.FromFieldInfo(def, fld, doc);
+                    def.Fields.Add(fld, fdef);
+                }
             }
 
             if(doc != null) {
@@ -103,6 +110,7 @@ namespace DocsGenerator.Models {
                             case "summary":
                                 def.Summary = current.InnerText.Replace("\n\r            ", "\n").Replace("\r\n            ", "\n").Replace("\n            ", "\n");
                                 def.Summary = def.Summary.Substring(1, def.Summary.Length - 2);
+                                def.Summary.Replace("\n", "\n\t");
                                 break;
                             case "remarks":
                                 def.Remarks = current.InnerText;

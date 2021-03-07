@@ -48,9 +48,22 @@ namespace DocsGenerator.Utils {
 
             return (DefinedMembers.ContainsKey(key)) ? DefinedMembers[key] : null;
         }
+        public XmlNode GetDocumentation(ConstructorDef constructorDef) {
+            ConstructorInfo constructorInfo = constructorDef.ConstructorInfo;
+            string key = "M:" + constructorDef.GetXMLName();
+            return (DefinedMembers.ContainsKey(key)) ? DefinedMembers[key] : null;
+        }
         public XmlNode GetDocumentation(PropertyInfo propertyInfo) {
-            string key = "P:" + XmlDocumentationKeyHelper(
-              propertyInfo.DeclaringType.FullName, propertyInfo.Name);
+            string key = "P:" + XmlDocumentationKeyHelper(propertyInfo.DeclaringType.FullName, propertyInfo.Name);
+            return (DefinedMembers.ContainsKey(key)) ? DefinedMembers[key] : null;
+        }
+        public XmlNode GetDocumentation(FieldInfo fieldInfo) {
+            string key = "F:" + XmlDocumentationKeyHelper(fieldInfo.DeclaringType.FullName, fieldInfo.Name);
+            return (DefinedMembers.ContainsKey(key)) ? DefinedMembers[key] : null;
+        }
+        public XmlNode GetDocumentation(EventInfo eventInfo) {
+            string key = "E:" + XmlDocumentationKeyHelper(eventInfo.DeclaringType.FullName, eventInfo.Name);
+
             return (DefinedMembers.ContainsKey(key)) ? DefinedMembers[key] : null;
         }
 

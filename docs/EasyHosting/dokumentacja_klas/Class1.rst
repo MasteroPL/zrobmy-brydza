@@ -2,18 +2,30 @@
 Class1
 ******
 
-.. sphinxsharp:type:: public class Class1
+.. csharpdocsclass:: EasyHosting.Class1
+    :access: public
+    :baseclass: System.Object
 	
 	
 
 Konstruktory
 ============
 
-.. sphinxsharp:method:: public Class1()
+.. csharpdocsconstructor:: Class1()
+    :access: public
 	
 	
 
 
 Metody
 ======
+
+Własności
+=========
+
+Pola
+====
+
+Wydarzenia
+==========
 

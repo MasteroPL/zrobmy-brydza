@@ -14,6 +14,10 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 import sphinx_rtd_theme
+import os
+import sys
+
+sys.path.append(os.path.abspath("./_ext"))
 
 
 # -- Project information -----------------------------------------------------
@@ -33,7 +37,8 @@ release = '0.1-pre-alpha'
 # ones.
 extensions = [
     "sphinx_rtd_theme",
-    "sphinxsharp.sphinxsharp"
+    "sphinxsharp.sphinxsharp",
+    "csharp",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -73,4 +78,5 @@ html_theme_options = {
 
 html_css_files = [
     "css/rtd_dark.css",
+    "css/csharp.css",
 ]

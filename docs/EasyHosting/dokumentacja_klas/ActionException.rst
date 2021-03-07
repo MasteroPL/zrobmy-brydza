@@ -2,18 +2,30 @@
 ActionException
 ***************
 
-.. sphinxsharp:type::  class ActionException
+.. csharpdocsclass:: EasyHosting.Models.Actions.ActionException
+    :access: 
+    :baseclass: System.Object
 	
 	
 
 Konstruktory
 ============
 
-.. sphinxsharp:method:: public ActionException()
+.. csharpdocsconstructor:: ActionException()
+    :access: public
 	
 	
 
 
 Metody
 ======
+
+Własności
+=========
+
+Pola
+====
+
+Wydarzenia
+==========
 
