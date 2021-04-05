@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Assets.Code.UI;
 
 public class HandlerManagerScript : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
     {
+
         Debug.Log(GameObject.Find("/Canvas/LoginCorner/RightCornerLoginOptions"));
         GameObject.Find("/Canvas/LoginCorner/RightCornerLoginOptions").SetActive(false); // right corner popup 
 
@@ -29,13 +31,31 @@ public class HandlerManagerScript : MonoBehaviour
         
         // right corner popup button options
         GameObject.Find("/Canvas/LoginCorner/RightCornerLoginOptions/ProfileButton").GetComponent<Button>().onClick.AddListener(() => { });  // change scene for 'profile'
-        GameObject.Find("/Canvas/LoginCorner/RightCornerLoginOptions/LogInOutButton").GetComponent<Button>().onClick.AddListener(() => { }); // logout user
+        GameObject.Find("/Canvas/LoginCorner/RightCornerLoginOptions/LogInOutButton").GetComponent<Button>().onClick.AddListener(() => {
+            if (UserData.LoggedIn)
+            {
+                GameObject.Find("/Canvas/LoginCorner/RightCornerLoginOptions/LogInOutButton/LogInOutButtonText").GetComponent<Text>().text = "Wyloguj";
+                // TODO perform logout request
+            }
+            else
+            {
+                GameObject.Find("/Canvas/LoginCorner/RightCornerLoginOptions/LogInOutButton/LogInOutButtonText").GetComponent<Text>().text = "Zaloguj";
+                SceneManager.LoadScene(2);
+            }
+        }); // logout user
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (UserData.LoggedIn)
+        {
+            GameObject.Find("/Canvas/LoginCorner/RightCornerLoginOptions/LogInOutButton/LogInOutButtonText").GetComponent<Text>().text = "Wyloguj";
+        }
+        else
+        {
+            GameObject.Find("/Canvas/LoginCorner/RightCornerLoginOptions/LogInOutButton/LogInOutButtonText").GetComponent<Text>().text = "Zaloguj";
+        }
     }
 }

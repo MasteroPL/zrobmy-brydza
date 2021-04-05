@@ -9,9 +9,10 @@ namespace Assets.Code.UI
 {
     public class UserData
     {
-        public PlayerTag position = PlayerTag.NOBODY;
-        public PlayerTag positionStart = PlayerTag.NOBODY; // non-changing position (just for development)
-        public bool IsAdmin = true;
-        public bool Sitting = false;
+        public static PlayerTag position = PlayerTag.NOBODY;
+        public static PlayerTag positionStart = PlayerTag.NOBODY; // non-changing position (just for development)
+        public static bool IsAdmin = true;
+        public static bool Sitting = false;
+        public static bool LoggedIn = false;
     }
 }

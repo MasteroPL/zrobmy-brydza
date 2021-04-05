@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Assets.Code.UI;
 
 public class SeatsManagerScript : MonoBehaviour
 {
@@ -14,6 +15,11 @@ public class SeatsManagerScript : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
+    {
+        
+    }
+
+    public void InitializeSeatManager()
     {
         SeatStates = new Dictionary<PlayerTag, bool>();
         PlayersNicknames = new Dictionary<PlayerTag, string>();
@@ -29,6 +35,7 @@ public class SeatsManagerScript : MonoBehaviour
         PlayersNicknames.Add(PlayerTag.S, "");
         PlayersNicknames.Add(PlayerTag.W, "");
     }
+
     public bool CheckSeatAvailability(PlayerTag Position)
     {
         return SeatStates[Position];
@@ -39,8 +46,9 @@ public class SeatsManagerScript : MonoBehaviour
         return !SeatStates[PlayerTag.N] && !SeatStates[PlayerTag.S] && !SeatStates[PlayerTag.E] && !SeatStates[PlayerTag.W];
     }
 
-    public void SitPlayer(PlayerTag Position, string PlayerNickname)
+    public void SitPlayer(PlayerTag Position, string PlayerNickname, bool TestPlayer=false)
     {
+        Debug.Log(Position.ToString() + " " + PlayerNickname);
         GameObject label = GameObject.Find(Position + "PlayerLabel");
         if (label != null)
         {
@@ -48,11 +56,11 @@ public class SeatsManagerScript : MonoBehaviour
             SeatStates[Position] = false;
             PlayersNicknames[Position] = PlayerNickname;
 
-            if (!GameConfig.DevMode)
+            if (!TestPlayer)
             {
-                GameManager.UserData.position = Position;
-                GameManager.UserData.positionStart = Position;
-                GameManager.UserData.Sitting = true;
+                UserData.position = Position;
+                UserData.positionStart = Position;
+                UserData.Sitting = true;
             }
             GameManager.ShowHideStartGameButton(!SeatStates[PlayerTag.N] && !SeatStates[PlayerTag.S] && !SeatStates[PlayerTag.E] && !SeatStates[PlayerTag.W]);
             //Debug.Log("All 4 players: " + (!SeatStates[PlayerTag.N] && !SeatStates[PlayerTag.S] && !SeatStates[PlayerTag.E] && !SeatStates[PlayerTag.W]));
@@ -70,9 +78,9 @@ public class SeatsManagerScript : MonoBehaviour
 
             if (!GameConfig.DevMode)
             {
-                GameManager.UserData.position = PlayerTag.NOBODY;
-                GameManager.UserData.positionStart = PlayerTag.NOBODY;
-                GameManager.UserData.Sitting = false;
+                UserData.position = PlayerTag.NOBODY;
+                UserData.positionStart = PlayerTag.NOBODY;
+                UserData.Sitting = false;
             }
             GameManager.ShowHideStartGameButton(!SeatStates[PlayerTag.N] && !SeatStates[PlayerTag.S] && !SeatStates[PlayerTag.E] && !SeatStates[PlayerTag.W]);
         }

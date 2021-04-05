@@ -8,6 +8,6 @@ namespace Assets.Code.Utils
 {
     class GameConfig
     {
-        public static bool DevMode = false;
+        public static bool DevMode = true;
     }
 }

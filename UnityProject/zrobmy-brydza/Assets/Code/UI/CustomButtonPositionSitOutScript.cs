@@ -17,8 +17,8 @@ namespace Assets.Code.UI
             bool available = SeatManager.CheckSeatAvailability(buttonID);
             if (!available)
             {
-                if (GameManager.UserData.IsAdmin ||
-                    (GameManager.UserData.position.ToString()[0] == ReferencedButton.gameObject.name[0]) && GameManager.UserData.Sitting)
+                if (UserData.IsAdmin ||
+                    (UserData.position.ToString()[0] == ReferencedButton.gameObject.name[0]) && UserData.Sitting)
                 {
                     ReferencedButton.image.color = new Color32(255, 221, 0, 255);
                 }
@@ -36,8 +36,8 @@ namespace Assets.Code.UI
             bool available = SeatManager.CheckSeatAvailability(buttonID);
             if (!available)
             {
-                if (GameManager.UserData.IsAdmin || 
-                    (GameManager.UserData.position.ToString()[0] == ReferencedButton.gameObject.name[0]) && GameManager.UserData.Sitting)
+                if (UserData.IsAdmin || 
+                    (UserData.position.ToString()[0] == ReferencedButton.gameObject.name[0]) && UserData.Sitting)
                 {
                     SeatManager.SitOutPlayer(buttonID);
                 }

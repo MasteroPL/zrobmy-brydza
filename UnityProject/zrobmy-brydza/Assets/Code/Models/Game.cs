@@ -21,13 +21,7 @@ namespace Assets.Code.Models
             GameState = GameState.AWAITING_PLAYERS;
             Match = new Match();
             this.GameManagerScript.UpdateTableCenter(this);
-            //this.GameManagerScript.UseSharedPlayerData(UserData);
         }
-
-        /*public Game(UserData Data)
-        {
-            this.UserData = Data;
-        }*/
 
         public void StartGame()
         {
@@ -46,7 +40,7 @@ namespace Assets.Code.Models
 
             //Match.PlayerList[0].Hand, Match.PlayerList[1].Hand, Match.PlayerList[2].Hand, Match.PlayerList[3].Hand
             GameManagerLib.Models.Card[] MyHand = { };
-            switch (GameManagerScript.UserData.position)
+            switch (UserData.position)
             {
                 case PlayerTag.N:
                     MyHand = Match.PlayerList[0].Hand;
@@ -70,7 +64,7 @@ namespace Assets.Code.Models
 
             //Match.PlayerList[0].Hand, Match.PlayerList[1].Hand, Match.PlayerList[2].Hand, Match.PlayerList[3].Hand
             GameManagerLib.Models.Card[] MyHand = { };
-            switch (GameManagerScript.UserData.position)
+            switch (UserData.position)
             {
                 case PlayerTag.N:
                     MyHand = Match.PlayerList[0].Hand;
@@ -116,7 +110,7 @@ namespace Assets.Code.Models
         public bool PutCard(CardFigure Figure, CardColor Color, PlayerTag owner)
         {
             PlayerTag ownerPartner = (PlayerTag)(((int)owner + 2) % 4);
-            if (GameManagerScript.UserData.position != owner && GameManagerScript.UserData.position != ownerPartner)
+            if (UserData.position != owner && UserData.position != ownerPartner)
             {
                 return false;
             }

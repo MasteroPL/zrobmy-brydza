@@ -24,7 +24,7 @@ public class GameManagerScript : MonoBehaviour
      */
     [SerializeField] GameObject hiddenCard;
     [SerializeField] AuctionModule AuctionModule;
-    public UserData UserData;
+    //public UserData UserData;
     [SerializeField] public SeatsManagerScript SeatManager;
 
     public Game Game;
@@ -43,10 +43,6 @@ public class GameManagerScript : MonoBehaviour
 
     void Start()
     {
-        if (UserData == null)
-        {
-            UserData = new UserData();
-        }
         GameObject.Find("TeamTakenHandsCounterLabel").GetComponent<Text>().text = "";
         GameObject.Find("DeclaredContractLabel").GetComponent<Text>().text = "";
 
@@ -68,9 +64,10 @@ public class GameManagerScript : MonoBehaviour
             startButtonObject.SetActive(false);
         }
 
-        /*SeatManager.SitPlayer(PlayerTag.N, "NCustomPlayer");
-        SeatManager.SitPlayer(PlayerTag.W, "WCustomPlayer");
-        SeatManager.SitPlayer(PlayerTag.S, "SCustomPlayer");*/
+        SeatManager.InitializeSeatManager();
+        SeatManager.SitPlayer(PlayerTag.N, "NCustomPlayer", true);
+        SeatManager.SitPlayer(PlayerTag.W, "WCustomPlayer", true);
+        SeatManager.SitPlayer(PlayerTag.S, "SCustomPlayer", true);
     }
 
     public void ShowHideStartGameButton(bool AllPlayersPresent)
@@ -251,7 +248,7 @@ public class GameManagerScript : MonoBehaviour
         }
 
         PlayerTag StartingPlayer = Game.Match.CurrentBidding.CurrentPlayer;
-        AuctionModule.InitAuctionModule(Game, UserData, StartingPlayer);
+        AuctionModule.InitAuctionModule(Game, StartingPlayer);
 
         GameObject auctionObject = GameObject.Find("/Canvas/TableCanvas/AuctionDialog");
         auctionObject.SetActive(true);

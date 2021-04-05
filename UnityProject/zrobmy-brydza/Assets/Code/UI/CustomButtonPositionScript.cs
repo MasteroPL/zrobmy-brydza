@@ -15,7 +15,7 @@ namespace Assets.Code.UI
         {
             PlayerTag buttonID = CastCharForPlayerTag(ReferencedButton.gameObject.name[0]);
             bool available = SeatManager.CheckSeatAvailability(buttonID);
-            if (available && !GameManager.UserData.Sitting)
+            if (available && !UserData.Sitting)
             {
                 ReferencedButton.image.color = new Color32(255, 221, 0, 255);
             }
@@ -30,7 +30,7 @@ namespace Assets.Code.UI
         {
             PlayerTag buttonID = CastCharForPlayerTag(ReferencedButton.gameObject.name[0]);
             bool available = SeatManager.CheckSeatAvailability(buttonID);
-            if (available && !GameManager.UserData.Sitting)
+            if (available && !UserData.Sitting)
             {
                 SeatManager.SitPlayer(buttonID, "nickname");
             }
