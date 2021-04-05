@@ -2,20 +2,24 @@
 ActionsManager
 **************
 
-.. sphinxsharp:type:: public class ActionsManager
+.. csharpdocsclass:: EasyHosting.Models.Actions.ActionsManager
+    :access: public
+    :baseclass: System.Object
 	
 	Klasa do zarządzania dostępnymi akcjami
 
 Konstruktory
 ============
 
-.. sphinxsharp:method:: public ActionsManager(Dictionary<FieldInfo, List<ValidationError>> actionsDictionary)
-	:param(1): 
+.. csharpdocsconstructor:: ActionsManager(System.Collections.Generic.Dictionary<System.String, EasyHosting.Models.Actions.BaseAction> actionsDictionary)
+    :access: public
+    :param(1): 
 	
 	
 
 
-.. sphinxsharp:method:: public ActionsManager()
+.. csharpdocsconstructor:: ActionsManager()
+    :access: public
 	
 	
 
@@ -23,22 +27,25 @@ Konstruktory
 Metody
 ======
 
-.. sphinxsharp:method:: public Void AddAction(String actionName, BaseAction action)
-	:param(1): Nazwa (identyfikator) akcji
-	:param(2): Obiekt definiujący akcję
+.. csharpdocsmethod:: System.Void AddAction(System.String actionName, EasyHosting.Models.Actions.BaseAction action)
+    :access: public
+    :param(1): Nazwa (identyfikator) akcji
+    :param(2): Obiekt definiujący akcję
 	
 	Dodaje akcję do listy dostępnych akcji w tym managerze
 
 
-.. sphinxsharp:method:: public Void AddActions(Dictionary<FieldInfo, List<ValidationError>> actions)
-	:param(1): 
+.. csharpdocsmethod:: System.Void AddActions(System.Collections.Generic.Dictionary<System.String, EasyHosting.Models.Actions.BaseAction> actions)
+    :access: public
+    :param(1): 
 	
 	
 
 
-.. sphinxsharp:method:: public JObject PerformActions(ClientConnection conn, JObject actionsData)
-	:param(1): 
-	:param(2): 
+.. csharpdocsmethod:: Newtonsoft.Json.Linq.JObject PerformActions(EasyHosting.Models.Server.ClientConnection conn, Newtonsoft.Json.Linq.JObject actionsData)
+    :access: public
+    :param(1): 
+    :param(2): 
             Definicja akcji. Struktura:
             {
             	"actions": [
@@ -58,24 +65,27 @@ Metody
 	Wykonuje akcje zdefiniowane w źródłowym JObject.
 
 
-.. sphinxsharp:method:: public JObject PerformActions(ClientConnection conn, IEnumerable<ValidationError> actions)
-	:param(1): 
-	:param(2): 
+.. csharpdocsmethod:: Newtonsoft.Json.Linq.JObject PerformActions(EasyHosting.Models.Server.ClientConnection conn, System.Collections.Generic.IEnumerable<Newtonsoft.Json.Linq.JObject> actions)
+    :access: public
+    :param(1): 
+    :param(2): 
 	
 	
 
 
-.. sphinxsharp:method:: public JObject PerformAction(ClientConnection conn, String actionName, JObject actionData)
-	:param(1): 
-	:param(2): Nazwa akcji
-	:param(3): Dane akcji
+.. csharpdocsmethod:: Newtonsoft.Json.Linq.JObject PerformAction(EasyHosting.Models.Server.ClientConnection conn, System.String actionName, Newtonsoft.Json.Linq.JObject actionData)
+    :access: public
+    :param(1): 
+    :param(2): Nazwa akcji
+    :param(3): Dane akcji
 	
 	Wykonuje pojedynczą akcję
 
 
-.. sphinxsharp:method:: public JObject PerformAction(ClientConnection conn, JObject actionData)
-	:param(1): 
-	:param(2): 
+.. csharpdocsmethod:: Newtonsoft.Json.Linq.JObject PerformAction(EasyHosting.Models.Server.ClientConnection conn, Newtonsoft.Json.Linq.JObject actionData)
+    :access: public
+    :param(1): 
+    :param(2): 
             Dane pojedycznej akcji
             Struktura:
             {
@@ -86,4 +96,37 @@ Metody
 	
 	Wykonuje pojedynczą akcję
 
+
+Własności
+=========
+
+Pola
+====
+
+.. csharpdocsproperty:: System.Collections.Generic.Dictionary<System.String, EasyHosting.Models.Actions.BaseAction> ActionsDictionary
+    :access: private
+	
+	
+
+
+.. csharpdocsproperty:: System.String ERROR_CODE_NOT_FOUND
+    :access: public static
+	
+	
+
+
+.. csharpdocsproperty:: System.String ERROR_CODE_MANAGER_GENERIC
+    :access: public static
+	
+	
+
+
+.. csharpdocsproperty:: System.String ERROR_CODE_INTERNAL
+    :access: public static
+	
+	
+
+
+Wydarzenia
+==========
 

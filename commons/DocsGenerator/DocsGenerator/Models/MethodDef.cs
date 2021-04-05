@@ -161,6 +161,7 @@ namespace DocsGenerator.Models {
                             case "summary":
                                 def.Summary = current.InnerText.Replace("\n\r            ", "\n").Replace("\r\n            ", "\n").Replace("\n            ", "\n");
                                 def.Summary = def.Summary.Substring(1, def.Summary.Length - 2);
+                                def.Summary = def.Summary.Replace("\n", "\n\t");
                                 break;
                             case "remarks":
                                 def.Remarks = current.InnerText;

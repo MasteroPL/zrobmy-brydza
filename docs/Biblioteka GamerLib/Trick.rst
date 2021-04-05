@@ -36,8 +36,6 @@ Konstruktory
 
 Konstruktor nie wymaga żadnych argumentów.
 
-.. sphinxsharp:method:: public Trick()
-
 .. code-block:: C#
 
     public Trick()
