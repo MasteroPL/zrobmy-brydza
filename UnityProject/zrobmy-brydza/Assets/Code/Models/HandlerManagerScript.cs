@@ -10,16 +10,18 @@ public class HandlerManagerScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
-        Debug.Log(GameObject.Find("/Canvas/LoginCorner/RightCornerLoginOptions"));
         GameObject.Find("/Canvas/LoginCorner/RightCornerLoginOptions").SetActive(false); // right corner popup 
 
         // main buttons panel
-        GameObject.Find("/Canvas/ButtonsPanel/PlayWithAIButton").GetComponent<Button>().onClick.AddListener(() => { });
-        GameObject.Find("/Canvas/ButtonsPanel/PlayViaServerButton").GetComponent<Button>().onClick.AddListener(() => {
+        GameObject.Find("/Canvas/ButtonsPanel/PlayWithAIButton").GetComponent<Button>().onClick.AddListener(() => {
             SceneManager.LoadScene(1); // Gameplay scene
         });
-        GameObject.Find("/Canvas/ButtonsPanel/QuitButton").GetComponent<Button>().onClick.AddListener(() => { });
+        GameObject.Find("/Canvas/ButtonsPanel/PlayViaServerButton").GetComponent<Button>().onClick.AddListener(() => {
+            SceneManager.LoadScene(3); // Tables list scene
+        });
+        GameObject.Find("/Canvas/ButtonsPanel/QuitButton").GetComponent<Button>().onClick.AddListener(() => {
+            Application.Quit();
+        });
 
         // right corner popup
         GameObject.Find("/Canvas/LoginCorner/RightCornerPopupButton").GetComponent<Button>().onClick.AddListener(() => {

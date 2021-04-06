@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LoginForm.unity
     guid: 0fb2e21764834be469a18b81f2017f83
+  - enabled: 1
+    path: Assets/Scenes/TablesList.unity
+    guid: 13d10508f0ea9174c9d2845aac9f5d10
   m_configObjects: {}
