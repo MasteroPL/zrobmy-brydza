@@ -11,6 +11,9 @@ namespace EasyHosting.Meta.Validators
 	public abstract class FieldValidatorAttribute : Attribute
 	{
 		private readonly List<ValidationError> _Errors = new List<ValidationError>();
+		/// <summary>
+		/// Lista błędów walidacji
+		/// </summary>
 		public List<ValidationError> Errors { get { return _Errors; } } 
 
 		/// <summary>

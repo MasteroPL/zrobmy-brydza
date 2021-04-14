@@ -4,6 +4,9 @@ using System.Text;
 
 namespace EasyHosting.Meta
 {
+	/// <summary>
+	/// Wyjątek konfiguracji, rzucany, jeśli konfiguracja została nieprawidłowo zdefiniowana. Wyrzucenie wyjątku indykuje błąd fizyczny (pod kątem poprawności konfiguracji) w kodzie.
+	/// </summary>
 	public class ConfigurationException : Exception
 	{
 		public ConfigurationException() : base() { }

@@ -6,16 +6,16 @@ SerializerFieldAttribute
     :access: public
     :baseclass: System.Attribute
 	
-	
+	Określa pole do uwzględnienia w serializacji
 
 Konstruktory
 ============
 
 .. csharpdocsconstructor:: SerializerFieldAttribute(System.String apiName, System.Boolean required=True, System.Object defaultValue=null)
     :access: public
-    :param(1): 
-    :param(2): 
-    :param(3): 
+    :param(1): Nazwa pola w komunikacji sieciowej
+    :param(2): Określa, czy pole jest wymagane
+    :param(3): Określa wartość domyślną dla pola (jeśli pole nie jest wymagane, powinno definiować wartość domyślną)
 	
 	
 
@@ -53,25 +53,25 @@ Własności
 .. csharpdocsproperty:: System.String ApiName
     :access: public
 	
-	
+	Nazwa pola w komunikacji sieciowej
 
 
 .. csharpdocsproperty:: System.Boolean Required
     :access: public
 	
-	
+	Określa, czy pole jest wymagane
 
 
 .. csharpdocsproperty:: System.Object Default
     :access: public
 	
-	
+	Określa wartość domyślną dla pola (jeśli pole nie jest wymagane, powinno definiować wartość domyślną)
 
 
 .. csharpdocsproperty:: EasyHosting.Meta.Validators.FieldValidatorAttribute[] Validators
     :access: public
 	
-	
+	Określa zestaw walidatorów dla pola
 
 
 .. csharpdocsproperty:: System.Object TypeId

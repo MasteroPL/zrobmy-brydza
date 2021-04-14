@@ -73,7 +73,7 @@ Własności
 .. csharpdocsproperty:: System.Collections.Generic.List<Newtonsoft.Json.Linq.JObject> Errors
     :access: public
 	
-	
+	Lista błędów walidacji
 
 
 .. csharpdocsproperty:: System.String ErrorsText

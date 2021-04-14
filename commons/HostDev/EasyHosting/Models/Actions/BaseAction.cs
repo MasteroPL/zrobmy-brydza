@@ -16,7 +16,7 @@ namespace EasyHosting.Models.Actions
 		/// Wydarzenie wywoływane kiedy dowolna akcja zostanie wywołana
 		/// </summary>
 		public static event EventHandler<ActionInvokeEventArgs> Invoked;
-		/// <summary>.,
+		/// <summary>
 		/// Wydarzenie wywoływane kiedy ta akcja zostanie wywołana
 		/// </summary>
 		public event EventHandler<ActionInvokeEventArgs> InvokedThis;

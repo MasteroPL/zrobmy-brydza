@@ -6,10 +6,18 @@ namespace EasyHosting.Meta.Validators
 {
 	/// <summary>
 	/// Klasa pozwalająca zdefiniować zestaw alternatyw pod kątem konfiguracyjnej walidacji pól
+	/// 
+	/// Definiujemy, że pole ma spełniać warunek A lub B lub C lub ...
 	/// </summary>
 	public class AlternativeValidatorAttribute : FieldValidatorAttribute
 	{
+		/// <summary>
+		/// Przechowuje listę alternatyw
+		/// </summary>
 		private FieldValidatorAttribute[] AlternateValidators;
+		/// <summary>
+		/// Kod błędu, jaki ma być zwracany w przypadku braku spełnienia warunku. Domyślnie: "ALTERNATIVE_CHECK_FAILED"
+		/// </summary>
 		private string ErrorCodeOnFail;
 
 		/// <summary>
@@ -26,6 +34,13 @@ namespace EasyHosting.Meta.Validators
 			this.ErrorCodeOnFail = (errorCodeOnFail == null) ? "ALTERNATIVE_CHECK_FAILED" : errorCodeOnFail;
 		}
 
+		/// <summary>
+		/// Wykonuje walidację w oparciu o zdefiniowane alternatywy. Jeśli przynajmniej jedna zostanie spełniona, zwraca jej wynik
+		/// </summary>
+		/// <param name="o">Obiekt do walidacji</param>
+		/// <param name="throwException">Definiuje czy ma być wyrzucony wyjątek w przypadku błędu walidacji wszystkich alternatyw</param>
+		/// <returns>Przepisuje wynik z pierwszej spełnionej alternatywy (zwalidowany obiekt, ew. konwertowany na określony typ danych))</returns>
+		/// <exception cref="ValidationException">Wyjątek wyrzucany jeśli throwException==true oraz dane nie przeszły walidacji</exception>
 		public override object Validate(object o, bool throwException = true) {
 			StringBuilder altErrs = new StringBuilder();
 			int currentIndex = 0;

@@ -9,6 +9,9 @@ using System.Text;
 
 namespace EasyHosting.Models.Serialization
 {
+	/// <summary>
+	/// Bazowa klasa dla serializatorów danych wysyłanych i odpowiedzi dla klientów
+	/// </summary>
 	public class BaseSerializer
 	{
 		/// <summary>

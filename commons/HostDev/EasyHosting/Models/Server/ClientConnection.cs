@@ -18,13 +18,22 @@ namespace EasyHosting.Models.Server
 		private LinkedList<JObject> CommunicatesQueue = new LinkedList<JObject>();
 
 		private ServerSocket _ServerSocket;
+		/// <summary>
+		/// ServerSocket z którym klient jest połączony
+		/// </summary>
 		public ServerSocket ServerSocket { get { return _ServerSocket; } private set { _ServerSocket = value; } }
 
 		private Session _Session = new Session();
+		/// <summary>
+		/// Sesja przypisana do klienta
+		/// </summary>
 		public Session Session { get { return _Session; } protected set { _Session = value; } }
 
 		private JsonSerializer JsonSerializer = new JsonSerializer();
 		private BsonDataWriter _BsonWriter = null;
+		/// <summary>
+		/// Prefedefiniowany BsonWriter do serializacji binarnej komunikacji z klientem
+		/// </summary>
 		protected BsonDataWriter BsonWriter {
 			get {
 				if (_BsonWriter != null) {
@@ -42,6 +51,9 @@ namespace EasyHosting.Models.Server
 			}
 		}
 		private BsonDataReader _BsonReader = null;
+		/// <summary>
+		/// Predefiniowany BsonReader do deserializacji binarnej komunikacji z klientem
+		/// </summary>
 		protected BsonDataReader BsonReader {
 			get {
 				if (_BsonReader != null) {
@@ -66,15 +78,24 @@ namespace EasyHosting.Models.Server
 		}
 
 		private TcpClient _TcpClient = null;
+		/// <summary>
+		/// Fizyczne połączenie klienta
+		/// </summary>
 		public TcpClient TcpClient { get { return _TcpClient; } protected set { this._TcpClient = value; } }
 
-
+		/// <summary>
+		/// Określa czy klient nadał jakieś dane
+		/// </summary>
 		public bool DataAvailable {
 			get {
 				return _TcpClient.GetStream().DataAvailable;
 			}
 		}
 
+		/// <summary>
+		/// Pobiera dane od klienta
+		/// </summary>
+		/// <returns></returns>
 		public JObject GetData() {
 			try {
 				var data = JObject.Load(BsonReader);
@@ -84,6 +105,10 @@ namespace EasyHosting.Models.Server
             }
         }
 
+		/// <summary>
+		/// Wpisuje dane do strumienia komunikacji z klientem
+		/// </summary>
+		/// <param name="data">Dane do wpisania</param>
 		public void WriteData(JObject data) {
             try {
 				JsonSerializer.Serialize(BsonWriter, data);
@@ -111,6 +136,9 @@ namespace EasyHosting.Models.Server
 			CommunicatesQueue.Clear();
         }
 
+		/// <summary>
+		/// Fizyczna wysyłka danych po ich wpisaniu do strumienia
+		/// </summary>
 		public void Flush() {
 			var stream = TcpClient.GetStream();
 			stream.Flush();

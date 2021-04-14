@@ -57,7 +57,7 @@ namespace EasyHosting.Meta.Validators
 
 		public JObject GetJson() {
 			var resp = new ErrorResponseSerializer() {
-				Status = "ERR",
+				Status = "VALIDATION_ERROR",
 				FieldErrors = null
 			};
 

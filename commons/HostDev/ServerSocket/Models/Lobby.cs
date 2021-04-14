@@ -12,6 +12,8 @@ using Newtonsoft.Json.Linq;
 
 namespace ServerSocket.Models {
     public class Lobby {
+        public event EventHandler Closed;
+
         public List<ClientConnection> ConnectedClients = new List<ClientConnection>();
         public ActionsManager ActionsManager;
         public Match Game;
@@ -46,6 +48,11 @@ namespace ServerSocket.Models {
 
             Console.WriteLine("Player " + newConnection.Session.Get("username") + " joined the lobby!");
             newConnection.Session.Set("joined-lobby", this);
+        }
+
+        public void Close() {
+
+            Closed?.Invoke(this, null);
         }
 
         public void Broadcast(JObject communicate) {

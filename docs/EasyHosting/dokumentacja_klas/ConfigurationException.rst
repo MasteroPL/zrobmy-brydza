@@ -6,7 +6,7 @@ ConfigurationException
     :access: public
     :baseclass: System.Exception
 	
-	
+	Wyjątek konfiguracji, rzucany, jeśli konfiguracja została nieprawidłowo zdefiniowana. Wyrzucenie wyjątku indykuje błąd fizyczny (pod kątem poprawności konfiguracji) w kodzie.
 
 Konstruktory
 ============

@@ -10,10 +10,16 @@ using EasyHosting.Models.Server.Serializers;
 
 namespace EasyHosting.Models.Server
 {
+    /// <summary>
+    /// Klasa definiująca podstawowe funkcjonalności gniazda serwera, tj. przechwytywanie połączeń, rozpoznawanie połączeń zautoryzowanych, wymaganie autoryzacji. Wymaga nadpisania AuthorizeConnection oraz HandleRequest
+    /// </summary>
     public abstract class ServerSocket {
         private List<ClientConnection> UnauthorizedConnections = new List<ClientConnection>();
         private List<ClientConnection> AuthorizedConnections = new List<ClientConnection>();
 
+        /// <summary>
+        /// Określa po jakim czasie bez poprawnej autoryzacji połączenie z klientem zostanie zamknięte przez gniazdo
+        /// </summary>
         protected TimeSpan TimeForAuthorization;
 
         private bool _Initialized = false;
@@ -30,11 +36,20 @@ namespace EasyHosting.Models.Server
 
 
         private System.Net.IPAddress _IpAddress = System.Net.IPAddress.Any;
+        /// <summary>
+        /// Określa na jakim adresie IP nasłuchuje gniazdo
+        /// </summary>
         public System.Net.IPAddress IpAddress { get { return _IpAddress; } private set { _IpAddress = value; } }
 
         private int _Port = 33564;
+        /// <summary>
+        /// Określa port na którym nasłuchuje gniazdo
+        /// </summary>
         public int Port { get { return _Port; } private set { _Port = value; } }
 
+        /// <summary>
+        /// Standardowa odpowiedź od serwera po poprawnej autoryzacji
+        /// </summary>
         protected readonly JObject AuthorizationSuccessfulResponse = JObject.Parse("{ \"authroization_status\": \"OK\" }");
 
         private void HandleIncommingConnections() {
@@ -106,16 +121,15 @@ namespace EasyHosting.Models.Server
                                     AuthorizedConnections.Add(connection);
                                     toRemove.Add(connection);
 
+                                    var response = GetAuthorizationResponseSuccessful();
+
                                     // Informacja dla odbiorcy o poprawnej autoryzacji
-                                    connection.WriteData(AuthorizationSuccessfulResponse);
+                                    connection.WriteData(response);
                                     connection.Flush();
                                 }
                                 else {
-                                    var resp = new StandardResponseSerializer() {
-                                        Status = "FORBIDDEN",
-                                        Message = "Autoryzacja odrzucona"
-                                    };
-                                    connection.WriteData(resp.GetApiObject());
+                                    var response = GetAuthorizationResponseFailed();
+                                    connection.WriteData(response);
                                     connection.Flush();
                                 }
                             }catch(Exception e) {
@@ -151,7 +165,28 @@ namespace EasyHosting.Models.Server
             Port = port;
             TimeForAuthorization = TimeSpan.FromSeconds(secondsForAuthorization);
         }
+        /// <summary>
+        /// Określa jaka odpowiedź ma być zwrócona do klienta w przypadku udanej autoryzacji
+        /// </summary>
+        /// <returns>Obiekt JSON do przekazania do klienta</returns>
+        protected virtual JObject GetAuthorizationResponseSuccessful() {
+            return AuthorizationSuccessfulResponse;
+        }
+        /// <summary>
+        /// Określa jaka odpowiedź ma być zwrócona do klienta w przypadku nieudanej autoryzacji
+        /// </summary>
+        /// <returns>Obiekt JSON do przekazania do klienta</returns>
+        protected virtual JObject GetAuthorizationResponseFailed() {
+            var resp = new StandardResponseSerializer() {
+                Status = "FORBIDDEN",
+                Message = "Autoryzacja odrzucona"
+            };
+            return resp.GetApiObject();
+        }
 
+        /// <summary>
+        /// Uruchamia socket
+        /// </summary>
         public void Start() {
             Listen();
         }

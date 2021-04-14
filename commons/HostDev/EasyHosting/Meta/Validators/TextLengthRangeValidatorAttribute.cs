@@ -4,19 +4,38 @@ using System.Text;
 
 namespace EasyHosting.Meta.Validators
 {
+	/// <summary>
+	/// Weryfikuje dozwoloną długość tekstu
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Field, AllowMultiple = true, Inherited = false)]
 	class TextLengthRangeValidatorAttribute : FieldValidatorAttribute
 	{
 		private readonly int _MinLength;
+		/// <summary>
+		/// Minimalna dozwolona długość tekstu (jeśli -1, nie jest sprawdzana)
+		/// </summary>
 		public int MinValue { get { return _MaxLength; } }
 
 		private readonly int _MaxLength;
+		/// <summary>
+		/// Maksymalna dozowlona długość tekstu (jeśli -1, nie jest sprawdzana)
+		/// </summary>
 		public int MaxValue { get { return _MaxLength; } }
 
+		/// <param name="minLength">Minimalna dozwolona długość tekstu (jeśli -1, nie jest sprawdzana)</param>
+		/// <param name="maxLength">Maksymalna dozowlona długość tekstu (jeśli -1, nie jest sprawdzana)</param>
 		public TextLengthRangeValidatorAttribute(int minLength = -1, int maxLength = -1) {
 			_MinLength = minLength;
 			_MaxLength = maxLength;
 		}
+
+		/// <summary>
+		/// Wykonuje walidację
+		/// </summary>
+		/// <param name="o">Obiekt do walidacji</param>
+		/// <param name="throwException">Definiuje czy ma być wyrzucony wyjątek w przypadku błędu walidacji wszystkich alternatyw</param>
+		/// <returns>Przepisuje wynik z pierwszej spełnionej alternatywy (zwalidowany obiekt, ew. konwertowany na określony typ danych))</returns>
+		/// <exception cref="ValidationException">Wyjątek wyrzucany jeśli throwException==true oraz dane nie przeszły walidacji</exception>
 		public override object Validate(object o, bool throwException = true) {
 			if (o == null) {
 				return null;
