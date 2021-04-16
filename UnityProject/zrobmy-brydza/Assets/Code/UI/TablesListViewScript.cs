@@ -16,28 +16,7 @@ public class TablesListViewScript : MonoBehaviour
         GameObject.Find("BackButton").GetComponent<Button>().onClick.AddListener(() => { SceneManager.LoadScene(0); });
         GameObject.Find("CreateNewTableButton").GetComponent<Button>().onClick.AddListener(() => { Debug.Log("Creating new button..."); });
 
-        GameObject.Find("/Canvas/LoginCorner/RightCornerLoginOptions").SetActive(false); // right corner popup 
-
-        // right corner popup
-        GameObject.Find("/Canvas/LoginCorner/RightCornerPopupButton").GetComponent<Button>().onClick.AddListener(() => {
-            GameObject.Find("/Canvas/LoginCorner/RightCornerLoginOptions").SetActive(!GameObject.Find("/Canvas/LoginCorner/RightCornerLoginOptions").activeSelf);
-        });
-
-        GameObject.Find("/Canvas/LoginCorner/RightCornerLoginOptions/ProfileButton").GetComponent<Button>().onClick.AddListener(() => { });  // change scene for 'profile'
-        GameObject.Find("/Canvas/LoginCorner/RightCornerLoginOptions/LogInOutButton").GetComponent<Button>().onClick.AddListener(() => {
-            if (UserData.LoggedIn)
-            {
-                GameObject.Find("/Canvas/LoginCorner/RightCornerLoginOptions/LogInOutButton/LogInOutButtonText").GetComponent<Text>().text = "Wyloguj";
-                // TODO perform logout request
-            }
-            else
-            {
-                GameObject.Find("/Canvas/LoginCorner/RightCornerLoginOptions/LogInOutButton/LogInOutButtonText").GetComponent<Text>().text = "Zaloguj";
-                SceneManager.LoadScene(2);
-            }
-        }); // logout user
-
-        FetchAndUpdateTables();
+        //FetchAndUpdateTables();
     }
 
     async void FetchAndUpdateTables()
@@ -79,10 +58,7 @@ public class TablesListViewScript : MonoBehaviour
 
         string[] ComponentsNamesToReleaseListeners = {
             "BackButton",
-            "CreateNewButton",
-            "/Canvas/LoginCorner/RightCornerPopupButton",
-            "/Canvas/LoginCorner/RightCornerLoginOptions/ProfileButton",
-            "/Canvas/LoginCorner/RightCornerLoginOptions/LogInOutButton"
+            "CreateNewButton"
         };
 
         foreach(var ComponentName in ComponentsNamesToReleaseListeners)
