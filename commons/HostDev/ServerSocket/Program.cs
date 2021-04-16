@@ -1,4 +1,5 @@
-﻿using ServerSocket.Models;
+﻿using EasyHosting.Models.Server.Config;
+using ServerSocket.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +9,8 @@ using System.Threading.Tasks;
 namespace ServerSocket {
     class Program {
         static void Main(string[] args) {
-            var socket = new BridgeServerSocket();
-            socket.Start();
+            MainConfig.InitiateServerSocket();
+            MainConfig.SERVER_SOCKET.Start();
         }
     }
 }

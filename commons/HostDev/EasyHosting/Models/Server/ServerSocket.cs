@@ -17,6 +17,8 @@ namespace EasyHosting.Models.Server
         private List<ClientConnection> UnauthorizedConnections = new List<ClientConnection>();
         private List<ClientConnection> AuthorizedConnections = new List<ClientConnection>();
 
+        private List<ClientConnection> ClientsToDisconnect = new List<ClientConnection>();
+
         /// <summary>
         /// Określa po jakim czasie bez poprawnej autoryzacji połączenie z klientem zostanie zamknięte przez gniazdo
         /// </summary>
@@ -133,16 +135,15 @@ namespace EasyHosting.Models.Server
                                     connection.Flush();
                                 }
                             }catch(Exception e) {
-                                var resp = new StandardResponseSerializer() {
-                                    Status = "FORBIDDEN",
-                                    Message = "Autoryzacja odrzucona"
-                                };
-                                connection.WriteData(resp.GetApiObject());
+                                connection.WriteData(GetAuthorizationResponseFailed());
                                 connection.Flush();
                             }
                         }
                     } 
                     else {
+                        connection.WriteData(GetAuthorizationTimeoutSignal());
+                        connection.Flush();
+
                         connection.TcpClient.Close();
                         toRemove.Add(connection);
                     }
@@ -151,6 +152,24 @@ namespace EasyHosting.Models.Server
                 // Finalizacja przenoszenie połączenia po zautoryzowaniu lub zamknięciu
                 foreach (var connection in toRemove) {
                     UnauthorizedConnections.Remove(connection);
+                }
+
+                // Odłączanie klientów do odłączenia
+                foreach(var connection in ClientsToDisconnect) {
+                    if (AuthorizedConnections.Contains(connection)) {
+                        connection.WriteData(GetDisconnectedSignal());
+                        connection.Flush();
+
+                        connection.TcpClient.Close();
+                        AuthorizedConnections.Remove(connection);
+                    }
+                    else if (UnauthorizedConnections.Contains(connection)) {
+                        connection.WriteData(GetDisconnectedSignal());
+                        connection.Flush();
+
+                        connection.TcpClient.Close();
+                        UnauthorizedConnections.Remove(connection);
+                    }
                 }
 
                 // Nowe połączenia
@@ -179,7 +198,29 @@ namespace EasyHosting.Models.Server
         protected virtual JObject GetAuthorizationResponseFailed() {
             var resp = new StandardResponseSerializer() {
                 Status = "FORBIDDEN",
-                Message = "Autoryzacja odrzucona"
+                Message = "Authorization failed"
+            };
+            return resp.GetApiObject();
+        }
+        /// <summary>
+        /// Treść komunikatu przy odłączeniu klienta od serwera
+        /// </summary>
+        /// <returns>Obiekt JSON do przekazania do klienta</returns>
+        protected virtual JObject GetDisconnectedSignal() {
+            var resp = new StandardResponseSerializer() {
+                Status = "DISCONNECTED",
+                Message = "You have been disconnected"
+            };
+            return resp.GetApiObject();
+        }
+        /// <summary>
+        /// Treść komunikatu przy odłączeniu klienta od serwera przez zbyt długi czas autoryzacji
+        /// </summary>
+        /// <returns>Obiekt JSON do przekazania do klienta</returns>
+        protected virtual JObject GetAuthorizationTimeoutSignal() {
+            var resp = new StandardResponseSerializer() {
+                Status = "AUTHORIZATION_TIMEOUT",
+                Message = "Authorization failed - timeout"
             };
             return resp.GetApiObject();
         }
@@ -194,6 +235,61 @@ namespace EasyHosting.Models.Server
         public void StartInThread() {
             throw new NotImplementedException();
         }
+        /// <summary>
+        /// Odłącza klienta od serwera
+        /// </summary>
+        /// <param name="clientToDisconnect">Klient do odłączenia</param>
+        /// <returns>True jeśli odłączenie poprawne, False jeśli klient już dodany do listy klientów do odłączenia</returns>
+        /// <exception cref="ArgumentException">Rzucany jeśli klient nie jest połączony z serwerem</exception>
+        public bool DisconnectClient(ClientConnection clientToDisconnect) {
+            if (ClientsToDisconnect.Contains(clientToDisconnect)) {
+                return false;
+            }
+
+            else if (AuthorizedConnections.Contains(clientToDisconnect)) {
+                ClientsToDisconnect.Add(clientToDisconnect);
+                return true;
+            }
+
+            else if (UnauthorizedConnections.Contains(clientToDisconnect)) {
+                ClientsToDisconnect.Add(clientToDisconnect);
+                return true;
+            }
+
+            else {
+                throw new ArgumentException("Client not connected");
+            }
+        }
+        /// <summary>
+        /// Sprawdza, czy klient jest połączony z serwerem
+        /// </summary>
+        /// <param name="client">Klient do sprawdzenia</param>
+        /// <param name="searchDependingOnStatus">Jeśli true, użyty zostanie dodatkowy filtr, sprwadzający tylko klientów zautoryzowanych lub tylko niezautoryzacowanych</param>
+        /// <param name="connectionStatus">Jeśli searchDependingOnStatus = true, po jakim statusie powinniśmy wyszukiwać połączenia</param>
+        /// <returns></returns>
+        public bool ClientConnected(ClientConnection client, bool searchDependingOnStatus = false, ConnectionStatus connectionStatus = ConnectionStatus.ANY) {
+            if(!searchDependingOnStatus || connectionStatus == ConnectionStatus.ANY) {
+                if (AuthorizedConnections.Contains(client)) {
+                    return true;
+                }
+                if (UnauthorizedConnections.Contains(client)) {
+                    return true;
+                }
+            }
+            else {
+                if(connectionStatus == ConnectionStatus.AUTHORIZED) {
+                    if (AuthorizedConnections.Contains(client)) {
+                        return true;
+                    }
+                }
+                else if(connectionStatus == ConnectionStatus.UNAUTHORIZED) {
+                    if (UnauthorizedConnections.Contains(client)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
 
         /// <summary>
         /// Metoda wywoływana po uzyskaniu pierwszego strumienia danych z 
@@ -203,6 +299,7 @@ namespace EasyHosting.Models.Server
         /// "false" w przeciwnym przypadku
         /// </summary>
         /// <param name="conn">Połączenie z którego przyszły dane autoryzacyjne</param>
+        /// <param name="requestData">Dane przychodzące od klienta</param>
         /// <returns>True - autoryzacja poprawna; False - autoryzacja odrzucona</returns>
         protected abstract bool AuthorizeConnection(ClientConnection conn, JObject requestData);
 
@@ -216,4 +313,10 @@ namespace EasyHosting.Models.Server
         /// <returns>Odpowiedź dla klienta w formacie JObject</returns>
         protected abstract JObject HandleRequest(ClientConnection conn, JObject requestData);
 	}
+
+    public enum ConnectionStatus {
+        ANY = -1,
+        UNAUTHORIZED = 0,
+        AUTHORIZED = 1
+    };
 }
