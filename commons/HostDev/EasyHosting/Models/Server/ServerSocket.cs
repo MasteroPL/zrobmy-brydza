@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using System.Net;
 using EasyHosting.Meta.Validators;
 using EasyHosting.Models.Server.Serializers;
+using EasyHosting.Models.Serialization;
 
 namespace EasyHosting.Models.Server
 {
@@ -49,11 +50,6 @@ namespace EasyHosting.Models.Server
         /// </summary>
         public int Port { get { return _Port; } private set { _Port = value; } }
 
-        /// <summary>
-        /// Standardowa odpowiedź od serwera po poprawnej autoryzacji
-        /// </summary>
-        protected readonly JObject AuthorizationSuccessfulResponse = JObject.Parse("{ \"authroization_status\": \"OK\" }");
-
         private void HandleIncommingConnections() {
             int acceptedCount = 0;
             while (TcpListener.Pending()) {
@@ -77,38 +73,117 @@ namespace EasyHosting.Models.Server
 
             while (true) {
                 // Komunikaty
+                toRemove.Clear();
                 foreach(var connection in AuthorizedConnections) {
-                    connection.SendCommunicates();
+                    try {
+                        connection.SendCommunicates();
+                    } catch (IOException) {
+                        toRemove.Add(connection);
+                    } catch (ObjectDisposedException) {
+                        toRemove.Add(connection);
+                    } catch (Exception) {
+                        Console.WriteLine("Nie można było wysłać komunikatów do klienta: " + connection.ToString());
+                    }
                 }
+                // Usuwanie zamkniętych połączeń
+                foreach (var connection in toRemove) {
+                    connection.Dispose();
+                    AuthorizedConnections.Remove(connection);
+                }
+                toRemove.Clear();
                 foreach(var connection in UnauthorizedConnections) {
-                    connection.SendCommunicates();
+                    try {
+                        connection.SendCommunicates();
+                    } catch (IOException) {
+                        toRemove.Add(connection);
+                    } catch (ObjectDisposedException) {
+                        toRemove.Add(connection);
+                    } catch (Exception) {
+                        Console.WriteLine("Nie można było wysłać komunikatów do klienta: " + connection.ToString());
+                    }
+                }
+                // Usuwanie zamkniętych połączeń
+                foreach (var connection in toRemove) {
+                    connection.Dispose();
+                    UnauthorizedConnections.Remove(connection);
                 }
 
                 // Zautoryzowane połączenia
+                bool canContinue;
+                toRemove.Clear();
                 foreach (var connection in AuthorizedConnections) {
                     if (connection.DataAvailable) {
                         JObject data = connection.GetData();
                         JObject response;
+                        canContinue = true;
 
+                        // Inicjalna walidacja (Bierzemy kod zapytania, jeśli został podany)
+                        var initialCheck = new StandardRequestSerializer(data);
                         try {
-                            try {
-                                response = HandleRequest(connection, data);
-                            } catch (ValidationException e) {
-                                response = e.GetJson();
-                            }
-                        } catch (Exception e) {
-                            var resp = new StandardResponseSerializer() {
-                                Status = "ERR_INTERNAL",
-                                Message = "Wystąpił wewnętrzny błąd serwera"
-                            };
-                            response = resp.GetApiObject();
+                            initialCheck.Validate();
+                        } catch (ValidationException) {
+                            // Inicjalny format nie przechodzi sprawdzenia
+                            var result = new StandardCommunicateSerializer();
+                            var resp = new StandardResponseSerializer();
+
+                            result.CommunicateType = StandardCommunicateSerializer.TYPE_REQUEST_ERROR;
+                            resp.Status = "INVALID_FORMAT";
+                            resp.Message = "Request failed initial validation";
+                            result.Data = resp.GetApiObject();
+
+                            response = result.GetApiObject();
+                            connection.WriteData(response);
+                            connection.Flush();
+
+                            canContinue = false;
                         }
 
-                        connection.WriteData(response);
-                        connection.Flush();
+                        if (canContinue) {
+                            try {
+                                try {
+                                    var resp = HandleRequest(connection, initialCheck.Data);
+                                    var respWrapper = new StandardCommunicateSerializer() {
+                                        CommunicateType = StandardCommunicateSerializer.TYPE_RESPONSE,
+                                        RequestCode = initialCheck.RequestCode,
+                                        Data = resp
+                                    };
+                                    response = respWrapper.GetApiObject();
+                                } catch (ValidationException e) {
+                                    var resp = e.GetJson();
+                                    var respWrapper = new StandardCommunicateSerializer() {
+                                        CommunicateType = StandardCommunicateSerializer.TYPE_RESPONSE,
+                                        RequestCode = initialCheck.RequestCode,
+                                        Data = resp
+                                    };
+                                    response = respWrapper.GetApiObject();
+                                }
+                            } catch (Exception e) {
+                                var resp = new StandardResponseSerializer() {
+                                    Status = "ERR_INTERNAL",
+                                    Message = "Wystąpił wewnętrzny błąd serwera"
+                                };
+                                var respWrapper = new StandardCommunicateSerializer() {
+                                    CommunicateType = StandardCommunicateSerializer.TYPE_REQUEST_ERROR,
+                                    RequestCode = initialCheck.RequestCode,
+                                    Data = resp.GetApiObject()
+                                };
+                                response = respWrapper.GetApiObject();
+                            }
 
-                        // TODO automatyczna obsługa wyjątków pod kątem zwracania nieprawidłowych odpowiedzi
+                            try {
+                                connection.WriteData(response);
+                                connection.Flush();
+                            } catch (IOException) {
+                                toRemove.Add(connection);
+                            }
+                        }
                     }
+                }
+
+                // Usuwanie zamkniętych połączeń
+                foreach (var connection in toRemove) {
+                    connection.Dispose();
+                    AuthorizedConnections.Remove(connection);
                 }
 
                 // Niezautoryzowane połączenia
@@ -116,27 +191,68 @@ namespace EasyHosting.Models.Server
                 foreach (var connection in UnauthorizedConnections){
                     if (TimeSpan.Compare(connection.GetConnectionTime(), TimeForAuthorization) <= 0) {
                         if (connection.DataAvailable) {
-                            // Zero zaufania do niezautoryzowanych połączeń
+                            canContinue = true;
+                            JObject data = connection.GetData();
+                            var initialCheck = new StandardRequestSerializer(data);
                             try {
-                                JObject data = connection.GetData();
-                                if (AuthorizeConnection(connection, data)) {
-                                    AuthorizedConnections.Add(connection);
-                                    toRemove.Add(connection);
-
-                                    var response = GetAuthorizationResponseSuccessful();
-
-                                    // Informacja dla odbiorcy o poprawnej autoryzacji
-                                    connection.WriteData(response);
+                                try {
+                                    initialCheck.Validate();
+                                } catch (ValidationException e) {
+                                    var wrappedResponse = new StandardCommunicateSerializer() {
+                                        CommunicateType = StandardCommunicateSerializer.TYPE_AUTHORIZATION,
+                                        RequestCode = initialCheck.RequestCode,
+                                        Data = GetAuthorizationResponseFailed()
+                                    };
+                                    connection.WriteData(wrappedResponse.GetApiObject());
                                     connection.Flush();
+                                    canContinue = false;
                                 }
-                                else {
-                                    var response = GetAuthorizationResponseFailed();
-                                    connection.WriteData(response);
-                                    connection.Flush();
+                                if (canContinue) {
+                                    // Zero zaufania do niezautoryzowanych połączeń
+                                    try {
+                                        if (AuthorizeConnection(connection, initialCheck.Data)) {
+                                            var response = GetAuthorizationResponseSuccessful();
+                                            var wrappedResponse = new StandardCommunicateSerializer() {
+                                                CommunicateType = StandardCommunicateSerializer.TYPE_AUTHORIZATION,
+                                                RequestCode = initialCheck.RequestCode,
+                                                Data = response
+                                            };
+
+                                            // Informacja dla odbiorcy o poprawnej autoryzacji
+                                            connection.WriteData(wrappedResponse.GetApiObject());
+                                            connection.Flush();
+
+                                            AuthorizedConnections.Add(connection);
+                                            toRemove.Add(connection);
+                                        }
+                                        else {
+                                            var response = GetAuthorizationResponseFailed();
+                                            var wrappedResponse = new StandardCommunicateSerializer() {
+                                                CommunicateType = StandardCommunicateSerializer.TYPE_AUTHORIZATION,
+                                                RequestCode = initialCheck.RequestCode,
+                                                Data = response
+                                            };
+                                            connection.WriteData(wrappedResponse.GetApiObject());
+                                            connection.Flush();
+                                        }
+                                    } catch (ValidationException e) {
+                                        var wrappedResponse = new StandardCommunicateSerializer() {
+                                            CommunicateType = StandardCommunicateSerializer.TYPE_AUTHORIZATION,
+                                            RequestCode = initialCheck.RequestCode,
+                                            Data = GetAuthorizationResponseFailed()
+                                        };
+                                        connection.WriteData(wrappedResponse.GetApiObject());
+                                        connection.Flush();
+                                    }
                                 }
-                            }catch(Exception e) {
-                                connection.WriteData(GetAuthorizationResponseFailed());
-                                connection.Flush();
+                            } catch(IOException e) {
+                                // Połączenie socketu rozłączone
+                                toRemove.Add(connection);
+                            } catch(ObjectDisposedException e) {
+                                // Połączenie socketu rozłączone
+                                toRemove.Add(connection);
+                            } catch(Exception e) {
+                                Console.WriteLine("Nieobsłużony wyjątek dla zapytania od połączenia " + connection.ToString() + "\n" + e.ToString());
                             }
                         }
                     } 
@@ -151,23 +267,28 @@ namespace EasyHosting.Models.Server
 
                 // Finalizacja przenoszenie połączenia po zautoryzowaniu lub zamknięciu
                 foreach (var connection in toRemove) {
+                    connection.Dispose();
                     UnauthorizedConnections.Remove(connection);
                 }
 
                 // Odłączanie klientów do odłączenia
                 foreach(var connection in ClientsToDisconnect) {
                     if (AuthorizedConnections.Contains(connection)) {
-                        connection.WriteData(GetDisconnectedSignal());
-                        connection.Flush();
+                        try {
+                            connection.WriteData(GetDisconnectedSignal());
+                            connection.Flush();
+                        } catch (Exception) { }
 
-                        connection.TcpClient.Close();
+                        connection.Dispose();
                         AuthorizedConnections.Remove(connection);
                     }
                     else if (UnauthorizedConnections.Contains(connection)) {
-                        connection.WriteData(GetDisconnectedSignal());
-                        connection.Flush();
+                        try {
+                            connection.WriteData(GetDisconnectedSignal());
+                            connection.Flush();
+                        } catch (Exception) { }
 
-                        connection.TcpClient.Close();
+                        connection.Dispose();
                         UnauthorizedConnections.Remove(connection);
                     }
                 }
@@ -189,7 +310,11 @@ namespace EasyHosting.Models.Server
         /// </summary>
         /// <returns>Obiekt JSON do przekazania do klienta</returns>
         protected virtual JObject GetAuthorizationResponseSuccessful() {
-            return AuthorizationSuccessfulResponse;
+            var resp = new StandardResponseSerializer() {
+                Status = "OK",
+                Message = "Authorization successful"
+            };
+            return resp.GetApiObject();
         }
         /// <summary>
         /// Określa jaka odpowiedź ma być zwrócona do klienta w przypadku nieudanej autoryzacji
@@ -211,7 +336,11 @@ namespace EasyHosting.Models.Server
                 Status = "DISCONNECTED",
                 Message = "You have been disconnected"
             };
-            return resp.GetApiObject();
+            var result = new StandardCommunicateSerializer() {
+                CommunicateType = StandardCommunicateSerializer.TYPE_SERVER_SIGNAL,
+                Data = resp.GetApiObject()
+            };
+            return result.GetApiObject();
         }
         /// <summary>
         /// Treść komunikatu przy odłączeniu klienta od serwera przez zbyt długi czas autoryzacji
@@ -222,7 +351,11 @@ namespace EasyHosting.Models.Server
                 Status = "AUTHORIZATION_TIMEOUT",
                 Message = "Authorization failed - timeout"
             };
-            return resp.GetApiObject();
+            var result = new StandardCommunicateSerializer() {
+                CommunicateType = StandardCommunicateSerializer.TYPE_AUTHORIZATION,
+                Data = resp.GetApiObject()
+            };
+            return result.GetApiObject();
         }
 
         /// <summary>

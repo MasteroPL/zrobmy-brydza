@@ -1,5 +1,6 @@
 ﻿using EasyHosting.Meta;
 using EasyHosting.Models.Client;
+using EasyHosting.Models.Client.Serializers;
 using EasyHosting.Models.Serialization;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,13 @@ namespace ClientSocketTesting
 {
 	class Program
 	{
+		static void OnRequestResponse(object sender, Request request) {
+			Console.WriteLine(request.ResponseData);
+        }
+		static void OnSignal(object sender, StandardResponseWrapperSerializer signal) {
+			Console.WriteLine(signal.Data);
+        }
+
 		static void Main(string[] args) {
 			var data = new SampleStruct {
 				Field1 = 100,
@@ -18,6 +26,9 @@ namespace ClientSocketTesting
 			};
 
 			var clientSocket = new ClientSocket("127.0.0.1");
+			clientSocket.RequestResponseReceived += OnRequestResponse;
+			clientSocket.SignalReceived += OnSignal;
+
 
 			var authData = new AuthData() {
 				LobbyId = "DEFAULT",
@@ -25,7 +36,11 @@ namespace ClientSocketTesting
 				LobbyPassword = ""
 			};
 
-			clientSocket.Send(authData.GetApiObject());
+			clientSocket.SendRequest(authData.GetApiObject());
+
+			while (true){
+				clientSocket.UpdateCommunication();
+            }
 		}
 	}
 

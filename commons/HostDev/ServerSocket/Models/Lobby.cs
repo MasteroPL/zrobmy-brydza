@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using GameManagerLib.Models;
 using Newtonsoft.Json.Linq;
 using ServerSocket.Serializers;
+using EasyHosting.Models.Serialization;
 
 namespace ServerSocket.Models {
     public class Lobby : IDisposable {
@@ -56,6 +57,7 @@ namespace ServerSocket.Models {
             string username = newConnection.Session.Get<string>("username");
             Console.WriteLine("Player " + username + " joined the lobby!");
             newConnection.Session.Set("joined-lobby", this);
+            newConnection.BeforeDispose += OnClientConnectionDisposed;
 
             // Broadcast o dołączeniu nowego gracza do Lobby
             var signal = new LobbySignalUserJoinedSerializer() {
@@ -69,6 +71,39 @@ namespace ServerSocket.Models {
             };
             Broadcast(result.GetApiObject());
             ConnectedClients.Add(newConnection);
+        }
+        public void RemoveFromLobby(ClientConnection client) {
+            if (!ConnectedClients.Contains(client)) {
+                throw new ArgumentException("Client not connected to Lobby");
+            }
+
+            // Komunikat o opuszczeniu Lobby przez użytkownika
+            string username = client.Session.Get<string>("username");
+            var signal = new LobbySignalUserRemovedSerializer() {
+                Signal = LobbySignalUserRemovedSerializer.SINGAL_USER_REMOVED,
+                Message = "User " + username + " left the lobby",
+                Username = username
+            };
+            var result = new StandardCommunicateSerializer() {
+                CommunicateType = StandardCommunicateSerializer.TYPE_LOBBY_SIGNAL,
+                Data = signal.GetApiObject()
+            };
+            Broadcast(result.GetApiObject());
+
+            // Usuwamy klienta z Lobby
+            ConnectedClients.Remove(client);
+            client.BeforeDispose -= OnClientConnectionDisposed;
+            Console.WriteLine("Użytkownik usunięty z Lobby: " + username);
+
+            // Ustawianie nowego właściciela Lobby
+            if (LobbyOwner == client) {
+                if(ConnectedClients.Count > 0) {
+                    LobbyOwner = ConnectedClients.First();
+                }
+                else {
+                    Close();
+                }
+            }
         }
         /// <summary>
         /// Zamyka Lobby i wysyła informację do graczy o zamknięciu
@@ -93,6 +128,8 @@ namespace ServerSocket.Models {
 
             Closed?.Invoke(this, null);
 
+            Console.WriteLine("Lobby zamknięte: " + this.ToString());
+
             Dispose();
         }
 
@@ -110,6 +147,14 @@ namespace ServerSocket.Models {
 
                 _Disposed = true;
             }
+        }
+
+        protected virtual void OnClientConnectionDisposed(object sender, EventArgs args) {
+            ClientConnection conn = (ClientConnection)sender;
+
+            try {
+                RemoveFromLobby(conn);
+            } catch (ArgumentException) { }
         }
     }
 }

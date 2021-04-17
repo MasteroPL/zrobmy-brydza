@@ -10,8 +10,12 @@ using Newtonsoft.Json;
 
 namespace EasyHosting.Models.Server
 {
-	public class ClientConnection
-	{
+	public class ClientConnection : IDisposable{
+		public event EventHandler BeforeDispose;
+
+		private bool _Disposed = false;
+		public bool Disposed { get { return _Disposed; } }
+
 		/// <summary>
 		/// Komunikaty typu "PUSH", czyli wysałane z serwera do użytkownika. Nie są to odpowiedzi do zapytań
 		/// </summary>
@@ -144,7 +148,16 @@ namespace EasyHosting.Models.Server
 			stream.Flush();
         }
 
-		public ClientConnection(TcpClient tcpClient, ServerSocket serverSocket = null) {
+        public void Dispose() {
+			if (!Disposed) {
+				_Disposed = true;
+				BeforeDispose?.Invoke(this, null);
+				TcpClient.Close();
+				TcpClient.Dispose();
+			}
+        }
+
+        public ClientConnection(TcpClient tcpClient, ServerSocket serverSocket = null) {
 			this.TcpClient = tcpClient;
 			this.ServerSocket = serverSocket;
 		}

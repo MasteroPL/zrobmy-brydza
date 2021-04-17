@@ -90,10 +90,9 @@
     <Compile Include="Serializers\ContractSerializer.cs" />
     <Compile Include="Serializers\LobbySignalsSerializer.cs" />
     <Compile Include="Serializers\LobbySignalUserJoinedSerializer.cs" />
+    <Compile Include="Serializers\LobbySignalUserRemovedSerializer.cs" />
     <Compile Include="Serializers\PlayerSerializer.cs" />
     <Compile Include="Serializers\CardSerializer.cs" />
-    <Compile Include="Serializers\StandardCommunicateSerializer.cs" />
-    <Compile Include="Serializers\StandardRequestSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

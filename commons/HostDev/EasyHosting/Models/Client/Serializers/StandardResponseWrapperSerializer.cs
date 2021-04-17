@@ -3,21 +3,10 @@ using EasyHosting.Models.Serialization;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace ServerSocket.Serializers {
-    /// <summary>
-    /// Serializator definiujący standardowy komunikat od serwera (dowolna odpowiedź lub wysyłana informacja)
-    /// </summary>
-    public class StandardCommunicateSerializer : BaseSerializer {
-        public const string TYPE_RESPONSE = "REQUEST_RESPONSE";
-        public const string TYPE_REQUEST_ERROR = "REQUEST_ERROR";
-        public const string TYPE_LOBBY_SIGNAL = "LOBBY_SIGNAL";
-        public const string TYPE_AUTHORIZATION = "AUTHORIZATION";
-        public const string TYPE_SERVER_SIGNAL = "SERVER_SIGNAL";
-
+namespace EasyHosting.Models.Client.Serializers {
+    public class StandardResponseWrapperSerializer : BaseSerializer {
         /// <summary>
         /// Określa typ komunikatu
         /// </summary>
@@ -36,7 +25,7 @@ namespace ServerSocket.Serializers {
         [SerializerField(apiName: "data", required: true)]
         public JObject Data;
 
-        public StandardCommunicateSerializer() : base() { }
-        public StandardCommunicateSerializer(JObject data) : base(data) { }
+        public StandardResponseWrapperSerializer() : base() { }
+        public StandardResponseWrapperSerializer(JObject data) : base(data) { }
     }
 }

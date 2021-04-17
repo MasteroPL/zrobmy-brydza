@@ -12,6 +12,7 @@ namespace ServerSocket.Serializers {
     /// Serializator odpowiadający za komunikaty dotyczące stanu Lobby, np. zamknięcie Lobby, pauza, odpauzowanie Lobby
     /// </summary>
     public class LobbySignalsSerializer : BaseSerializer {
+        public const string SIGNAL_REMOVED_FROM_LOBBY = "REMOVED_FROM_LOBBU";
         public const string SIGNAL_PAUSED = "PAUSED";
         public const string SIGNAL_UNPAUSED = "UNPAUSED";
         public const string SIGNAL_CLOSED = "CLOSED";

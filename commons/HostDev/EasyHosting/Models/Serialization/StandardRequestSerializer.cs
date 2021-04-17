@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ServerSocket.Serializers {
+namespace EasyHosting.Models.Serialization {
     /// <summary>
     /// Serializator do inicjalnej walidacji danych przychodzących (przed przekazaniem do menadżera akcji)
     /// </summary>

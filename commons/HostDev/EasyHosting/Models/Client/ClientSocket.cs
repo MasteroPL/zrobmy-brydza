@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using EasyHosting.Meta.Validators;
+using EasyHosting.Models.Client.Serializers;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
 using System;
@@ -11,6 +13,12 @@ namespace EasyHosting.Models.Client
 {
 	public class ClientSocket
 	{
+		public event EventHandler<Request> RequestSent;
+		public event EventHandler<Request> RequestResponseReceived;
+		public event EventHandler<StandardResponseWrapperSerializer> SignalReceived;
+
+		protected Dictionary<long, Request> OnGoingRequests = new Dictionary<long, Request>();
+
 		private JsonSerializer JsonSerializer = new JsonSerializer();
 
 		private bool _Initialized = false;
@@ -22,12 +30,6 @@ namespace EasyHosting.Models.Client
 		private TcpClient _TcpClient = null;
 		public TcpClient TcpClient { get { return _TcpClient; } private set { _TcpClient = value; } }
 
-		private uint _BufferSize = 16384; // 16KB
-		/// <summary>
-		/// Zdefiniowany rozmiar bufora nadającego i odbierającego
-		/// </summary>
-		public uint BufferSize { get { return _BufferSize; } private set { _BufferSize = value; } }
-
 		private string _IpAddress;
 		public string IpAddress { get { return _IpAddress; } private set { _IpAddress = value; } }
 
@@ -37,7 +39,8 @@ namespace EasyHosting.Models.Client
 		private bool _Authorized = false;
 		public bool Authorized { get { return _Authorized; } private set { _Authorized = value; } }
 
-		public ConnectionState ConnectionState { get; protected set; }
+		protected long _CurrentRequestId = 1;
+		public long CurrentRequestId { get { return _CurrentRequestId; } }
 
 		private void Init() {
 			TcpClient = new TcpClient(IpAddress, Port);
@@ -78,35 +81,91 @@ namespace EasyHosting.Models.Client
 			}
 		}
 
-		public ClientSocket(string ipAddress, int port = 33564, uint bufferSize = 16384) {
+		public ClientSocket(string ipAddress, int port = 33564) {
 			IpAddress = ipAddress;
 			Port = port;
-			BufferSize = bufferSize;
 
 			Init();
-
-			ConnectionState = ConnectionState.IDLE;
 		}
 
-		public JObject Send(object data) {
-			NetworkStream stream = TcpClient.GetStream();
-			JsonSerializer.Serialize(BsonWriter, data);
+		/// <summary>
+		/// Tworzy i wysyła zapytanie do serwera. Na odpowiedź na zapytanie należy nasłuchiwać na event'cie RequestResponseReceived
+		/// </summary>
+		/// <param name="requestData">Dane zapytania do wysłania, metoda obudowuje je dodatkowo odpowiednimi meta-danymi zapytania</param>
+		public Request SendRequest(JObject requestData) {
+			var requestId = CurrentRequestId;
+			_CurrentRequestId++;
 
+			var wrapper = new StandardRequestWrapperSerializer() {
+				RequestCode = requestId,
+				Data = requestData
+			};
+			var request = new Request(this, wrapper.GetApiObject(), requestId);
 
-			JObject response = null;
+			OnGoingRequests.Add(requestId, request);
+			request.Send();
+
+			RequestSent?.Invoke(this, request);
+			return request;
+        }
+		/// <summary>
+		/// Wypisuje dane na strumień wyjściowy do serwera
+		/// </summary>
+		/// <param name="data"></param>
+		public void WriteData(JObject data) {
 			try {
-				response = JObject.Load(BsonReader);
-			} catch (Exception e) {
-				// TODO: handle bad request
-
-				Console.WriteLine("Parsing response from the server failed");
-
-				return null;
-			}
-
-			Console.WriteLine(response);
-
-			return response;
+				JsonSerializer.Serialize(BsonWriter, data);
+            } catch(Exception e) {
+				throw e; // Temporary; TODO: change
+            }
 		}
+		/// <summary>
+		/// Przetwarza dane otrzymane od serwera, określa czy są odpowiedzią na zapytanie, czy sygnałem od serwera
+		/// </summary>
+		/// <param name="data">Dane do przetworzenia</param>
+		protected void ProcessReceivedData(JObject data) {
+			var serializer = new StandardResponseWrapperSerializer(data);
+			try {
+				serializer.Validate();
+            } catch(ValidationException e) {
+				Console.WriteLine("Wystąpił błąd walidacji odpowiedzi: \n" + e.GetJson());
+				return;
+            }
+
+			// Przypadek odpowiedzi na zapytanie wysłane przez socket
+			if(serializer.CommunicateType == "REQUEST_RESPONSE" || serializer.CommunicateType == "REQUEST_ERROR" || serializer.CommunicateType == "AUTHORIZATION") {
+				long id = serializer.RequestCode;
+
+                if (OnGoingRequests.ContainsKey(id)) {
+					Request request = OnGoingRequests[id];
+					request.AttachResponse(serializer.Data);
+
+					OnGoingRequests.Remove(id);
+
+					RequestResponseReceived?.Invoke(this, request);
+                }
+                else {
+					Console.WriteLine("Zapytanie z identyfikatorem nie znalezione: " + id);
+                }
+            }
+            else {
+				SignalReceived?.Invoke(this, serializer);
+            }
+        }
+		/// <summary>
+		/// Sprawdza, czy serwer nadał komunikację do klienta, przetwarza komunikację od serwera, jeśli została nadana
+		/// </summary>
+		public void UpdateCommunication() {
+			var stream = TcpClient.GetStream();
+			JObject data;
+            while (stream.DataAvailable) {
+                try {
+					data = JObject.Load(BsonReader);
+                } catch(Exception e) {
+					throw e; // temporary; TODO: change
+                }
+				ProcessReceivedData(data);
+            }
+        }
 	}
 }
