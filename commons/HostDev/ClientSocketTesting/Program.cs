@@ -20,10 +20,6 @@ namespace ClientSocketTesting
         }
 
 		static void Main(string[] args) {
-			var data = new SampleStruct {
-				Field1 = 100,
-				Field2 = "TEST"
-			};
 
 			var clientSocket = new ClientSocket("127.0.0.1");
 			clientSocket.RequestResponseReceived += OnRequestResponse;

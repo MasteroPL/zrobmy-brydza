@@ -104,6 +104,7 @@ namespace ServerSocket.Models {
                     Close();
                 }
             }
+            client.Dispose();
         }
         /// <summary>
         /// Zamyka Lobby i wysyła informację do graczy o zamknięciu

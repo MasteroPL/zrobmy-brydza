@@ -21,11 +21,11 @@ namespace ServerSocket.Actions.Bid
 
             if (!X && !XX) {
                 if (Height < -1 || Height > 7 || Height == 0) {
-                    AddError("Height", "INVALID_CONTRACT_HEIGHT", "Za niski lub zawisoki kontrakt. Dozwolone wartości <-1> ∪ <1,7>");
+                    AddError("height", "INVALID_CONTRACT_HEIGHT", "Za niski lub zawisoki kontrakt. Dozwolone wartości <-1> ∪ <1,7>");
                 }
 
                 if (Color < -1 || Color > 4) {
-                    AddError("Color", "INVALID_COLOR", "Zły kolor, dozwolone wartości <0,4>");
+                    AddError("color", "INVALID_COLOR", "Zły kolor, dozwolone wartości <0,4>");
                 }
             }
 
