@@ -40,6 +40,9 @@ namespace EasyHosting.Models.Server
 		/// </summary>
 		protected BsonDataWriter BsonWriter {
 			get {
+				_BsonWriter = new BsonDataWriter(TcpClient.GetStream());
+				return _BsonWriter;
+
 				if (_BsonWriter != null) {
 					return _BsonWriter;
 				}
@@ -60,6 +63,9 @@ namespace EasyHosting.Models.Server
 		/// </summary>
 		protected BsonDataReader BsonReader {
 			get {
+				_BsonReader = new BsonDataReader(TcpClient.GetStream());
+				return _BsonReader;
+
 				if (_BsonReader != null) {
 					return _BsonReader;
 				}
@@ -102,8 +108,8 @@ namespace EasyHosting.Models.Server
 		/// <returns></returns>
 		public JObject GetData() {
 			try {
-				var data = JObject.Load(BsonReader);
-				return data;
+				var data = JToken.Load(BsonReader);
+				return (JObject)data;
             } catch(Exception e) {
 				throw e; // temporary; TODO: change
             }

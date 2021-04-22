@@ -241,12 +241,21 @@ namespace EasyHosting.Models.Serialization
 					JObject[] targetArr = new JObject[sourceArr.Length];
 
 					for(int i = 0; i < sourceArr.Length; i++) {
-						targetArr[i] = sourceArr[i].GetApiObject();
+						if (sourceArr[i] != null)
+							targetArr[i] = sourceArr[i].GetApiObject();
+						else
+							targetArr[i] = null;
 					}
 					result.Add(fieldMeta.ApiName, JToken.FromObject(targetArr));
 				}
 				else if (typeof(BaseSerializer).IsAssignableFrom(field.FieldType)) {
-					result.Add(fieldMeta.ApiName, ((BaseSerializer)field.GetValue(this)).GetApiObject());
+					var tmp = (BaseSerializer)field.GetValue(this);
+					if (tmp != null) {
+						result.Add(fieldMeta.ApiName, tmp.GetApiObject());
+                    }
+                    else {
+						result.Add(fieldMeta.ApiName, null);
+                    }
 				}
 				else {
 					var val = field.GetValue(this);

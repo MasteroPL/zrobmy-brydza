@@ -26,6 +26,9 @@ namespace EasyHosting.Models.Client {
         public JObject ResponseData {
             get; protected set;
         }
+        public string ResponseType {
+            get; set;
+        }
 
         private DateTime _SentAt;
         /// <summary>

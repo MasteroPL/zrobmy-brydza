@@ -27,9 +27,6 @@ namespace ServerSocket.Serializers {
         [SerializerField(apiName:"bidding_ended")]
         public bool BiddingEnded;
 
-        [SerializerField(apiName:"declarer")]
-        public int Declarer;
-
 
         public BiddingSerializer() : base() { }
         public BiddingSerializer(JObject data) : base(data) { }

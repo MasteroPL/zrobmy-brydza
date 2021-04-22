@@ -49,7 +49,10 @@ namespace EasyHosting.Models.Client
 		private BsonDataWriter _BsonWriter = null;
 		protected BsonDataWriter BsonWriter {
 			get {
-				if(_BsonWriter != null) {
+				_BsonWriter = new BsonDataWriter(TcpClient.GetStream());
+				return _BsonWriter;
+
+				if (_BsonWriter != null) {
 					return _BsonWriter;
 				}
 				else {
@@ -66,6 +69,9 @@ namespace EasyHosting.Models.Client
 		private BsonDataReader _BsonReader = null;
 		protected BsonDataReader BsonReader {
 			get {
+				_BsonReader = new BsonDataReader(TcpClient.GetStream());
+				return _BsonReader;
+
 				if (_BsonReader != null) {
 					return _BsonReader;
 				}
@@ -139,6 +145,7 @@ namespace EasyHosting.Models.Client
                 if (OnGoingRequests.ContainsKey(id)) {
 					Request request = OnGoingRequests[id];
 					request.AttachResponse(serializer.Data);
+					request.ResponseType = serializer.CommunicateType;
 
 					OnGoingRequests.Remove(id);
 

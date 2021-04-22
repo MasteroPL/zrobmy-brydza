@@ -23,8 +23,15 @@ namespace ServerSocket.Actions.GetTableInfo {
         [SerializerField(apiName: "points_ns_below_line")]
         public int PointsNSBelowLine;
 
+        [SerializerField(apiName: "number_of_players")]
+        public int NumberOfPlayers;
         [SerializerField(apiName: "players")]
         public PlayerSerializer[] Players;
+
+        [SerializerField(apiName: "number_of_users_in_lobby")]
+        public int NumberOfLobbyUsers;
+        [SerializerField(apiName: "lobby_users")]
+        public LobbyUserSerializer[] LobbyUsers;
 
         [SerializerField(apiName: "current_bidding")]
         public BiddingSerializer CurrentBidding;

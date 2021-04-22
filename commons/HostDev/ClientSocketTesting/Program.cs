@@ -1,7 +1,9 @@
 ﻿using EasyHosting.Meta;
+using EasyHosting.Models.Actions;
 using EasyHosting.Models.Client;
 using EasyHosting.Models.Client.Serializers;
 using EasyHosting.Models.Serialization;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +14,26 @@ namespace ClientSocketTesting
 {
 	class Program
 	{
+		static bool Authorized = false;
+
 		static void OnRequestResponse(object sender, Request request) {
 			Console.WriteLine(request.ResponseData);
         }
 		static void OnSignal(object sender, StandardResponseWrapperSerializer signal) {
 			Console.WriteLine(signal.Data);
+        }
+
+		static ActionsSerializer WrapRequestData(string actionName, JObject data) {
+			var result = new ActionsSerializer();
+			result.Actions = new ActionSerializer[1];
+			var tmp = new ActionSerializer();
+
+			tmp.ActionName = actionName;
+			tmp.ActionData = data;
+
+			result.Actions[0] = tmp;
+
+			return result;
         }
 
 		static void Main(string[] args) {
@@ -32,11 +49,20 @@ namespace ClientSocketTesting
 				LobbyPassword = ""
 			};
 
-			clientSocket.SendRequest(authData.GetApiObject());
+			var authRequest = clientSocket.SendRequest(authData.GetApiObject());
 
-			while (true){
+			while (authRequest.RequestState != RequestState.RESPONSE_RECEIVED){
 				clientSocket.UpdateCommunication();
             }
+
+			var tableInfoRequestData = WrapRequestData("get-table-info", null);
+			var tableInfoRequest = clientSocket.SendRequest(tableInfoRequestData.GetApiObject());
+
+			while(tableInfoRequest.RequestState != RequestState.RESPONSE_RECEIVED) {
+				clientSocket.UpdateCommunication();
+            }
+
+			Console.WriteLine("OK");
 		}
 	}
 
