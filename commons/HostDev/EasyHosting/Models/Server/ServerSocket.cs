@@ -70,6 +70,7 @@ namespace EasyHosting.Models.Server
             TcpListener.Start();
 
             List<ClientConnection> toRemove = new List<ClientConnection>();
+            List<ClientConnection> currentlyAuthorized = new List<ClientConnection>();
 
             while (true) {
                 // Komunikaty
@@ -223,7 +224,7 @@ namespace EasyHosting.Models.Server
                                             connection.Flush();
 
                                             AuthorizedConnections.Add(connection);
-                                            toRemove.Add(connection);
+                                            currentlyAuthorized.Add(connection);
                                         }
                                         else {
                                             var response = GetAuthorizationResponseFailed();
@@ -266,6 +267,10 @@ namespace EasyHosting.Models.Server
                 }
 
                 // Finalizacja przenoszenie połączenia po zautoryzowaniu lub zamknięciu
+                foreach (var connection in currentlyAuthorized) {
+                    UnauthorizedConnections.Remove(connection);
+                    AuthorizedConnections.Add(connection);
+                }
                 foreach (var connection in toRemove) {
                     connection.Dispose();
                     UnauthorizedConnections.Remove(connection);
