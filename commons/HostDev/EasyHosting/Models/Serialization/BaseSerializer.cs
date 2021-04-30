@@ -147,7 +147,7 @@ namespace EasyHosting.Models.Serialization
 				var fieldMeta = fieldMetas.First();
 				if (!data.ContainsKey(fieldMeta.ApiName)) {
 					if (fieldMeta.Required) {
-						AddError(fieldMeta.ApiName, "MISSING_REQUIRED_FIELD", "This field is required.");
+						AddError(field.Name, "MISSING_REQUIRED_FIELD", "This field is required.");
 						fieldValid = false;
 					}
 					else {
@@ -166,26 +166,36 @@ namespace EasyHosting.Models.Serialization
 							BaseSerializer[] serializers = (BaseSerializer[])Array.CreateInstance(serializerType, arrayData.Count);
 							int index = 0;
 							foreach(var obj in arrayData) {
-								serializer = (BaseSerializer)Activator.CreateInstance(serializerType);
-								serializer.SetData((JObject)obj);
-								serializer.Validate();
-								serializers[index] = serializer;
+								if (!obj.Any()) {
+									serializers[index] = null;
+								}
+								else {
+									serializer = (BaseSerializer)Activator.CreateInstance(serializerType);
+									serializer.SetData((JObject)obj);
+									serializer.Validate();
+									serializers[index] = serializer;
+								}
 								index++;
 							}
 							fieldValue = serializers;
 						} catch(Exception e) {
-							AddError(fieldMeta.ApiName, "INVALID_VALUE", "Could not convert provided value to type required by field.");
+							AddError(field.Name, "INVALID_VALUE", "Could not convert provided value to type required by field.");
 							fieldValid = false;
 						}
 					}
 					// Przypadek zagniezdzonych serializatorów
 					else if (typeof(BaseSerializer).IsAssignableFrom(field.FieldType)) {
 						try {
-							BaseSerializer serializer = (BaseSerializer)Activator.CreateInstance(field.FieldType);
-							serializer.SetData((JObject)currentData);
-							fieldValue = serializer;
+							if (!currentData.Any()) {
+								fieldValue = null;
+							}
+							else {
+								BaseSerializer serializer = (BaseSerializer)Activator.CreateInstance(field.FieldType);
+								serializer.SetData((JObject)currentData);
+								fieldValue = serializer;
+							}
 						} catch(Exception e) {
-							AddError(fieldMeta.ApiName, "INVALID_VALUE", "Could not convert provided value to type required by field.");
+							AddError(field.Name, "INVALID_VALUE", "Could not convert provided value to type required by field.");
 							fieldValid = false;
 						}
 					}
@@ -194,7 +204,7 @@ namespace EasyHosting.Models.Serialization
 						try {
 							fieldValue = data[fieldMeta.ApiName].ToObject(field.FieldType);
 						} catch (Exception e) {
-							AddError(fieldMeta.ApiName, "INVALID_VALUE", "Could not convert provided value to type required by field.");
+							AddError(field.Name, "INVALID_VALUE", "Could not convert provided value to type required by field.");
 							fieldValid = false;
 						}
 					}

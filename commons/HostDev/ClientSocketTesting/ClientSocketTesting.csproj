@@ -62,6 +62,10 @@
       <Project>{FB7B10C5-89FA-42DC-A706-F504A0674B9F}</Project>
       <Name>EasyHosting</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ServerSocket\ServerSocket.csproj">
+      <Project>{6a99b9ef-3465-47d8-aaa2-72f67774ee9e}</Project>
+      <Name>ServerSocket</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

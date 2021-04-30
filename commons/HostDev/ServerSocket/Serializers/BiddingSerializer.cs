@@ -1,4 +1,5 @@
 ﻿using EasyHosting.Meta;
+using EasyHosting.Meta.Validators;
 using EasyHosting.Models.Serialization;
 using Newtonsoft.Json.Linq;
 using System;
@@ -13,9 +14,11 @@ namespace ServerSocket.Serializers {
         public int CurrentPlayerTag;
 
         [SerializerField(apiName:"contract_list")]
+        [NullValidator(canBeNull: true)]
         public ContractSerializer[] ContractList;
 
         [SerializerField(apiName:"highest_contract")]
+        [NullValidator(canBeNull: true)]
         public ContractSerializer HighestContract;
 
         [SerializerField(apiName:"dealer")]
