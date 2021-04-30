@@ -2,10 +2,12 @@
 using EasyHosting.Models.Serialization;
 using Newtonsoft.Json.Linq;
 using ServerSocket.Serializers;
+using EasyHosting.Meta.Validators;
 
 namespace ServerSocket.Actions.GetTableInfo {
     public class ResponseSerializer : BaseSerializer {
         [SerializerField(apiName: "status")]
+        [NullValidator(canBeNull: true)]
         public string Status;
 
         [SerializerField(apiName:"game_state")]
@@ -26,14 +28,17 @@ namespace ServerSocket.Actions.GetTableInfo {
         [SerializerField(apiName: "number_of_players")]
         public int NumberOfPlayers;
         [SerializerField(apiName: "players")]
+        [NullValidator(canBeNull: true)]
         public PlayerSerializer[] Players;
 
         [SerializerField(apiName: "number_of_users_in_lobby")]
         public int NumberOfLobbyUsers;
         [SerializerField(apiName: "lobby_users")]
+        [NullValidator(canBeNull: true)]
         public LobbyUserSerializer[] LobbyUsers;
 
         [SerializerField(apiName: "current_bidding")]
+        [NullValidator(canBeNull: true)]
         public BiddingSerializer CurrentBidding;
 
         [SerializerField(apiName: "rounds_ns")]

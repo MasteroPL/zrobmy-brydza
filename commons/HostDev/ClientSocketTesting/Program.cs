@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GetTableInfoSerializer=ServerSocket.Actions.GetTableInfo.ResponseSerializer;
 
 namespace ClientSocketTesting
 {
@@ -60,6 +61,21 @@ namespace ClientSocketTesting
 
 			while(tableInfoRequest.RequestState != RequestState.RESPONSE_RECEIVED) {
 				clientSocket.UpdateCommunication();
+            }
+
+
+			var responseActionSerializer = new ActionsSerializer(tableInfoRequest.ResponseData);
+			responseActionSerializer.Validate();
+
+			var dataResponseSerializer = new GetTableInfoSerializer(responseActionSerializer.Actions[0].ActionData);
+            try
+            {
+				dataResponseSerializer.Validate();
+				Console.WriteLine(dataResponseSerializer.Status);
+            }
+			catch(Exception ex)
+            {
+				Console.WriteLine(ex.Message);
             }
 
 			Console.WriteLine("OK");
