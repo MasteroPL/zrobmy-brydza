@@ -192,6 +192,7 @@ namespace EasyHosting.Models.Serialization
 							else {
 								BaseSerializer serializer = (BaseSerializer)Activator.CreateInstance(field.FieldType);
 								serializer.SetData((JObject)currentData);
+								serializer.Validate();
 								fieldValue = serializer;
 							}
 						} catch(Exception e) {
