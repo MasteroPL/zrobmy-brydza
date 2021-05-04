@@ -13,8 +13,8 @@ namespace GameManagerLib.Models
 		public List<Contract> ContractList;
 		public Contract HighestContract;
 		public PlayerTag Dealer;
-		private int PassCounter = 0;
-		private bool End = false;
+		public int PassCounter = 0;
+		public bool End = false;
 		public PlayerTag Declarer;
 
 		// Tablice mówiące, kto jaki kolor jako pierwszy deklarował
@@ -68,7 +68,7 @@ namespace GameManagerLib.Models
 				}
 				else
 				{
-					HighestContract.XEnabled = true;
+					HighestContract = new Contract(HighestContract.ContractHeight, HighestContract.ContractColor, HighestContract.DeclaredBy, true, false);
 					ContractList.Add(Contract);
 					this.PassCounter = 0;
 					return true;
@@ -84,7 +84,7 @@ namespace GameManagerLib.Models
 				}
 				else
 				{
-					HighestContract.XXEnabled = true;
+					HighestContract = new Contract(HighestContract.ContractHeight, HighestContract.ContractColor, HighestContract.DeclaredBy, false, true);
 					ContractList.Add(Contract);
 					this.PassCounter = 0;
 					return true;

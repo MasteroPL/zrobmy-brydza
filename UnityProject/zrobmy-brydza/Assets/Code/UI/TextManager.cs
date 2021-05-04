@@ -111,6 +111,7 @@ public class TextManager : MonoBehaviour
                 NSText = AbovePoints + "\n" + NSText;
             }
         }
+
         NSText += "____________\n";
         foreach (string UnderPoints in NSUnderPoints)
         {
@@ -136,6 +137,7 @@ public class TextManager : MonoBehaviour
                 EWText = AbovePoints + "\n" + EWText;
             }
         }
+
         EWText += "____________\n";
         foreach (string UnderPoints in EWUnderPoints)
         {

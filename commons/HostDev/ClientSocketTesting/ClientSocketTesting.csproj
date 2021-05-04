@@ -58,6 +58,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\GameDev\GamerLib\GamerLib.csproj">
+      <Project>{0241cd53-4c0f-48ed-923d-fc2cc0facc37}</Project>
+      <Name>GamerLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EasyHosting\EasyHosting.csproj">
       <Project>{FB7B10C5-89FA-42DC-A706-F504A0674B9F}</Project>
       <Name>EasyHosting</Name>

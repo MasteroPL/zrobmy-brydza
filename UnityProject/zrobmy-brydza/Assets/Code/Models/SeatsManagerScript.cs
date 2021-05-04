@@ -46,9 +46,9 @@ public class SeatsManagerScript : MonoBehaviour
         return !SeatStates[PlayerTag.N] && !SeatStates[PlayerTag.S] && !SeatStates[PlayerTag.E] && !SeatStates[PlayerTag.W];
     }
 
-    public void SitPlayer(PlayerTag Position, string PlayerNickname, bool TestPlayer=false)
+    public void SitPlayer(PlayerTag Position, string PlayerNickname, bool ClickedByMe=false)
     {
-        Debug.Log(Position.ToString() + " " + PlayerNickname);
+        //Debug.Log(Position.ToString() + " " + PlayerNickname);
         GameObject label = GameObject.Find(Position + "PlayerLabel");
         if (label != null)
         {
@@ -56,7 +56,7 @@ public class SeatsManagerScript : MonoBehaviour
             SeatStates[Position] = false;
             PlayersNicknames[Position] = PlayerNickname;
 
-            if (!TestPlayer)
+            if (ClickedByMe)
             {
                 UserData.position = Position;
                 UserData.positionStart = Position;

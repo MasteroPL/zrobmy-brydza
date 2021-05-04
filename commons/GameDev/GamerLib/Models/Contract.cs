@@ -36,6 +36,9 @@ namespace GameManagerLib.Models
             } else if (XEnabled)
             {
                 contractStr += "X";
+            } else if (contractStr == "")
+            {
+                contractStr = "pass";
             }
             return contractStr;
         }

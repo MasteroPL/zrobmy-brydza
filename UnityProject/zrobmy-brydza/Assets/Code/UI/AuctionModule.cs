@@ -287,7 +287,33 @@ public class AuctionModule : MonoBehaviour
                 WPlayerDeclarations.text += MainModule.Match.CurrentBidding.HighestContract.ToString() + "\n";
                 break;
         }
-        // setting initial contractCache value
-        //AuctionState.currentPlayer = PlayerTag.E; // TODO setting proper player
+    }
+
+    public void ReloadDeclarations()
+    {
+        NPlayerDeclarations.text = "";
+        EPlayerDeclarations.text = "";
+        SPlayerDeclarations.text = "";
+        WPlayerDeclarations.text = "";
+        Text[] auctionTexts = { NPlayerDeclarations, EPlayerDeclarations, SPlayerDeclarations, WPlayerDeclarations };
+
+        Debug.Log(MainModule.Match.CurrentBidding.CurrentPlayer);
+
+        for (int i = 0; i < (int)MainModule.Match.CurrentBidding.ContractList[0].DeclaredBy; i++)
+        {
+            auctionTexts[i].text = "-\n";
+        }
+
+        for (int i = 0; i < MainModule.Match.CurrentBidding.ContractList.Count; i++)
+        {
+            if (MainModule.Match.CurrentBidding.ContractList[i].ContractHeight == ContractHeight.NONE && !MainModule.Match.CurrentBidding.ContractList[i].XEnabled && !MainModule.Match.CurrentBidding.ContractList[i].XXEnabled)
+            {
+                auctionTexts[(int)MainModule.Match.CurrentBidding.ContractList[i].DeclaredBy].text += "pass\n";
+            }
+            else
+            {
+                auctionTexts[(int)MainModule.Match.CurrentBidding.ContractList[i].DeclaredBy].text += MainModule.Match.CurrentBidding.ContractList[i].ToString() + "\n";
+            }
+        }
     }
 }

@@ -3,6 +3,7 @@ using EasyHosting.Models.Actions;
 using EasyHosting.Models.Client;
 using EasyHosting.Models.Client.Serializers;
 using EasyHosting.Models.Serialization;
+using GameManagerLib.Models;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -71,14 +72,40 @@ namespace ClientSocketTesting
             try
             {
 				dataResponseSerializer.Validate();
-				Console.WriteLine(dataResponseSerializer.Status);
+				//Console.WriteLine(dataResponseSerializer.Status);
             }
 			catch(Exception ex)
             {
 				Console.WriteLine(ex.Message);
             }
 
-			Console.WriteLine("OK");
+			Match match = new Match();
+			for (int i = 0; i < 4; i++)
+			{
+				if (dataResponseSerializer.Players[i] != null)
+				{
+					match.AddPlayer(new Player((PlayerTag)dataResponseSerializer.Players[i].PlayerTag, dataResponseSerializer.Players[i].Username));
+				}
+			}
+
+			match.Dealer = (PlayerTag)dataResponseSerializer.Dealer;
+			match.Start();
+
+			foreach (var contract in dataResponseSerializer.CurrentBidding.ContractList)
+			{
+				if (contract != null)
+				{
+					var contractObject = new Contract(
+						(ContractHeight)contract.ContractHeight,
+						(ContractColor)contract.ContractColor,
+						(PlayerTag)contract.PlayerTag,
+						contract.XEnabled,
+						contract.XXEnabled
+					);
+					Console.WriteLine(contractObject.ToString());
+					match.AddBid(contractObject);
+				}
+			}
 		}
 	}
 

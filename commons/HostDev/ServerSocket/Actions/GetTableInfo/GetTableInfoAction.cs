@@ -4,6 +4,7 @@ using EasyHosting.Models.Server;
 using GameManagerLib.Models;
 using ServerSocket.Models;
 using ServerSocket.Serializers;
+using System;
 
 namespace ServerSocket.Actions.GetTableInfo {
 
@@ -23,7 +24,7 @@ namespace ServerSocket.Actions.GetTableInfo {
 
             // Serializacja podstawowych informacji
             resp.Status = "OK";
-            resp.GameState = (int)GameState.BIDDING;//(int)game.GameState;
+            resp.GameState = (int)game.GameState;
             resp.Dealer = (int)game.Dealer;
             resp.PointsNSAboveLine = game.PointsNS[1];
             resp.PointsNSBelowLine = game.PointsNS[0];
@@ -39,7 +40,7 @@ namespace ServerSocket.Actions.GetTableInfo {
             // Serializacja graczy przy stole
             PlayerSerializer tmpPlayer;
             int index = 0;
-            /*foreach(var player in game.PlayerList) {
+            foreach(var player in game.PlayerList) {
                 tmpPlayer = new PlayerSerializer();
 
                 tmpPlayer.PlayerTag = (int)player.Tag;
@@ -48,10 +49,10 @@ namespace ServerSocket.Actions.GetTableInfo {
                 resp.Players[index] = tmpPlayer;
 
                 index++;
-            }*/
+            }
 
             // test for players serializer
-            for(int i = 0; i < 4; i++)
+            /*for(int i = 0; i < 4; i++)
             {
                 tmpPlayer = new PlayerSerializer();
 
@@ -59,7 +60,7 @@ namespace ServerSocket.Actions.GetTableInfo {
                 tmpPlayer.Username = "Player" + (i + 1).ToString();
 
                 resp.Players[i] = tmpPlayer;
-            }
+            }*/
             // end test for players serializer
 
             // Serializacja użytkowników w lobby
@@ -88,7 +89,7 @@ namespace ServerSocket.Actions.GetTableInfo {
 
 
             // test API for bidding serialization
-            var match = new Match();
+            /*var match = new Match();
             match.AddPlayer(new Player(PlayerTag.W, "WPlayer"));
             match.AddPlayer(new Player(PlayerTag.S, "SPlayer"));
             match.AddPlayer(new Player(PlayerTag.E, "EPlayer"));
@@ -100,15 +101,17 @@ namespace ServerSocket.Actions.GetTableInfo {
             match.AddBid(new Contract(ContractHeight.ONE, ContractColor.H, PlayerTag.W));
             match.AddBid(new Contract(ContractHeight.NONE, ContractColor.NONE, PlayerTag.N));
             match.AddBid(new Contract(ContractHeight.TWO, ContractColor.C, PlayerTag.E));
-            match.AddBid(new Contract(ContractHeight.NONE, ContractColor.NONE, PlayerTag.S));
-            match.AddBid(new Contract(ContractHeight.NONE, ContractColor.NONE, PlayerTag.W));
+            match.AddBid(new Contract(ContractHeight.NONE, ContractColor.NONE, PlayerTag.S, true));
+            match.AddBid(new Contract(ContractHeight.NONE, ContractColor.NONE, PlayerTag.W, false, true));
             match.AddBid(new Contract(ContractHeight.NONE, ContractColor.NONE, PlayerTag.N));
+            match.AddBid(new Contract(ContractHeight.NONE, ContractColor.NONE, PlayerTag.E));
+            match.AddBid(new Contract(ContractHeight.NONE, ContractColor.NONE, PlayerTag.S));
 
             if (true)//game.GameState == GameState.BIDDING)
             {
                 var tmp = new BiddingSerializer();
                 tmp.CurrentPlayerTag = (int)match.CurrentBidding.CurrentPlayer;
-                tmp.ContractList = new ContractSerializer[8];
+                tmp.ContractList = new ContractSerializer[match.CurrentBidding.ContractList.Count];
 
                 Contract tmpContract;
                 for (int i = 0; i < match.CurrentBidding.ContractList.Count; i++)
@@ -134,11 +137,11 @@ namespace ServerSocket.Actions.GetTableInfo {
                 tmp.BiddingEnded = match.CurrentBidding.IsEnd();
 
                 resp.CurrentBidding = tmp;
-            }
+            }*/
             // end test for bidding serialization
 
             // Serializacja licytacji
-            /*if (game.GameState == GameState.BIDDING) {
+            if (game.GameState == GameState.BIDDING) {
                 var tmp = new BiddingSerializer();
                 tmp.CurrentPlayerTag = (int)game.CurrentBidding.CurrentPlayer;
                 tmp.ContractList = new ContractSerializer[game.CurrentBidding.ContractList.Count];
@@ -169,8 +172,7 @@ namespace ServerSocket.Actions.GetTableInfo {
             }
             else {
                 resp.CurrentBidding = null;
-            }*/
-
+            }
 
             // Rundy
             resp.RoundsNS = game.RoundsNS;

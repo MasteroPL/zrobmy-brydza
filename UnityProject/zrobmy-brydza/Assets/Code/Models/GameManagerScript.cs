@@ -49,7 +49,7 @@ public class GameManagerScript : MonoBehaviour
         // method assignment should be placed in GameManagerScript, because of reference to Game class instance (where is located info about teams' points)
         GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/ChatButton").GetComponent<Button>().onClick.AddListener(() => { TextManager.ChatButton(); });
         GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/AuctionButton").GetComponent<Button>().onClick.AddListener(() => { TextManager.BidButton(); });
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/PointsButton").GetComponent<Button>().onClick.AddListener(() => { TextManager.PointsButton(Game); }); // TODO
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/PointsButton").GetComponent<Button>().onClick.AddListener(() => { TextManager.PointsButton(Game); });
         TextManager.ChatButton(); // ChatButton simulation
 
         GameObject.Find("TakeEverythingButton").GetComponent<Button>().onClick.AddListener(() => { TakeEverythingHandler(); });
@@ -59,21 +59,119 @@ public class GameManagerScript : MonoBehaviour
 
         // at the beginning wait till all player will have a seat
         GameObject startButtonObject = GameObject.Find("/Canvas/TableCanvas/StartButton");
-        if (startButtonObject != null)
+        if (startButtonObject != null && UserData.position != PlayerTag.NOBODY)
         {
             startButtonObject.SetActive(false);
         }
 
         SeatManager.InitializeSeatManager();
-        SeatManager.SitPlayer(PlayerTag.N, "NCustomPlayer", true);
-        SeatManager.SitPlayer(PlayerTag.W, "WCustomPlayer", true);
-        SeatManager.SitPlayer(PlayerTag.S, "SCustomPlayer", true);
+        if (UserData.TableData != null)
+        {
+            if(UserData.TableData.NumberOfLobbyUsers == 1)
+            {
+                UserData.IsAdmin = true;
+            }
+            else
+            {
+                UserData.IsAdmin = false;
+            }
+
+            if (UserData.TableData.GameState == (int)GameState.AWAITING_PLAYERS) // GameState.AWAITING = 0
+            {
+                ReloadTableAwaitingState();
+            }
+            else if(UserData.TableData.GameState == (int)GameState.BIDDING && UserData.TableData.NumberOfPlayers == 4) // GameState.BIDDING = 2 and 4 players present
+            {
+                ReloadTableBiddingState();
+            }
+            else if (UserData.TableData.GameState == (int)GameState.PLAYING && UserData.TableData.NumberOfPlayers == 4)
+            {
+                // GET CURRENT GAME DATA AND ASSIGN IT
+            }
+        }
+    }
+
+    private void ReloadTableAwaitingState()
+    {
+        Game = new Game(this);
+        Game.GameState = GameState.AWAITING_PLAYERS;
+
+        Game.Match.RoundsNS = UserData.TableData.RoundsNS;
+        Game.Match.RoundsWE = UserData.TableData.RoundsWE;
+
+        Game.Match.PointsNS[0] = UserData.TableData.PointsNSBelowLine; // [0] - under line, [1] - above line
+        Game.Match.PointsNS[1] = UserData.TableData.PointsNSAboveLine;
+
+        Game.Match.PointsWE[0] = UserData.TableData.PointsWEBelowLine; // [0] - under line, [1] - above line
+        Game.Match.PointsWE[1] = UserData.TableData.PointsWEAboveLine;
+
+        for (int i = 0; i < 4; i++)
+        {
+            if (UserData.TableData.Players[i] != null)
+            {
+                Game.Match.AddPlayer(new Player((PlayerTag)UserData.TableData.Players[i].PlayerTag, UserData.TableData.Players[i].Username));
+                SeatManager.SitPlayer((PlayerTag)UserData.TableData.Players[i].PlayerTag, UserData.TableData.Players[i].Username);
+            }
+        }
+    }
+
+    private void ReloadTableBiddingState()
+    {
+        Game = new Game(this);
+
+        for (int i = 0; i < 4; i++)
+        {
+            if (UserData.TableData.Players[i] != null)
+            {
+                Game.Match.AddPlayer(new Player((PlayerTag)UserData.TableData.Players[i].PlayerTag, UserData.TableData.Players[i].Username));
+                SeatManager.SitPlayer((PlayerTag)UserData.TableData.Players[i].PlayerTag, UserData.TableData.Players[i].Username);
+            }
+        }
+
+        Game.Match.Dealer = (PlayerTag)UserData.TableData.Dealer;
+        Game.Match.Start();
+
+        foreach (var contract in UserData.TableData.CurrentBidding.ContractList)
+        {
+            if (contract != null)
+            {
+                Game.Match.AddBid(new Contract(
+                    (ContractHeight)contract.ContractHeight,
+                    (ContractColor)contract.ContractColor,
+                    (PlayerTag)contract.PlayerTag,
+                    contract.XEnabled,
+                    contract.XXEnabled
+                ));
+            }
+        }
+
+        Game.Match.RoundsNS = UserData.TableData.RoundsNS;
+        Game.Match.RoundsWE = UserData.TableData.RoundsWE;
+
+        Game.Match.History.AddNSHistory(UserData.TableData.PointsNSBelowLine, UserData.TableData.PointsNSAboveLine);
+        Game.Match.History.AddWEHistory(UserData.TableData.PointsWEBelowLine, UserData.TableData.PointsWEAboveLine);
+
+        Game.Match.PointsNS[0] = UserData.TableData.PointsNSBelowLine; // [0] - under line, [1] - above line
+        Game.Match.PointsNS[1] = UserData.TableData.PointsNSAboveLine;
+
+        Game.Match.PointsWE[0] = UserData.TableData.PointsWEBelowLine; // [0] - under line, [1] - above line
+        Game.Match.PointsWE[1] = UserData.TableData.PointsWEAboveLine;
+
+        PlayerTag StartingPlayer = Game.Match.CurrentBidding.CurrentPlayer;
+        AuctionModule.InitAuctionModule(Game, StartingPlayer);
+        AuctionModule.ReloadDeclarations();
+    }
+
+    public void ReloadTableData()
+    {
+        // Request for data
+
     }
 
     public void ShowHideStartGameButton(bool AllPlayersPresent)
     {
         GameObject startButtonObject = GameObject.Find("/Canvas/TableCanvas/StartButton");
-        if (AllPlayersPresent)
+        if (AllPlayersPresent && UserData.position != PlayerTag.NOBODY)
         {
             if (startButtonObject != null)
             {
@@ -90,9 +188,9 @@ public class GameManagerScript : MonoBehaviour
 
     void OnDestroy()
     {
-        /*GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/ChatButton").GetComponent<Button>().onClick.RemoveAllListeners();
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/ChatButton").GetComponent<Button>().onClick.RemoveAllListeners();
         GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/AuctionButton").GetComponent<Button>().onClick.RemoveAllListeners();
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/PointsButton").GetComponent<Button>().onClick.RemoveAllListeners();*/
+        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/PointsButton").GetComponent<Button>().onClick.RemoveAllListeners();
     }
 
     private void TakeEverythingHandler()
