@@ -160,11 +160,18 @@ namespace AI
                     {
                         return 0;
                     }
-                    if(history_length >= 6 & history[history_length - 6] != 0)
+
+                    if(history_length >= 6 )
                     {
                         //mamy ponad 11 punktów gadamy z partnerem
                         //TODO
-                        return 0;
+                        if(history_length >= 6)
+                        {
+                            if (history[history_length - 6] != 0)
+                            {
+                                return 0;
+                            }
+                        }
                     }
                     //odpowiedź na pierwsze wyjście partnera
                     return FirstResponse(history_length, history, highest_bid);
@@ -246,7 +253,7 @@ namespace AI
                         {
                             bid = 15;
                         }
-                        if(last_p % 10 == 3 )
+                        else if(last_p % 10 == 3 )
                         {
                            if( this.AI_hand.H.Count >= 3)
                            {
@@ -264,7 +271,7 @@ namespace AI
                                 }
                            }
                         }
-                        if (last_p % 10 == 4)
+                        else if (last_p % 10 == 4)
                         {
                             if (this.AI_hand.S.Count >= 3)
                             {
@@ -282,7 +289,18 @@ namespace AI
                                 }
                             }
                         }
-                        if (last_p % 10 == 5 | last_p % 10 == 1 | last_p % 10 == 2)
+                        else if (last_p == 22 & last_my == 11)
+                        {
+                            if(this.Points > 16)
+                            {
+                                bid = 35;
+                            }
+                            else
+                            {
+                                bid = 15;
+                            }
+                        }
+                        else if (last_p % 10 == 5 | last_p % 10 == 1 | last_p % 10 == 2)
                         {
                             if(this.Points > 16)
                             {
@@ -408,6 +426,10 @@ namespace AI
                 else
                 {
                     bid = 10 + Colors5;
+                    if(partner_bid == 11 & Colors5 == 2)
+                    {
+                        bid = bid + 10;
+                    }
                 }
             }
             if (this.Points >= 6)
