@@ -1,0 +1,7 @@
+D:\projekt_zespolowy\commons\AI\bin\Debug\AI.exe.config
+D:\projekt_zespolowy\commons\AI\bin\Debug\AI.exe
+D:\projekt_zespolowy\commons\AI\bin\Debug\AI.pdb
+D:\projekt_zespolowy\commons\AI\obj\Debug\AI.csprojAssemblyReference.cache
+D:\projekt_zespolowy\commons\AI\obj\Debug\AI.csproj.CoreCompileInputs.cache
+D:\projekt_zespolowy\commons\AI\obj\Debug\AI.exe
+D:\projekt_zespolowy\commons\AI\obj\Debug\AI.pdb
