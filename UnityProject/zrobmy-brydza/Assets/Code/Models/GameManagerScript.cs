@@ -69,6 +69,18 @@ public class GameManagerScript : MonoBehaviour
     private ConnectionState CurrentConnectionState = ConnectionState.PRELOADING;
     public Request CurrentRequest = null;
 
+    // referencje do przyciskow z panelu chatu/licytacji/punktacji
+    [SerializeField] Button ChatButton;
+    [SerializeField] Button AuctionButton;
+    [SerializeField] Button PointsButton;
+
+    // przyciski przydatne podczas gry - "biore wszystko", "nie biore nic", "pauza", "wyjdź" (taunt jest oddzielnie)
+    [SerializeField] Button TakeEverythingButton;
+    [SerializeField] Button TakeNothingButton;
+    [SerializeField] Button PauseRequestButton;
+    [SerializeField] Button QuitButton;
+    [SerializeField] Button StartButton;
+
     /**
      * -1 - neutral state
      * 0  - take everything
@@ -95,22 +107,21 @@ public class GameManagerScript : MonoBehaviour
         GameObject.Find("TeamTakenHandsCounterLabel").GetComponent<Text>().text = "";
         GameObject.Find("DeclaredContractLabel").GetComponent<Text>().text = "";
 
-        // method assignment should be placed in GameManagerScript, because of reference to Game class instance (where is located info about teams' points)
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/ChatButton").GetComponent<Button>().onClick.AddListener(() => { TextManager.ChatButton(); });
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/AuctionButton").GetComponent<Button>().onClick.AddListener(() => { TextManager.BidButton(); });
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/PointsButton").GetComponent<Button>().onClick.AddListener(() => { TextManager.PointsButton(Game); });
-        TextManager.ChatButton(); // ChatButton simulation
+        // przypisanie click handlerów do przyciskow panelu chatu/licytacji/punktacji
+        ChatButton.onClick.AddListener(() => { TextManager.ChatButton(); });
+        AuctionButton.onClick.AddListener(() => { TextManager.BidButton(); });
+        PointsButton.onClick.AddListener(() => { TextManager.PointsButton(Game); });
+        TextManager.ChatButton(); // inicjalnie otwarty jest panel chatu
 
-        GameObject.Find("TakeEverythingButton").GetComponent<Button>().onClick.AddListener(() => { TakeEverythingHandler(); });
-        GameObject.Find("TakeNothingButton").GetComponent<Button>().onClick.AddListener(() => { TakeNothingHandler(); });
-        GameObject.Find("PauseRequestButton").GetComponent<Button>().onClick.AddListener(() => { PauseRequestHandler(); });
-        GameObject.Find("QuitButton").GetComponent<Button>().onClick.AddListener(() => { QuitHandler(); });
+        TakeEverythingButton.onClick.AddListener(() => { TakeEverythingHandler(); });
+        TakeNothingButton.onClick.AddListener(() => { TakeNothingHandler(); });
+        PauseRequestButton.onClick.AddListener(() => { PauseRequestHandler(); });
+        QuitButton.onClick.AddListener(() => { QuitHandler(); });
 
-        // at the beginning wait till all player will have a seat
-        GameObject startButtonObject = GameObject.Find("/Canvas/TableCanvas/StartButton");
-        if (startButtonObject != null && UserData.Position != PlayerTag.NOBODY)
+        // przycisk "start" pokaze sie tylko gdy bedzie 4 graczy
+        if (StartButton != null && UserData.Position != PlayerTag.NOBODY)
         {
-            startButtonObject.SetActive(false);
+            StartButton.gameObject.SetActive(false);
         }
 
         if (!UserData.LoggedIn) {
@@ -310,12 +321,15 @@ public class GameManagerScript : MonoBehaviour
 
     void OnDestroy()
     {
-        var button1 = GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/ChatButton").GetComponent<Button>();
-        if (button1) button1.onClick.RemoveAllListeners();
-        var button2 = GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/AuctionButton").GetComponent<Button>();
-        if (button2) button2.onClick.RemoveAllListeners();
-        var button3 = GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/PointsButton").GetComponent<Button>();
-        if(button3) button3.onClick.RemoveAllListeners();
+        if (ChatButton) ChatButton.onClick.RemoveAllListeners();
+        if (AuctionButton) AuctionButton.onClick.RemoveAllListeners();
+        if (PointsButton) PointsButton.onClick.RemoveAllListeners();
+
+        if (TakeEverythingButton) TakeEverythingButton.onClick.RemoveAllListeners();
+        if (TakeNothingButton) TakeNothingButton.onClick.RemoveAllListeners();
+        if (PauseRequestButton) PauseRequestButton.onClick.RemoveAllListeners();
+        if (QuitButton) QuitButton.onClick.RemoveAllListeners();
+        if (StartButton) StartButton.onClick.RemoveAllListeners();
     }
 
     private void TakeEverythingHandler()
@@ -355,25 +369,25 @@ public class GameManagerScript : MonoBehaviour
 
     private void UpdateButtonPanelCanvas()
     {
-        GameObject.Find("TakeEverythingButton").GetComponent<Button>().image.color = new Color32(255, 255, 255, 255);
-        GameObject.Find("TakeNothingButton").GetComponent<Button>().image.color = new Color32(255, 255, 255, 255);
+        TakeEverythingButton.image.color = new Color32(255, 255, 255, 255);
+        TakeNothingButton.image.color = new Color32(255, 255, 255, 255);
         if(ButtonPanelCanvasState == 0)
         {
-            GameObject.Find("TakeEverythingButton").GetComponent<Button>().image.color = new Color32(0, 0, 0, 255);
+            TakeEverythingButton.image.color = new Color32(0, 0, 0, 255);
         } 
         else if(ButtonPanelCanvasState == 1)
         {
-            GameObject.Find("TakeNothingButton").GetComponent<Button>().image.color = new Color32(0, 0, 0, 255);
+            TakeNothingButton.image.color = new Color32(0, 0, 0, 255);
         }
 
-        GameObject.Find("PauseRequestButton").GetComponent<Button>().image.color = new Color32(255, 255, 255, 255);
+        PauseRequestButton.image.color = new Color32(255, 255, 255, 255);
         if (RequestingForPause)
         {
-            GameObject.Find("PauseRequestButton").GetComponent<Button>().image.color = new Color32(0, 0, 0, 255);
+            PauseRequestButton.image.color = new Color32(0, 0, 0, 255);
         } 
         else
         {
-            GameObject.Find("PauseRequestButton").GetComponent<Button>().image.color = new Color32(255, 255, 255, 255);
+            PauseRequestButton.image.color = new Color32(255, 255, 255, 255);
         }
     }
 

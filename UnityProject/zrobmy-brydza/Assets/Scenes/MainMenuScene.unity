@@ -402,7 +402,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Multiplayer
+  m_Text: 'Gra wieloosobowa
 
 '
 --- !u!222 &248739236
@@ -826,7 +826,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Singleplayer
+  m_Text: Gra jednoosobowa
 --- !u!222 &1247833454
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1454,6 +1454,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fdcb4a0ea54fe54eadb0654c4fcecb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayWithAIButton: {fileID: 1795505886}
+  PlayViaServerButton: {fileID: 1387954841}
+  QuitButton: {fileID: 1105861595}
 --- !u!4 &1841575926
 Transform:
   m_ObjectHideFlags: 0

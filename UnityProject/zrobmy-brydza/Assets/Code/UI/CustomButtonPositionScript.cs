@@ -32,7 +32,7 @@ namespace Assets.Code.UI
             bool available = SeatManager.CheckSeatAvailability(buttonID);
             if (available && !UserData.Sitting)
             {
-                SeatManager.SitPlayer(buttonID, "nickname", ClickedByMe:true);
+                SeatManager.SitPlayer(buttonID, UserData.Username, ClickedByMe:true);
             }
         }
 

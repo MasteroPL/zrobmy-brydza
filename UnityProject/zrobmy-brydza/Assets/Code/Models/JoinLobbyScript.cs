@@ -12,19 +12,39 @@ using GetTableInfoSerializer = ServerSocket.Actions.GetTableInfo.ResponseSeriali
 
 public class JoinLobbyScript : MonoBehaviour
 {
+    // okno bledu dolaczania do stolu
+    [SerializeField] GameObject ErrorWindow;
+    [SerializeField] Button ErrorCloseButton;
+
+    // okno bledu formularza
+    [SerializeField] GameObject ErrorFormWindow;
+    [SerializeField] Button ErrorFormCloseButton;
+
+    // Przyciski dla formularza dolaczenia 
+    [SerializeField] Button JoinButton;
+    [SerializeField] Button BackButton;
+
     // Start is called before the first frame update
     void Start()
     {
-        GameObject.Find("JoinButton").GetComponent<Button>().onClick.AddListener(() => { JoinLobby(); });
-        GameObject.Find("BackButton").GetComponent<Button>().onClick.AddListener(() => {
-            SceneManager.LoadScene(0);
-        });
+        JoinButton.onClick.AddListener(() => { JoinLobby(); });
+        BackButton.onClick.AddListener(() => { SceneManager.LoadScene(0); });
+        ErrorCloseButton.onClick.AddListener(() => { ErrorWindow.SetActive(false); });
+        ErrorFormCloseButton.onClick.AddListener(() => { ErrorFormWindow.SetActive(false); });
+    }
+
+    void OnDestroy()
+    {
+        JoinButton.onClick.RemoveAllListeners();
+        BackButton.onClick.RemoveAllListeners();
+        ErrorCloseButton.onClick.RemoveAllListeners();
+        ErrorFormCloseButton.onClick.RemoveAllListeners();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     static ActionsSerializer WrapRequestData(string actionName, JObject data)
@@ -46,9 +66,10 @@ public class JoinLobbyScript : MonoBehaviour
         string username = GameObject.Find("UsernameInput").GetComponent<InputField>().text;
         string ipaddress = GameObject.Find("IpAddressInput").GetComponent<InputField>().text;
 
-        Debug.Log(username + "_" + ipaddress);
         if (username == "" || ipaddress == "")
         {
+            // komunikat o bledzie formularza
+            ErrorFormWindow.SetActive(true);
             return;
         }
 
@@ -60,38 +81,32 @@ public class JoinLobbyScript : MonoBehaviour
             LobbyPassword = ""
         };
         var clientSocket = new ClientSocket(ipaddress);
-        var authRequest = clientSocket.SendRequest(authData.GetApiObject());
-
-        while (authRequest.RequestState != RequestState.RESPONSE_RECEIVED)
-        {
-            clientSocket.UpdateCommunication();
-        }
-
-        // table info request
-        var tableInfoRequestData = WrapRequestData("get-table-info", null);
-        var tableInfoRequest = clientSocket.SendRequest(tableInfoRequestData.GetApiObject());
-
-        while (tableInfoRequest.RequestState != RequestState.RESPONSE_RECEIVED)
-        {
-            clientSocket.UpdateCommunication();
-        }
-
-        var actionsSerializer = new ActionsSerializer(tableInfoRequest.ResponseData);
-        actionsSerializer.Validate();
-
-        var responseSerializer = new GetTableInfoSerializer(actionsSerializer.Actions[0].ActionData);
+        string status = null;
         try
         {
-            responseSerializer.Validate();
+            var authRequest = clientSocket.SendRequest(authData.GetApiObject());
+            while (authRequest.RequestState != RequestState.RESPONSE_RECEIVED)
+            {
+                clientSocket.UpdateCommunication();
+            }
+
+            status = authRequest.ResponseData["status"].Value<string>();
         }
         catch(Exception ex)
         {
-            Debug.Log(ex.Message);
+            // w przypadku gdy nas nie zautoryzuje to nawet nie probujemy pobierac danych stolu bo nie ma po co
+            ErrorWindow.SetActive(true);
+            return;
         }
-
-        if (responseSerializer.Status == "OK")
+        if (status != "OK")
         {
-            UserData.TableData = responseSerializer;
+            ErrorWindow.SetActive(true);
+        }
+        else
+        {
+            UserData.LoggedIn = true;
+            UserData.ClientConnection = clientSocket;
+            UserData.Username = username;
             SceneManager.LoadScene(1);
         }
     }

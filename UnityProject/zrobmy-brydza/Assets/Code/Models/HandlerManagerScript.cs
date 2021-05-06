@@ -7,24 +7,28 @@ using Assets.Code.UI;
 
 public class HandlerManagerScript : MonoBehaviour
 {
+    [SerializeField] Button PlayWithAIButton;
+    [SerializeField] Button PlayViaServerButton;
+    [SerializeField] Button QuitButton;
+
     // Start is called before the first frame update
     void Start()
     {
-        // main buttons panel
-        GameObject.Find("/Canvas/ButtonsPanel/PlayWithAIButton").GetComponent<Button>().onClick.AddListener(() => {
-            SceneManager.LoadScene(1); // Gameplay scene
-        });
-        GameObject.Find("/Canvas/ButtonsPanel/PlayViaServerButton").GetComponent<Button>().onClick.AddListener(() => {
-            SceneManager.LoadScene(3); // Tables list scene
-        });
-        GameObject.Find("/Canvas/ButtonsPanel/QuitButton").GetComponent<Button>().onClick.AddListener(() => {
-            Application.Quit();
-        });
+        PlayWithAIButton.onClick.AddListener(() => { SceneManager.LoadScene(1); });
+        PlayViaServerButton.onClick.AddListener(() => { SceneManager.LoadScene(4); });
+        QuitButton.onClick.AddListener(() => { Application.Quit(); });
     }
 
     // Update is called once per frame
     void Update()
     {
 
+    }
+
+    void OnDestroy()
+    {
+        PlayWithAIButton.onClick.RemoveAllListeners();
+        PlayViaServerButton.onClick.RemoveAllListeners();
+        QuitButton.onClick.RemoveAllListeners();
     }
 }
