@@ -66,11 +66,11 @@ public class AuctionModule : MonoBehaviour
         if (GameConfig.DevMode)
         {
             //MainModule.GameManagerScript.UserData.position = MainModule.Match.CurrentBidding.CurrentPlayer;
-            UserData.position = MainModule.Match.CurrentBidding.CurrentPlayer;
+            UserData.Position = MainModule.Match.CurrentBidding.CurrentPlayer;
         }
 
         // setting visibility of dialog for first render, later it'll be updated according to game state & current player
-        if (AuctionState.CurrentPlayer == UserData.position)//MainModule.GameManagerScript.UserData.position
+        if (AuctionState.CurrentPlayer == UserData.Position)//MainModule.GameManagerScript.UserData.position
         {
             AuctionDialog.enabled = true;
             AssignControls();
@@ -125,7 +125,7 @@ public class AuctionModule : MonoBehaviour
 
             bool updatedCorrectly = MainModule.AddBid(AuctionState.ContractCache.ContractHeight,
                                 AuctionState.ContractCache.ContractColor,
-                                UserData.position,
+                                UserData.Position,
                                 AuctionState.ContractCache.XEnabled,
                                 AuctionState.ContractCache.XXEnabled);
 
@@ -136,14 +136,14 @@ public class AuctionModule : MonoBehaviour
                 AuctionState.CurrentPlayer = MainModule.Match.CurrentBidding.CurrentPlayer;
                 if (GameConfig.DevMode)
                 {
-                    UserData.position = MainModule.Match.CurrentBidding.CurrentPlayer; // for dev mode
+                    UserData.Position = MainModule.Match.CurrentBidding.CurrentPlayer; // for dev mode
                 }
                 PassCounter = 0;
             }
         });
         PassButton.onClick.AddListener(() =>
         {
-            bool correctlyDeclared = MainModule.AddBid(ContractHeight.NONE, ContractColor.NONE, UserData.position);
+            bool correctlyDeclared = MainModule.AddBid(ContractHeight.NONE, ContractColor.NONE, UserData.Position);
             if (correctlyDeclared)
             {
                 PassCounter++;
@@ -165,7 +165,7 @@ public class AuctionModule : MonoBehaviour
                 AuctionState.CurrentPlayer = MainModule.Match.CurrentBidding.CurrentPlayer;
                 if (GameConfig.DevMode)
                 {
-                    UserData.position = MainModule.Match.CurrentBidding.CurrentPlayer;
+                    UserData.Position = MainModule.Match.CurrentBidding.CurrentPlayer;
                 }
             }
         });
@@ -204,7 +204,7 @@ public class AuctionModule : MonoBehaviour
         {
             if (MainModule.GameState == GameState.BIDDING)
             {
-                if (AuctionState.CurrentPlayer == UserData.position)
+                if (AuctionState.CurrentPlayer == UserData.Position)
                 {
                     AuctionDialog.enabled = true;  // showing dialog
                     UpdateContractDisplayedText();
@@ -241,7 +241,7 @@ public class AuctionModule : MonoBehaviour
 
                     if (GameConfig.DevMode)
                     {
-                        UserData.position = MainModule.Match.CurrentGame.CurrentPlayer;
+                        UserData.Position = MainModule.Match.CurrentGame.CurrentPlayer;
                     }
                     AuctionDialog.enabled = false;
                 }

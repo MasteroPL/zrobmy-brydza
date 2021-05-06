@@ -58,8 +58,8 @@ public class SeatsManagerScript : MonoBehaviour
 
             if (ClickedByMe)
             {
-                UserData.position = Position;
-                UserData.positionStart = Position;
+                UserData.Position = Position;
+                UserData.PositionStart = Position;
                 UserData.Sitting = true;
             }
             GameManager.ShowHideStartGameButton(!SeatStates[PlayerTag.N] && !SeatStates[PlayerTag.S] && !SeatStates[PlayerTag.E] && !SeatStates[PlayerTag.W]);
@@ -78,8 +78,8 @@ public class SeatsManagerScript : MonoBehaviour
 
             if (!GameConfig.DevMode)
             {
-                UserData.position = PlayerTag.NOBODY;
-                UserData.positionStart = PlayerTag.NOBODY;
+                UserData.Position = PlayerTag.NOBODY;
+                UserData.PositionStart = PlayerTag.NOBODY;
                 UserData.Sitting = false;
             }
             GameManager.ShowHideStartGameButton(!SeatStates[PlayerTag.N] && !SeatStates[PlayerTag.S] && !SeatStates[PlayerTag.E] && !SeatStates[PlayerTag.W]);

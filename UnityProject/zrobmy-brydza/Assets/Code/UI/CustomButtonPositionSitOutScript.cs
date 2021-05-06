@@ -18,7 +18,7 @@ namespace Assets.Code.UI
             if (!available)
             {
                 if (UserData.IsAdmin ||
-                    (UserData.position.ToString()[0] == ReferencedButton.gameObject.name[0]) && UserData.Sitting)
+                    (UserData.Position.ToString()[0] == ReferencedButton.gameObject.name[0]) && UserData.Sitting)
                 {
                     ReferencedButton.image.color = new Color32(255, 221, 0, 255);
                 }
@@ -37,7 +37,7 @@ namespace Assets.Code.UI
             if (!available)
             {
                 if (UserData.IsAdmin || 
-                    (UserData.position.ToString()[0] == ReferencedButton.gameObject.name[0]) && UserData.Sitting)
+                    (UserData.Position.ToString()[0] == ReferencedButton.gameObject.name[0]) && UserData.Sitting)
                 {
                     SeatManager.SitOutPlayer(buttonID);
                 }

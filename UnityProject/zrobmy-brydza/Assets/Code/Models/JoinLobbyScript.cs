@@ -59,7 +59,7 @@ public class JoinLobbyScript : MonoBehaviour
             Login = username,
             LobbyPassword = ""
         };
-        var clientSocket = new ClientSocket("127.0.0.1");
+        var clientSocket = new ClientSocket(ipaddress);
         var authRequest = clientSocket.SendRequest(authData.GetApiObject());
 
         while (authRequest.RequestState != RequestState.RESPONSE_RECEIVED)

@@ -8,9 +8,42 @@ using Assets.Code.UI;
 using GameManagerLib.Models;
 using Assets.Code.Utils;
 using UnityEngine.SceneManagement;
+using EasyHosting.Models.Serialization;
+using EasyHosting.Meta;
+using EasyHosting.Models.Client;
+using EasyHosting.Models.Actions;
+using Newtonsoft.Json.Linq;
+using GetTableInfoSerializer = ServerSocket.Actions.GetTableInfo.ResponseSerializer;
+using System;
 
 public class GameManagerScript : MonoBehaviour
 {
+    public enum ConnectionState {
+        /// <summary>
+        /// Pierwsze wczytywanie ekranu
+        /// </summary>
+        PRELOADING = 0,
+        /// <summary>
+        /// Brak requestow w trakcie oczekiwania
+        /// </summary>
+        IDLE = 1,
+        /// <summary>
+        /// Oczekiwanie na odpowiedź od zapytania
+        /// </summary>
+        LOADING = 2
+    }
+
+    class AuthData : BaseSerializer {
+        [SerializerField(apiName: "lobby-id")]
+        public string LobbyId;
+
+        [SerializerField(apiName: "login")]
+        public string Login;
+
+        [SerializerField(apiName: "lobby-password")]
+        public string LobbyPassword;
+    }
+
     /**
      * My hand cards in deck coordinates on screen (according to main camera)
      * ======================================================================
@@ -33,6 +66,9 @@ public class GameManagerScript : MonoBehaviour
     private List<GameObject> HiddenCardsOfPlayerS;
     private List<GameObject> HiddenCardsOfPlayerW;
 
+    private ConnectionState CurrentConnectionState = ConnectionState.PRELOADING;
+    public Request CurrentRequest = null;
+
     /**
      * -1 - neutral state
      * 0  - take everything
@@ -40,6 +76,19 @@ public class GameManagerScript : MonoBehaviour
      */
     private int ButtonPanelCanvasState = -1;
     private bool RequestingForPause = false;
+
+    public static ActionsSerializer WrapRequestData(string actionName, JObject data) {
+        var result = new ActionsSerializer();
+        result.Actions = new ActionSerializer[1];
+        var tmp = new ActionSerializer();
+
+        tmp.ActionName = actionName;
+        tmp.ActionData = data;
+
+        result.Actions[0] = tmp;
+
+        return result;
+    }
 
     void Start()
     {
@@ -59,58 +108,131 @@ public class GameManagerScript : MonoBehaviour
 
         // at the beginning wait till all player will have a seat
         GameObject startButtonObject = GameObject.Find("/Canvas/TableCanvas/StartButton");
-        if (startButtonObject != null && UserData.position != PlayerTag.NOBODY)
+        if (startButtonObject != null && UserData.Position != PlayerTag.NOBODY)
         {
             startButtonObject.SetActive(false);
         }
 
-        SeatManager.InitializeSeatManager();
-        if (UserData.TableData != null)
-        {
-            if(UserData.TableData.NumberOfLobbyUsers == 1)
-            {
-                UserData.IsAdmin = true;
-            }
-            else
-            {
-                UserData.IsAdmin = false;
+        if (!UserData.LoggedIn) {
+            // DEBUG: Przypisuję sobie domyślnie dane użytkownika z autoryzacją
+            // auth request
+            var authData = new AuthData() {
+                LobbyId = "DEFAULT",
+                Login = "DEBUG#1",
+                LobbyPassword = ""
+            };
+            var clientSocket = new ClientSocket("127.0.0.1");
+            var authRequest = clientSocket.SendRequest(authData.GetApiObject());
+
+            while (authRequest.RequestState != RequestState.RESPONSE_RECEIVED) {
+                clientSocket.UpdateCommunication();
             }
 
-            if (UserData.TableData.GameState == (int)GameState.AWAITING_PLAYERS) // GameState.AWAITING = 0
-            {
-                ReloadTableAwaitingState();
-            }
-            else if(UserData.TableData.GameState == (int)GameState.BIDDING && UserData.TableData.NumberOfPlayers == 4) // GameState.BIDDING = 2 and 4 players present
-            {
-                ReloadTableBiddingState();
-            }
-            else if (UserData.TableData.GameState == (int)GameState.PLAYING && UserData.TableData.NumberOfPlayers == 4)
-            {
-                // GET CURRENT GAME DATA AND ASSIGN IT
+            UserData.Username = "DEBUG#1";
+            UserData.LoggedIn = true;
+            UserData.ClientConnection = clientSocket;
+        }
+
+        SeatManager.InitializeSeatManager();
+        //if (UserData.TableData != null)
+        //{
+        //    if(UserData.TableData.NumberOfLobbyUsers == 1)
+        //    {
+        //        UserData.IsAdmin = true;
+        //    }
+        //    else
+        //    {
+        //        UserData.IsAdmin = false;
+        //    }
+
+        //    if (UserData.TableData.GameState == (int)GameState.AWAITING_PLAYERS) // GameState.AWAITING = 0
+        //    {
+        //        ReloadTableAwaitingState();
+        //    }
+        //    else if(UserData.TableData.GameState == (int)GameState.BIDDING && UserData.TableData.NumberOfPlayers == 4) // GameState.BIDDING = 2 and 4 players present
+        //    {
+        //        ReloadTableBiddingState();
+        //    }
+        //    else if (UserData.TableData.GameState == (int)GameState.PLAYING && UserData.TableData.NumberOfPlayers == 4)
+        //    {
+        //        // GET CURRENT GAME DATA AND ASSIGN IT
+        //    }
+        //}
+        
+    }
+    /// <summary>
+    /// Metoda obsługuje przypadek preloadingu w pętli Update
+    /// </summary>
+    private void HandlePreloading() {
+        // Pierwsze wywołanie
+        if(CurrentRequest == null) {
+            var tableInfoRequestData = WrapRequestData("get-table-info", null);
+            CurrentRequest = UserData.ClientConnection.SendRequest(tableInfoRequestData.GetApiObject());
+        }
+
+        // Aktualizacja komunikacji
+        CurrentRequest.ParentSocket.UpdateCommunication();
+
+        // Otrzymaliśmy odpowiedź na zapytanie
+        if(CurrentRequest.RequestState == RequestState.RESPONSE_RECEIVED) {
+            var request = CurrentRequest;
+            CurrentRequest = null;
+            this.CurrentConnectionState = ConnectionState.IDLE;
+            Debug.Log(request.ResponseData);
+            var actionsSerializer = new ActionsSerializer(request.ResponseData);
+            actionsSerializer.Validate();
+            var responseSerializer = new GetTableInfoSerializer(actionsSerializer.Actions[0].ActionData);
+            try {
+                responseSerializer.Validate();
+
+                if (responseSerializer.Status == "OK") {
+                    // Przetwarzanie odpowiedzi
+                    if (responseSerializer.NumberOfLobbyUsers == 1) {
+                        UserData.IsAdmin = true;
+                    }
+                    else {
+                        UserData.IsAdmin = false;
+                    }
+
+                    if(responseSerializer.GameState == (int)GameState.AWAITING_PLAYERS) {
+                        ReloadTableAwaitingState(responseSerializer);
+                    }
+                }
+            } catch (Exception ex) {
+                Debug.Log(ex.Message);
             }
         }
     }
 
-    private void ReloadTableAwaitingState()
+    void Update() {
+        switch (this.CurrentConnectionState) {
+            // Przypadek, kiedy ekran nie otrzymal jeszcze informacji od serwera
+            case ConnectionState.PRELOADING:
+                this.HandlePreloading();
+                break;
+        }    
+    }
+
+    private void ReloadTableAwaitingState(GetTableInfoSerializer tableData)
     {
         Game = new Game(this);
         Game.GameState = GameState.AWAITING_PLAYERS;
 
-        Game.Match.RoundsNS = UserData.TableData.RoundsNS;
-        Game.Match.RoundsWE = UserData.TableData.RoundsWE;
+        Game.Match.RoundsNS = tableData.RoundsNS;
+        Game.Match.RoundsWE = tableData.RoundsWE;
 
-        Game.Match.PointsNS[0] = UserData.TableData.PointsNSBelowLine; // [0] - under line, [1] - above line
-        Game.Match.PointsNS[1] = UserData.TableData.PointsNSAboveLine;
+        Game.Match.PointsNS[0] = tableData.PointsNSBelowLine; // [0] - under line, [1] - above line
+        Game.Match.PointsNS[1] = tableData.PointsNSAboveLine;
 
-        Game.Match.PointsWE[0] = UserData.TableData.PointsWEBelowLine; // [0] - under line, [1] - above line
-        Game.Match.PointsWE[1] = UserData.TableData.PointsWEAboveLine;
+        Game.Match.PointsWE[0] = tableData.PointsWEBelowLine; // [0] - under line, [1] - above line
+        Game.Match.PointsWE[1] = tableData.PointsWEAboveLine;
 
         for (int i = 0; i < 4; i++)
         {
-            if (UserData.TableData.Players[i] != null)
+            if (tableData.Players[i] != null)
             {
-                Game.Match.AddPlayer(new Player((PlayerTag)UserData.TableData.Players[i].PlayerTag, UserData.TableData.Players[i].Username));
-                SeatManager.SitPlayer((PlayerTag)UserData.TableData.Players[i].PlayerTag, UserData.TableData.Players[i].Username);
+                Game.Match.AddPlayer(new Player((PlayerTag)tableData.Players[i].PlayerTag, tableData.Players[i].Username));
+                SeatManager.SitPlayer((PlayerTag)tableData.Players[i].PlayerTag, tableData.Players[i].Username);
             }
         }
     }
@@ -171,7 +293,7 @@ public class GameManagerScript : MonoBehaviour
     public void ShowHideStartGameButton(bool AllPlayersPresent)
     {
         GameObject startButtonObject = GameObject.Find("/Canvas/TableCanvas/StartButton");
-        if (AllPlayersPresent && UserData.position != PlayerTag.NOBODY)
+        if (AllPlayersPresent && UserData.Position != PlayerTag.NOBODY)
         {
             if (startButtonObject != null)
             {
@@ -188,9 +310,12 @@ public class GameManagerScript : MonoBehaviour
 
     void OnDestroy()
     {
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/ChatButton").GetComponent<Button>().onClick.RemoveAllListeners();
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/AuctionButton").GetComponent<Button>().onClick.RemoveAllListeners();
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/PointsButton").GetComponent<Button>().onClick.RemoveAllListeners();
+        var button1 = GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/ChatButton").GetComponent<Button>();
+        if (button1) button1.onClick.RemoveAllListeners();
+        var button2 = GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/AuctionButton").GetComponent<Button>();
+        if (button2) button2.onClick.RemoveAllListeners();
+        var button3 = GameObject.Find("/Canvas/InfoCanvas/InfoTable/Header/PointsButton").GetComponent<Button>();
+        if(button3) button3.onClick.RemoveAllListeners();
     }
 
     private void TakeEverythingHandler()
@@ -297,17 +422,17 @@ public class GameManagerScript : MonoBehaviour
 
     public void UpdateTableCenter(Game Game)
     {
-        GameObject.Find("Player3IndicatorText").GetComponent<Text>().text = UserData.position.ToString();
-        GameObject.Find("Player4IndicatorText").GetComponent<Text>().text = ((PlayerTag)(((int)UserData.position + 1) % 4)).ToString();
-        GameObject.Find("Player1IndicatorText").GetComponent<Text>().text = ((PlayerTag)(((int)UserData.position + 2) % 4)).ToString();
-        GameObject.Find("Player2IndicatorText").GetComponent<Text>().text = ((PlayerTag)(((int)UserData.position + 3) % 4)).ToString();
+        GameObject.Find("Player3IndicatorText").GetComponent<Text>().text = UserData.Position.ToString();
+        GameObject.Find("Player4IndicatorText").GetComponent<Text>().text = ((PlayerTag)(((int)UserData.Position + 1) % 4)).ToString();
+        GameObject.Find("Player1IndicatorText").GetComponent<Text>().text = ((PlayerTag)(((int)UserData.Position + 2) % 4)).ToString();
+        GameObject.Find("Player2IndicatorText").GetComponent<Text>().text = ((PlayerTag)(((int)UserData.Position + 3) % 4)).ToString();
     }
 
     // this method is implemented in case concrete user switches his place - currently not used
     public void UpdateTable(Game Game, GameManagerLib.Models.Card[] PlayerHand)
     {
         UpdateTableCenter(Game);
-        switch (UserData.position)
+        switch (UserData.Position)
         {
             case PlayerTag.N:
                 GiveCardsToPlayer(PlayerTag.N, PlayerHand);
@@ -322,7 +447,7 @@ public class GameManagerScript : MonoBehaviour
                 GiveCardsToPlayer(PlayerTag.W, PlayerHand);
                 break;
         }
-        GiveHiddenCardsToPlayers(UserData.position);
+        GiveHiddenCardsToPlayers(UserData.Position);
     }
 
     public void StartGame(Game Game, GameManagerLib.Models.Card[] PlayerHand)
@@ -363,7 +488,7 @@ public class GameManagerScript : MonoBehaviour
         Game.Match.GameState = GameState.BIDDING;
         if (GameConfig.DevMode)
         {
-            UserData.position = UserData.positionStart;
+            UserData.Position = UserData.PositionStart;
         }
 
         GameObject.Find("TeamTakenHandsCounterLabelBackground").GetComponent<Image>().color = new Color32(219, 31, 35, 0);
@@ -468,7 +593,7 @@ public class GameManagerScript : MonoBehaviour
         float[] opCardsY = { 1.72f, 1.4334f, 1.1468f, 0.86f, 0.5736f, 0.287f, 0.0f, -0.2862f, -0.5728f, -0.8594f, -1.146f, -1.43f, -1.72f };
 
         List<float[]> coordinates = new List<float[]>();
-        if ((int)Position == (int)UserData.position) // down
+        if ((int)Position == (int)UserData.Position) // down
         {
             for(int i = 0; i < 13; i++)
             {
@@ -479,7 +604,7 @@ public class GameManagerScript : MonoBehaviour
                 coordinates.Add(tmp);
             }
         }
-        else if ((int)Position == (((int)UserData.position + 1) % 4)) // left
+        else if ((int)Position == (((int)UserData.Position + 1) % 4)) // left
         {
             for (int i = 0; i < 13; i++)
             {
@@ -490,7 +615,7 @@ public class GameManagerScript : MonoBehaviour
                 coordinates.Add(tmp);
             }
         }
-        else if ((int)Position == (((int)UserData.position + 2) % 4)) // up
+        else if ((int)Position == (((int)UserData.Position + 2) % 4)) // up
         {
             for (int i = 0; i < 13; i++)
             {
@@ -501,7 +626,7 @@ public class GameManagerScript : MonoBehaviour
                 coordinates.Add(tmp);
             }
         }
-        else if ((int)Position == (((int)UserData.position + 3) % 4)) // right
+        else if ((int)Position == (((int)UserData.Position + 3) % 4)) // right
         {
             for (int i = 0; i < 13; i++)
             {
@@ -671,19 +796,19 @@ public class GameManagerScript : MonoBehaviour
 
                 float[] newPos = new float[2];
                 // WARNING! For production 'positionStart' should be replaced with 'position' 
-                if (card.PlayerID == UserData.positionStart)
+                if (card.PlayerID == UserData.PositionStart)
                 {
                     newPos = CalculatePutCardPosition('D');
                 } 
-                else if(card.PlayerID == (PlayerTag)(( (int)UserData.positionStart + 1) % 4 ))
+                else if(card.PlayerID == (PlayerTag)(( (int)UserData.PositionStart + 1) % 4 ))
                 {
                     newPos = CalculatePutCardPosition('L');
                 }
-                else if (card.PlayerID == (PlayerTag)(((int)UserData.positionStart + 2) % 4))
+                else if (card.PlayerID == (PlayerTag)(((int)UserData.PositionStart + 2) % 4))
                 {
                     newPos = CalculatePutCardPosition('U');
                 }
-                else if (card.PlayerID == (PlayerTag)(((int)UserData.positionStart + 3) % 4))
+                else if (card.PlayerID == (PlayerTag)(((int)UserData.PositionStart + 3) % 4))
                 {
                     newPos = CalculatePutCardPosition('R');
                 }
@@ -697,7 +822,7 @@ public class GameManagerScript : MonoBehaviour
                 }
                 if (GameConfig.DevMode)
                 {
-                    UserData.position = (PlayerTag)(((int)UserData.position + 1) % 4); // for dev mode
+                    UserData.Position = (PlayerTag)(((int)UserData.Position + 1) % 4); // for dev mode
                 }
 
                 if (Game.IsTrickComplete())
@@ -730,7 +855,7 @@ public class GameManagerScript : MonoBehaviour
 
                     if (GameConfig.DevMode)
                     {
-                        UserData.position = lastTrick.Winner; // for dev mode
+                        UserData.Position = lastTrick.Winner; // for dev mode
                     }
 
                     if (Game.Match.CurrentGame.IsEnd())
