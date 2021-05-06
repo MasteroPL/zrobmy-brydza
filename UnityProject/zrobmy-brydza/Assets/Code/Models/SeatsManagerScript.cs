@@ -46,6 +46,10 @@ public class SeatsManagerScript : MonoBehaviour
         return !SeatStates[PlayerTag.N] && !SeatStates[PlayerTag.S] && !SeatStates[PlayerTag.E] && !SeatStates[PlayerTag.W];
     }
 
+    public bool IsSeatTaken(PlayerTag position) {
+        return !SeatStates[position];
+    }
+
     public void SitPlayer(PlayerTag Position, string PlayerNickname, bool ClickedByMe=false)
     {
         //Debug.Log(Position.ToString() + " " + PlayerNickname);

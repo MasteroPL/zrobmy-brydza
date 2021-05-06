@@ -4,6 +4,7 @@ using EasyHosting.Models.Server;
 using GameManagerLib.Models;
 using ServerSocket.Models;
 using GameManagerLib.Exceptions;
+using System;
 
 namespace ServerSocket.Actions.Sit {
     public class SitAction : BaseAction {
@@ -25,6 +26,7 @@ namespace ServerSocket.Actions.Sit {
                 var player = new Player((PlayerTag)data.PlaceTag, (string)conn.Session.Get("username"));
                 game.AddPlayer(player);
                 conn.Session.Set("player", player);
+                Console.WriteLine("Player sat at " + data.PlaceTag + ": " + conn.Session.Get("username"));
             } catch(SeatTakenException) {
                 data.AddError("PlaceTag", "SEAT_TAKEN", "Miejsce jest już zajęte");
                 data.ThrowException();

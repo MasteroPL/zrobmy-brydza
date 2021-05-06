@@ -15,6 +15,7 @@ using EasyHosting.Models.Actions;
 using Newtonsoft.Json.Linq;
 using GetTableInfoSerializer = ServerSocket.Actions.GetTableInfo.ResponseSerializer;
 using System;
+using Assets.Code.Models.Exceptions;
 
 public class GameManagerScript : MonoBehaviour
 {
@@ -66,8 +67,11 @@ public class GameManagerScript : MonoBehaviour
     private List<GameObject> HiddenCardsOfPlayerS;
     private List<GameObject> HiddenCardsOfPlayerW;
 
-    private ConnectionState CurrentConnectionState = ConnectionState.PRELOADING;
-    public Request CurrentRequest = null;
+    private ConnectionState _CurrentConnectionState = ConnectionState.PRELOADING;
+    public ConnectionState CurrentConnectionState { get { return _CurrentConnectionState;  } private set { _CurrentConnectionState = value; } }
+    private Request CurrentRequest = null;
+    private Action<Request, ActionsSerializer, object> CurrentRequestCallback = null;
+    private object CurrentRequestAddtionalData = null;
 
     // referencje do przyciskow z panelu chatu/licytacji/punktacji
     [SerializeField] Button ChatButton;
@@ -100,6 +104,28 @@ public class GameManagerScript : MonoBehaviour
         result.Actions[0] = tmp;
 
         return result;
+    }
+
+    /// <summary>
+    /// Generyczna metoda obsługi wykonywania akcji synchronicznie z serwerem
+    /// 
+    /// Po zakończeniu zapytania dane wynikowe wysyłane zostają do metody callback
+    /// </summary>
+    /// <param name="actionName">Nazwa akcji</param>
+    /// <param name="data">Dane akcji (dane zapytania)</param>
+    /// <param name="callback">Metoda do której należy wysłać odpowiedź zwrotną</param>
+    /// <param name="additionalData">Ten parametr zostanie bezpośrednio przekazany do metody zwrotnej</param>
+    /// <exception cref="RequestingInProgressException">Rzucany w przypadku kiedy inne zapytanie jest juz w trakcie wykonywania</exception>
+    public void PerformServerAction(string actionName, JObject data, Action<Request, ActionsSerializer, object> callback = null, object additionalData = null) {
+        if(CurrentConnectionState != ConnectionState.IDLE) {
+            throw new RequestInProgressException("Inne zapytanie jest juz w trakcie wykonywania");
+        }
+
+        CurrentConnectionState = ConnectionState.LOADING;
+        var requestData = WrapRequestData(actionName, data);
+        CurrentRequest = UserData.ClientConnection.SendRequest(requestData.GetApiObject());
+        CurrentRequestCallback = callback;
+        CurrentRequestAddtionalData = additionalData;
     }
 
     void Start()
@@ -208,10 +234,35 @@ public class GameManagerScript : MonoBehaviour
                     if(responseSerializer.GameState == (int)GameState.AWAITING_PLAYERS) {
                         ReloadTableAwaitingState(responseSerializer);
                     }
+                    // TODO Inne stany gry
                 }
             } catch (Exception ex) {
                 Debug.Log(ex.Message);
             }
+        }
+    }
+    /// <summary>
+    /// Obsługa dla przypadku "Loading"
+    /// </summary>
+    private void HandleLoading() {
+        CurrentRequest.ParentSocket.UpdateCommunication();
+
+        if(CurrentRequest.RequestState == RequestState.RESPONSE_RECEIVED) {
+            Debug.Log(CurrentRequest.ResponseData);
+            var request = CurrentRequest;
+            var requestCallback = CurrentRequestCallback;
+            var additionalData = CurrentRequestAddtionalData;
+            CurrentRequest = null;
+            CurrentRequestCallback = null;
+            CurrentRequestAddtionalData = null;
+
+            CurrentConnectionState = ConnectionState.IDLE;
+
+            var actsSer = new ActionsSerializer(request.ResponseData);
+            actsSer.Validate();
+
+            // ?.Invoke - jeśli nie null, to wywołaj Invoke
+            requestCallback?.Invoke(request, actsSer, additionalData);
         }
     }
 
@@ -220,6 +271,9 @@ public class GameManagerScript : MonoBehaviour
             // Przypadek, kiedy ekran nie otrzymal jeszcze informacji od serwera
             case ConnectionState.PRELOADING:
                 this.HandlePreloading();
+                break;
+            case ConnectionState.LOADING:
+                this.HandleLoading();
                 break;
         }    
     }

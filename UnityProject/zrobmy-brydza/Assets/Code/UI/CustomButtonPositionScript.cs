@@ -2,6 +2,10 @@
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using GameManagerLib.Models;
+using EasyHosting.Models.Client;
+using SitActionRequestSerializer = ServerSocket.Actions.Sit.RequestSerializer;
+using SitActionResponseSerializer = ServerSocket.Actions.Sit.ResponseSerializer;
+using EasyHosting.Models.Actions;
 
 namespace Assets.Code.UI
 {
@@ -10,6 +14,20 @@ namespace Assets.Code.UI
         [SerializeField] Button ReferencedButton;
         [SerializeField] GameManagerScript GameManager;
         [SerializeField] SeatsManagerScript SeatManager;
+
+        private void OnSitRequestCallback(Request request, ActionsSerializer response, object additionalData) {
+            var position = (PlayerTag)additionalData;
+
+            var data = new SitActionResponseSerializer(response.Actions[0].ActionData);
+            data.Validate();
+
+            if(data.Status == "OK") {
+                if (SeatManager.IsSeatTaken(position)) {
+                    SeatManager.SitOutPlayer(position);
+                }
+                SeatManager.SitPlayer(position, UserData.Username, ClickedByMe: true);
+            }
+        }
 
         public void OnPointerEnter(PointerEventData data)
         {
@@ -32,7 +50,9 @@ namespace Assets.Code.UI
             bool available = SeatManager.CheckSeatAvailability(buttonID);
             if (available && !UserData.Sitting)
             {
-                SeatManager.SitPlayer(buttonID, UserData.Username, ClickedByMe:true);
+                var requestData = new SitActionRequestSerializer();
+                requestData.PlaceTag = (int)buttonID;
+                GameManager.PerformServerAction("sit", requestData.GetApiObject(), this.OnSitRequestCallback, buttonID);
             }
         }
 
