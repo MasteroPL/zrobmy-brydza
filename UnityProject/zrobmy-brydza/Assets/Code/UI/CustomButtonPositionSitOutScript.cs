@@ -2,6 +2,11 @@
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using GameManagerLib.Models;
+using EasyHosting.Models.Client;
+using EasyHosting.Models.Actions;
+
+using LeavePlaceActionRequestSerializer = ServerSocket.Actions.LeavePlace.RequestSerializer;
+using LeavePlaceActionResponseSerializer = ServerSocket.Actions.LeavePlace.ResponseSerializer;
 
 namespace Assets.Code.UI
 {
@@ -10,6 +15,19 @@ namespace Assets.Code.UI
         [SerializeField] Button ReferencedButton;
         [SerializeField] GameManagerScript GameManager;
         [SerializeField] SeatsManagerScript SeatManager;
+
+        private void OnLeavePlaceRequestCallback(Request request, ActionsSerializer response, object additionalData) {
+            var position = (PlayerTag)additionalData;
+
+            var data = new LeavePlaceActionResponseSerializer(response.Actions[0].ActionData);
+            data.Validate();
+
+            if (data.Status == "OK") {
+                if (SeatManager.IsSeatTaken(position)) {
+                    SeatManager.SitOutPlayer(position);
+                }
+            }
+        }
 
         public void OnPointerEnter(PointerEventData data)
         {
@@ -36,9 +54,12 @@ namespace Assets.Code.UI
             bool available = SeatManager.CheckSeatAvailability(buttonID);
             if (!available)
             {
-                if (UserData.IsAdmin || 
-                    (UserData.Position.ToString()[0] == ReferencedButton.gameObject.name[0]) && UserData.Sitting)
-                {
+                if((UserData.Position.ToString()[0] == ReferencedButton.gameObject.name[0]) && UserData.Sitting){
+                    var requestData = new LeavePlaceActionRequestSerializer();
+                    requestData.PlaceTag = (int)buttonID;
+                    GameManager.PerformServerAction("leave-place", requestData.GetApiObject(), this.OnLeavePlaceRequestCallback, buttonID);
+                }
+                else if (UserData.IsAdmin) { 
                     SeatManager.SitOutPlayer(buttonID);
                 }
             }

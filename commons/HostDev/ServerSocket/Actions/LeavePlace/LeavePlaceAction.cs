@@ -30,10 +30,11 @@ namespace ServerSocket.Actions.LeavePlace{
                 {                    
                     game.RemovePlayer(player);
                     conn.Session.Remove("player");
+                    Console.WriteLine("Player left at " + data.PlaceTag + ": " + conn.Session.Get("username"));
                 }
-                catch (Exception e) {
-                    //TO-DO nie wiem jakie może to wyrzucić wyjątki
-                    // To się dowiedz
+                catch (WrongPlayerException) {
+                    data.AddError("PlaceTag", "NOT_SEATEN_HERE", "Gracz nie siedzi na tym miejscu");
+                    data.ThrowException();
                 }
 
             }

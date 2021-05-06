@@ -2,6 +2,7 @@
 using ServerSocket.Actions.Bid;
 using ServerSocket.Actions.GetTableInfo;
 using ServerSocket.Actions.HelloWorld;
+using ServerSocket.Actions.LeavePlace;
 using ServerSocket.Actions.Sit;
 using ServerSocket.Models;
 using System;
@@ -13,7 +14,8 @@ namespace EasyHosting.Models.Server.Config {
         public static readonly Dictionary<string, BaseAction> GAME_ACTIONS = new Dictionary<string, BaseAction>() {
             { "hello-world", new HelloWorldAction() },
             { "get-table-info", new GetTableInfoAction() },
-            { "sit", new SitAction() }
+            { "sit", new SitAction() },
+            { "leave-place", new LeavePlaceAction() },
         };
 
         private static BridgeServerSocket ServerSocket = null;
