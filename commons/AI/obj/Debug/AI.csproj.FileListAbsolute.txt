@@ -5,3 +5,10 @@ D:\projekt_zespolowy\commons\AI\obj\Debug\AI.csprojAssemblyReference.cache
 D:\projekt_zespolowy\commons\AI\obj\Debug\AI.csproj.CoreCompileInputs.cache
 D:\projekt_zespolowy\commons\AI\obj\Debug\AI.exe
 D:\projekt_zespolowy\commons\AI\obj\Debug\AI.pdb
+C:\Users\marci\Desktop\EE\Projekt\commons\AI\bin\Debug\AI.exe.config
+C:\Users\marci\Desktop\EE\Projekt\commons\AI\bin\Debug\AI.exe
+C:\Users\marci\Desktop\EE\Projekt\commons\AI\bin\Debug\AI.pdb
+C:\Users\marci\Desktop\EE\Projekt\commons\AI\obj\Debug\AI.csprojAssemblyReference.cache
+C:\Users\marci\Desktop\EE\Projekt\commons\AI\obj\Debug\AI.csproj.CoreCompileInputs.cache
+C:\Users\marci\Desktop\EE\Projekt\commons\AI\obj\Debug\AI.exe
+C:\Users\marci\Desktop\EE\Projekt\commons\AI\obj\Debug\AI.pdb

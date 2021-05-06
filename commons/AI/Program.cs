@@ -46,9 +46,19 @@ namespace AI
             h.Add(kakuter4.Bid(h));
             Console.WriteLine(h[3]);
 
-            h = new List<int> { 0, 14};
-            h.Add(kakuter1.Bid(h));
-            Console.WriteLine(h[2]);
+            List<int> C5 = new List<int> { 13, 8, 3 };
+            List<int> D5 = new List<int> { 13, 11, 5 };
+            List<int> H5 = new List<int> { 12, 3};
+            List<int> S5 = new List<int> { 13, 12, 11, 6, 2 };
+            AI kakuter5 = new AI(C5, D5, H5, S5);
+
+            h = new List<int> { 0, 14, 15, 34, 0 };
+            h.Add(kakuter5.Bid(h));
+            Console.WriteLine(h[5]);
+
+            h = new List<int> { 0, 14, 25, 34, 0 };
+            h.Add(kakuter5.Bid(h));
+            Console.WriteLine(h[5]);
         }
     }
 }
