@@ -46,8 +46,16 @@ namespace AI
                 this.Colors5 = 0;
             }
         }
-
         public int Bid(List<int> history)
+        {
+            int bid = AI_Bid(history);
+            while(bid > 75)
+            {
+                bid = bid - 10;
+            }
+            return bid;
+        }
+        public int AI_Bid(List<int> history)
         {
             int history_length = history.Count;
             int round = history_length / 4 + 1;
