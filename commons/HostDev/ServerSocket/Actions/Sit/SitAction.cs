@@ -5,6 +5,7 @@ using GameManagerLib.Models;
 using ServerSocket.Models;
 using GameManagerLib.Exceptions;
 using System;
+using ServerSocket.Serializers;
 
 namespace ServerSocket.Actions.Sit {
     public class SitAction : BaseAction {
@@ -27,6 +28,13 @@ namespace ServerSocket.Actions.Sit {
                 game.AddPlayer(player);
                 conn.Session.Set("player", player);
                 Console.WriteLine("Player sat at " + data.PlaceTag + ": " + conn.Session.Get("username"));
+
+                var boardcastData = new LobbySignalUserSatSerializer() {
+                    Signal = LobbySignalUserSatSerializer.SIGNAL_USER_SAT,
+                    PlaceTag = data.PlaceTag,
+                    Username = player.Name
+                };
+                lobby.Broadcast(boardcastData.GetApiObject());
             } catch(SeatTakenException) {
                 data.AddError("PlaceTag", "SEAT_TAKEN", "Miejsce jest już zajęte");
                 data.ThrowException();

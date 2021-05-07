@@ -1,5 +1,6 @@
 ﻿using EasyHosting.Models.Server;
 using ServerSocket.Models.Exceptions;
+using ServerSocket.Serializers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,6 +70,12 @@ namespace ServerSocket.Models {
             var lobby = Lobbies[lobbyId];
 
             lobby.Join(conn);
+            var data = new LobbySignalUserJoinedSerializer() {
+                Signal = "USER_JOINED",
+                Message = "Użytkownik " + conn.Session.Get("username") + " dołączył do Lobby",
+                Username = (string)conn.Session.Get("username")
+            };
+            lobby.Broadcast(data.GetApiObject());
         }
 
         /// <summary>

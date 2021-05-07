@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GetTableInfoSerializer=ServerSocket.Actions.GetTableInfo.ResponseSerializer;
+using SitActionRequestSerializer = ServerSocket.Actions.Sit.RequestSerializer;
 
 namespace ClientSocketTesting
 {
@@ -57,55 +58,67 @@ namespace ClientSocketTesting
 				clientSocket.UpdateCommunication();
             }
 
-			var tableInfoRequestData = WrapRequestData("get-table-info", null);
-			var tableInfoRequest = clientSocket.SendRequest(tableInfoRequestData.GetApiObject());
+			Console.WriteLine("OK");
 
-			while(tableInfoRequest.RequestState != RequestState.RESPONSE_RECEIVED) {
+			var sitAction = new SitActionRequestSerializer() {
+				PlaceTag = 0
+			};
+			var sitActionRequestData = WrapRequestData("sit", sitAction.GetApiObject());
+			var sitActionRequest = clientSocket.SendRequest(sitActionRequestData.GetApiObject());
+
+			while(sitActionRequest.RequestState != RequestState.RESPONSE_RECEIVED) {
 				clientSocket.UpdateCommunication();
             }
 
+			//var tableInfoRequestData = WrapRequestData("get-table-info", null);
+			//var tableInfoRequest = clientSocket.SendRequest(tableInfoRequestData.GetApiObject());
 
-			var responseActionSerializer = new ActionsSerializer(tableInfoRequest.ResponseData);
-			responseActionSerializer.Validate();
+			//while(tableInfoRequest.RequestState != RequestState.RESPONSE_RECEIVED) {
+			//	clientSocket.UpdateCommunication();
+   //         }
 
-			var dataResponseSerializer = new GetTableInfoSerializer(responseActionSerializer.Actions[0].ActionData);
-            try
-            {
-				dataResponseSerializer.Validate();
-				//Console.WriteLine(dataResponseSerializer.Status);
-            }
-			catch(Exception ex)
-            {
-				Console.WriteLine(ex.Message);
-            }
 
-			Match match = new Match();
-			for (int i = 0; i < 4; i++)
-			{
-				if (dataResponseSerializer.Players[i] != null)
-				{
-					match.AddPlayer(new Player((PlayerTag)dataResponseSerializer.Players[i].PlayerTag, dataResponseSerializer.Players[i].Username));
-				}
-			}
+			//var responseActionSerializer = new ActionsSerializer(tableInfoRequest.ResponseData);
+			//responseActionSerializer.Validate();
 
-			match.Dealer = (PlayerTag)dataResponseSerializer.Dealer;
-			match.Start();
+			//var dataResponseSerializer = new GetTableInfoSerializer(responseActionSerializer.Actions[0].ActionData);
+   //         try
+   //         {
+			//	dataResponseSerializer.Validate();
+			//	//Console.WriteLine(dataResponseSerializer.Status);
+   //         }
+			//catch(Exception ex)
+   //         {
+			//	Console.WriteLine(ex.Message);
+   //         }
 
-			foreach (var contract in dataResponseSerializer.CurrentBidding.ContractList)
-			{
-				if (contract != null)
-				{
-					var contractObject = new Contract(
-						(ContractHeight)contract.ContractHeight,
-						(ContractColor)contract.ContractColor,
-						(PlayerTag)contract.PlayerTag,
-						contract.XEnabled,
-						contract.XXEnabled
-					);
-					Console.WriteLine(contractObject.ToString());
-					match.AddBid(contractObject);
-				}
-			}
+			//Match match = new Match();
+			//for (int i = 0; i < 4; i++)
+			//{
+			//	if (dataResponseSerializer.Players[i] != null)
+			//	{
+			//		match.AddPlayer(new Player((PlayerTag)dataResponseSerializer.Players[i].PlayerTag, dataResponseSerializer.Players[i].Username));
+			//	}
+			//}
+
+			//match.Dealer = (PlayerTag)dataResponseSerializer.Dealer;
+			//match.Start();
+
+			//foreach (var contract in dataResponseSerializer.CurrentBidding.ContractList)
+			//{
+			//	if (contract != null)
+			//	{
+			//		var contractObject = new Contract(
+			//			(ContractHeight)contract.ContractHeight,
+			//			(ContractColor)contract.ContractColor,
+			//			(PlayerTag)contract.PlayerTag,
+			//			contract.XEnabled,
+			//			contract.XXEnabled
+			//		);
+			//		Console.WriteLine(contractObject.ToString());
+			//		match.AddBid(contractObject);
+			//	}
+			//}
 		}
 	}
 

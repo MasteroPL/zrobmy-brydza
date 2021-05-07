@@ -49,12 +49,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BridgeServerSocket.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RequestSerializer.cs" />
-    <Compile Include="ResponseSerializer.cs" />
-    <Compile Include="SampleAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -62,8 +58,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EasyHosting\EasyHosting.csproj">
-      <Project>{FB7B10C5-89FA-42DC-A706-F504A0674B9F}</Project>
+      <Project>{fb7b10c5-89fa-42dc-a706-f504a0674b9f}</Project>
       <Name>EasyHosting</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ServerSocket\ServerSocket.csproj">
+      <Project>{6a99b9ef-3465-47d8-aaa2-72f67774ee9e}</Project>
+      <Name>ServerSocket</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
