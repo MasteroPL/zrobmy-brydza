@@ -27,6 +27,15 @@ namespace ServerSocket.Models {
         public string Password;
         public ClientConnection LobbyOwner = null;
 
+        public bool UsernameAlreadyJoined(string username) {
+            foreach(var client in ConnectedClients) {
+                if(client.Session.Get<string>("username").CompareTo(username) == 0) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public Lobby(string password = "") {
             // Lista akcji definiowana w konfiguracji
             ActionsManager = new ActionsManager(MainConfig.GAME_ACTIONS);
@@ -55,6 +64,11 @@ namespace ServerSocket.Models {
             }
 
             string username = newConnection.Session.Get<string>("username");
+
+            if (UsernameAlreadyJoined(username)) {
+                throw new UsernameTakenException("Username taken");
+            }
+
             Console.WriteLine("Player " + username + " joined the lobby!");
             newConnection.Session.Set("joined-lobby", this);
             newConnection.BeforeDispose += OnClientConnectionDisposed;

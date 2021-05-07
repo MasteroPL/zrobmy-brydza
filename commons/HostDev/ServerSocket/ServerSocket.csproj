@@ -85,6 +85,7 @@
     <Compile Include="Models\Exceptions\LobbyAuthorizationFailedException.cs" />
     <Compile Include="Models\Exceptions\LobbyDoesNotExistException.cs" />
     <Compile Include="Models\Exceptions\LobbyException.cs" />
+    <Compile Include="Models\Exceptions\UsernameTakenException.cs" />
     <Compile Include="Models\LobbiesManager.cs" />
     <Compile Include="Models\Lobby.cs" />
     <Compile Include="Program.cs" />

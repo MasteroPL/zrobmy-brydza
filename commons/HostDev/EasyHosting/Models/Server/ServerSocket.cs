@@ -82,6 +82,8 @@ namespace EasyHosting.Models.Server
                         toRemove.Add(connection);
                     } catch (ObjectDisposedException) {
                         toRemove.Add(connection);
+                    } catch (InvalidOperationException) {
+                        toRemove.Add(connection);
                     } catch (Exception) {
                         Console.WriteLine("Nie można było wysłać komunikatów do klienta: " + connection.ToString());
                     }
@@ -99,6 +101,8 @@ namespace EasyHosting.Models.Server
                         toRemove.Add(connection);
                     } catch (ObjectDisposedException) {
                         toRemove.Add(connection);
+                    } catch (InvalidOperationException) {
+                        Console.WriteLine("Nie można było wysłać komunikatów do klienta: " + connection.ToString());
                     } catch (Exception) {
                         Console.WriteLine("Nie można było wysłać komunikatów do klienta: " + connection.ToString());
                     }
@@ -176,6 +180,8 @@ namespace EasyHosting.Models.Server
                                 connection.Flush();
                             } catch (IOException) {
                                 toRemove.Add(connection);
+                            } catch (InvalidOperationException) {
+                                toRemove.Add(connection);
                             }
                         }
                     }
@@ -190,14 +196,52 @@ namespace EasyHosting.Models.Server
                 // Niezautoryzowane połączenia
                 toRemove.Clear();
                 foreach (var connection in UnauthorizedConnections){
-                    if (TimeSpan.Compare(connection.GetConnectionTime(), TimeForAuthorization) <= 0) {
-                        if (connection.DataAvailable) {
-                            canContinue = true;
-                            JObject data = connection.GetData();
-                            var initialCheck = new StandardRequestSerializer(data);
+                    bool authorized = false;
+                    if (connection.DataAvailable) {
+                        canContinue = true;
+                        JObject data = connection.GetData();
+                        var initialCheck = new StandardRequestSerializer(data);
+                        try {
                             try {
+                                initialCheck.Validate();
+                            } catch (ValidationException e) {
+                                var wrappedResponse = new StandardCommunicateSerializer() {
+                                    CommunicateType = StandardCommunicateSerializer.TYPE_AUTHORIZATION,
+                                    RequestCode = initialCheck.RequestCode,
+                                    Data = GetAuthorizationResponseFailed()
+                                };
+                                connection.WriteData(wrappedResponse.GetApiObject());
+                                connection.Flush();
+                                canContinue = false;
+                            }
+                            if (canContinue) {
+                                // Zero zaufania do niezautoryzowanych połączeń
                                 try {
-                                    initialCheck.Validate();
+                                    if (AuthorizeConnection(connection, initialCheck.Data)) {
+                                        var response = GetAuthorizationResponseSuccessful();
+                                        var wrappedResponse = new StandardCommunicateSerializer() {
+                                            CommunicateType = StandardCommunicateSerializer.TYPE_AUTHORIZATION,
+                                            RequestCode = initialCheck.RequestCode,
+                                            Data = response
+                                        };
+                                        authorized = true;
+
+                                        // Informacja dla odbiorcy o poprawnej autoryzacji
+                                        connection.WriteData(wrappedResponse.GetApiObject());
+                                        connection.Flush();
+
+                                        currentlyAuthorized.Add(connection);
+                                    }
+                                    else {
+                                        var response = GetAuthorizationResponseFailed();
+                                        var wrappedResponse = new StandardCommunicateSerializer() {
+                                            CommunicateType = StandardCommunicateSerializer.TYPE_AUTHORIZATION,
+                                            RequestCode = initialCheck.RequestCode,
+                                            Data = response
+                                        };
+                                        connection.WriteData(wrappedResponse.GetApiObject());
+                                        connection.Flush();
+                                    }
                                 } catch (ValidationException e) {
                                     var wrappedResponse = new StandardCommunicateSerializer() {
                                         CommunicateType = StandardCommunicateSerializer.TYPE_AUTHORIZATION,
@@ -206,58 +250,21 @@ namespace EasyHosting.Models.Server
                                     };
                                     connection.WriteData(wrappedResponse.GetApiObject());
                                     connection.Flush();
-                                    canContinue = false;
                                 }
-                                if (canContinue) {
-                                    // Zero zaufania do niezautoryzowanych połączeń
-                                    try {
-                                        if (AuthorizeConnection(connection, initialCheck.Data)) {
-                                            var response = GetAuthorizationResponseSuccessful();
-                                            var wrappedResponse = new StandardCommunicateSerializer() {
-                                                CommunicateType = StandardCommunicateSerializer.TYPE_AUTHORIZATION,
-                                                RequestCode = initialCheck.RequestCode,
-                                                Data = response
-                                            };
-
-                                            // Informacja dla odbiorcy o poprawnej autoryzacji
-                                            connection.WriteData(wrappedResponse.GetApiObject());
-                                            connection.Flush();
-
-                                            AuthorizedConnections.Add(connection);
-                                            currentlyAuthorized.Add(connection);
-                                        }
-                                        else {
-                                            var response = GetAuthorizationResponseFailed();
-                                            var wrappedResponse = new StandardCommunicateSerializer() {
-                                                CommunicateType = StandardCommunicateSerializer.TYPE_AUTHORIZATION,
-                                                RequestCode = initialCheck.RequestCode,
-                                                Data = response
-                                            };
-                                            connection.WriteData(wrappedResponse.GetApiObject());
-                                            connection.Flush();
-                                        }
-                                    } catch (ValidationException e) {
-                                        var wrappedResponse = new StandardCommunicateSerializer() {
-                                            CommunicateType = StandardCommunicateSerializer.TYPE_AUTHORIZATION,
-                                            RequestCode = initialCheck.RequestCode,
-                                            Data = GetAuthorizationResponseFailed()
-                                        };
-                                        connection.WriteData(wrappedResponse.GetApiObject());
-                                        connection.Flush();
-                                    }
-                                }
-                            } catch(IOException e) {
-                                // Połączenie socketu rozłączone
-                                toRemove.Add(connection);
-                            } catch(ObjectDisposedException e) {
-                                // Połączenie socketu rozłączone
-                                toRemove.Add(connection);
-                            } catch(Exception e) {
-                                Console.WriteLine("Nieobsłużony wyjątek dla zapytania od połączenia " + connection.ToString() + "\n" + e.ToString());
                             }
+                        } catch (IOException e) {
+                            // Połączenie socketu rozłączone
+                            toRemove.Add(connection);
+                        } catch (ObjectDisposedException e) {
+                            // Połączenie socketu rozłączone
+                            toRemove.Add(connection);
+                        } catch (InvalidOperationException) {
+                            toRemove.Add(connection);
+                        } catch(Exception e) {
+                            Console.WriteLine("Nieobsłużony wyjątek dla zapytania od połączenia " + connection.ToString() + "\n" + e.ToString());
                         }
-                    } 
-                    else {
+                    }
+                    if (!authorized && TimeSpan.Compare(connection.GetConnectionTime(), TimeForAuthorization) > 0) {
                         connection.WriteData(GetAuthorizationTimeoutSignal());
                         connection.Flush();
 
@@ -271,6 +278,7 @@ namespace EasyHosting.Models.Server
                     UnauthorizedConnections.Remove(connection);
                     AuthorizedConnections.Add(connection);
                 }
+                currentlyAuthorized.Clear();
                 foreach (var connection in toRemove) {
                     connection.Dispose();
                     UnauthorizedConnections.Remove(connection);

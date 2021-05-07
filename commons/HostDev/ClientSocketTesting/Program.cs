@@ -70,6 +70,13 @@ namespace ClientSocketTesting
 				clientSocket.UpdateCommunication();
             }
 
+			Console.WriteLine("OK");
+
+            while (true) {
+				System.Threading.Thread.Sleep(1000);
+				Console.WriteLine("OK");
+			}
+
 			//var tableInfoRequestData = WrapRequestData("get-table-info", null);
 			//var tableInfoRequest = clientSocket.SendRequest(tableInfoRequestData.GetApiObject());
 

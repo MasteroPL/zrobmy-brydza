@@ -27,7 +27,7 @@ namespace EasyHosting.Meta
 		/// <summary>
 		/// Określa wartość domyślną dla pola (jeśli pole nie jest wymagane, powinno definiować wartość domyślną)
 		/// </summary>
-		public object Default { get { return Default; } }
+		public object Default { get { return _Default; } }
 
 		private readonly FieldValidatorAttribute[] _Validators = null;
 		/// <summary>
