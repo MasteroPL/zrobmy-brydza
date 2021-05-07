@@ -7356,6 +7356,7 @@ MonoBehaviour:
   PauseRequestButton: {fileID: 1595635567}
   QuitButton: {fileID: 1592352569}
   StartButton: {fileID: 1373166919}
+  TextManager: {fileID: 1073802091}
 --- !u!4 &783291824
 Transform:
   m_ObjectHideFlags: 0

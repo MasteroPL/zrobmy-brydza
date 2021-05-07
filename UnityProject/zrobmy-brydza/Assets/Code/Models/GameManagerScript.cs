@@ -16,6 +16,8 @@ using Newtonsoft.Json.Linq;
 using GetTableInfoSerializer = ServerSocket.Actions.GetTableInfo.ResponseSerializer;
 using System;
 using Assets.Code.Models.Exceptions;
+using EasyHosting.Models.Client.Serializers;
+using ServerSocket.Serializers;
 
 public class GameManagerScript : MonoBehaviour
 {
@@ -84,6 +86,7 @@ public class GameManagerScript : MonoBehaviour
     [SerializeField] Button PauseRequestButton;
     [SerializeField] Button QuitButton;
     [SerializeField] Button StartButton;
+    [SerializeField] TextManager TextManager;
 
     /**
      * -1 - neutral state
@@ -104,6 +107,36 @@ public class GameManagerScript : MonoBehaviour
         result.Actions[0] = tmp;
 
         return result;
+    }
+
+
+    private void HandleLobbySignal(JObject signalData) {
+        var signalName = (string)signalData.GetValue("signal");
+
+        if(signalName == LobbySignalUserJoinedSerializer.SIGNAL_USER_JOINED) {
+            var serializer = new LobbySignalUserJoinedSerializer(signalData);
+            serializer.Validate();
+
+            TextManager.AddMessage("Użytkownik " + serializer.Username + " dołączył do stołu.");
+            // Jakaś lista?
+        }
+        else if(signalName == LobbySignalUserSatSerializer.SIGNAL_USER_SAT) {
+
+        }
+    }
+    private void OnServerSignalReceive(object sender, StandardResponseWrapperSerializer data) {
+        Debug.Log(data.CommunicateType);
+        Debug.Log(data.Data);
+
+        switch (data.CommunicateType) {
+            case "LOBBY_SIGNAL":
+                HandleLobbySignal(data.Data);
+                break;
+
+            default:
+                Debug.Log("Unrecognized signal");
+                break;
+        }
     }
 
     /// <summary>
@@ -169,6 +202,7 @@ public class GameManagerScript : MonoBehaviour
             UserData.LoggedIn = true;
             UserData.ClientConnection = clientSocket;
         }
+        UserData.ClientConnection.SignalReceived += OnServerSignalReceive;
 
         SeatManager.InitializeSeatManager();
         //if (UserData.TableData != null)
@@ -275,6 +309,9 @@ public class GameManagerScript : MonoBehaviour
             case ConnectionState.LOADING:
                 this.HandleLoading();
                 break;
+            case ConnectionState.IDLE:
+                UserData.ClientConnection.UpdateCommunication();
+                break;
         }    
     }
 
@@ -375,6 +412,8 @@ public class GameManagerScript : MonoBehaviour
 
     void OnDestroy()
     {
+        UserData.ClientConnection.SignalReceived -= OnServerSignalReceive;
+
         if (ChatButton) ChatButton.onClick.RemoveAllListeners();
         if (AuctionButton) AuctionButton.onClick.RemoveAllListeners();
         if (PointsButton) PointsButton.onClick.RemoveAllListeners();

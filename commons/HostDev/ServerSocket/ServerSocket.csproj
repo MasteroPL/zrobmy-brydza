@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{6A99B9EF-3465-47D8-AAA2-72F67774EE9E}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>ServerSocket</RootNamespace>
     <AssemblyName>ServerSocket</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
@@ -31,6 +31,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -94,6 +97,7 @@
     <Compile Include="Serializers\LobbySignalsSerializer.cs" />
     <Compile Include="Serializers\LobbySignalUserJoinedSerializer.cs" />
     <Compile Include="Serializers\LobbySignalUserRemovedSerializer.cs" />
+    <Compile Include="Serializers\LobbySignalUserSatSerializer.cs" />
     <Compile Include="Serializers\LobbyUserSerializer.cs" />
     <Compile Include="Serializers\PlayerSerializer.cs" />
     <Compile Include="Serializers\CardSerializer.cs" />
