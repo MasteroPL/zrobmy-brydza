@@ -31,7 +31,7 @@ namespace ServerSocket.Actions.GetTableInfo {
             resp.PointsWEAboveLine = game.PointsWE[1];
             resp.PointsWEBelowLine = game.PointsWE[0];
 
-            resp.NumberOfPlayers = 4;// game.PlayerList.Count;
+            resp.NumberOfPlayers = game.PlayerList.Count;
             resp.Players = new PlayerSerializer[4];
             resp.NumberOfLobbyUsers = lobby.ConnectedClients.Count;
             resp.LobbyUsers = new LobbyUserSerializer[lobby.ConnectedClients.Count];
@@ -50,18 +50,6 @@ namespace ServerSocket.Actions.GetTableInfo {
 
                 index++;
             }
-
-            // test for players serializer
-            /*for(int i = 0; i < 4; i++)
-            {
-                tmpPlayer = new PlayerSerializer();
-
-                tmpPlayer.PlayerTag = i;
-                tmpPlayer.Username = "Player" + (i + 1).ToString();
-
-                resp.Players[i] = tmpPlayer;
-            }*/
-            // end test for players serializer
 
             // Serializacja użytkowników w lobby
             LobbyUserSerializer tmpLobbyUser;

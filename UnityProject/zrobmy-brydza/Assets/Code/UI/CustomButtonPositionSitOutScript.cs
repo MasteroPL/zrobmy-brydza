@@ -54,13 +54,10 @@ namespace Assets.Code.UI
             bool available = SeatManager.CheckSeatAvailability(buttonID);
             if (!available)
             {
-                if((UserData.Position.ToString()[0] == ReferencedButton.gameObject.name[0]) && UserData.Sitting){
+                if((UserData.Position.ToString()[0] == ReferencedButton.gameObject.name[0]) && UserData.Sitting || UserData.IsAdmin){
                     var requestData = new LeavePlaceActionRequestSerializer();
                     requestData.PlaceTag = (int)buttonID;
                     GameManager.PerformServerAction("leave-place", requestData.GetApiObject(), this.OnLeavePlaceRequestCallback, buttonID);
-                }
-                else if (UserData.IsAdmin) { 
-                    SeatManager.SitOutPlayer(buttonID);
                 }
             }
         }
