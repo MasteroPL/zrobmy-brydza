@@ -90,6 +90,7 @@ public class GameManagerScript : MonoBehaviour
 
     // lista graczy obecnych w lobby
     LobbyUserSerializer[] LobbyUsers;
+    const int MAX_USERS_IN_LOBBY = 10;
 
     /**
      * -1 - neutral state
@@ -217,31 +218,6 @@ public class GameManagerScript : MonoBehaviour
         UserData.ClientConnection.SignalReceived += OnServerSignalReceive;
 
         SeatManager.InitializeSeatManager();
-        //if (UserData.TableData != null)
-        //{
-        //    if(UserData.TableData.NumberOfLobbyUsers == 1)
-        //    {
-        //        UserData.IsAdmin = true;
-        //    }
-        //    else
-        //    {
-        //        UserData.IsAdmin = false;
-        //    }
-
-        //    if (UserData.TableData.GameState == (int)GameState.AWAITING_PLAYERS) // GameState.AWAITING = 0
-        //    {
-        //        ReloadTableAwaitingState();
-        //    }
-        //    else if(UserData.TableData.GameState == (int)GameState.BIDDING && UserData.TableData.NumberOfPlayers == 4) // GameState.BIDDING = 2 and 4 players present
-        //    {
-        //        ReloadTableBiddingState();
-        //    }
-        //    else if (UserData.TableData.GameState == (int)GameState.PLAYING && UserData.TableData.NumberOfPlayers == 4)
-        //    {
-        //        // GET CURRENT GAME DATA AND ASSIGN IT
-        //    }
-        //}
-        
     }
     /// <summary>
     /// Metoda obsługuje przypadek preloadingu w pętli Update
@@ -331,6 +307,15 @@ public class GameManagerScript : MonoBehaviour
                 UserData.ClientConnection.UpdateCommunication();
                 break;
         }
+
+        if (SeatManager.AllFourPlayersPresent() && UserData.Position != PlayerTag.NOBODY && Game.GameState == GameState.AWAITING_PLAYERS)
+        {
+            if (StartButton != null) StartButton.gameObject.SetActive(true);
+        }
+        else
+        {
+            if (StartButton != null) StartButton.gameObject.SetActive(false);
+        }
     }
 
     private void ReloadTableAwaitingState(GetTableInfoSerializer tableData)
@@ -356,7 +341,11 @@ public class GameManagerScript : MonoBehaviour
             }
         }
 
-        LobbyUsers = tableData.LobbyUsers;
+        LobbyUsers = new LobbyUserSerializer[MAX_USERS_IN_LOBBY];
+        for(int i = 0; i < tableData.LobbyUsers.Length; i++)
+        {
+            LobbyUsers[i] = tableData.LobbyUsers[i];
+        }
     }
 
     private void ReloadTableBiddingState(GetTableInfoSerializer tableData)
@@ -402,7 +391,11 @@ public class GameManagerScript : MonoBehaviour
         Game.Match.PointsWE[0] = tableData.PointsWEBelowLine; // [0] - under line, [1] - above line
         Game.Match.PointsWE[1] = tableData.PointsWEAboveLine;
 
-        LobbyUsers = tableData.LobbyUsers;
+        LobbyUsers = new LobbyUserSerializer[MAX_USERS_IN_LOBBY];
+        for (int i = 0; i < tableData.LobbyUsers.Length; i++)
+        {
+            LobbyUsers[i] = tableData.LobbyUsers[i];
+        }
 
         PlayerTag StartingPlayer = Game.Match.CurrentBidding.CurrentPlayer;
         AuctionModule.InitAuctionModule(Game, StartingPlayer);
@@ -411,18 +404,18 @@ public class GameManagerScript : MonoBehaviour
 
     public void ShowHideStartGameButton(bool AllPlayersPresent)
     {
-        GameObject startButtonObject = GameObject.Find("/Canvas/TableCanvas/StartButton");
         if (AllPlayersPresent && UserData.Position != PlayerTag.NOBODY)
         {
-            if (startButtonObject != null)
+            if (StartButton != null)
             {
-                startButtonObject.SetActive(true);
+                StartButton.gameObject.SetActive(true);
             }
-        } else
+        }
+        else
         {
-            if (startButtonObject != null)
+            if (StartButton != null)
             {
-                startButtonObject.SetActive(false);
+                StartButton.gameObject.SetActive(false);
             }
         }
     }
@@ -599,10 +592,9 @@ public class GameManagerScript : MonoBehaviour
 
         GameObject auctionObject = GameObject.Find("/Canvas/TableCanvas/AuctionDialog");
         auctionObject.SetActive(true);
-        GameObject startButtonObject = GameObject.Find("StartButton");
-        if (startButtonObject != null)
+        if (StartButton != null)
         {
-            startButtonObject.SetActive(false);
+            StartButton.gameObject.SetActive(false);
         }
         InvokeRepeating("CurrentPlayerLight", 0.5f, 0.05f);
     }

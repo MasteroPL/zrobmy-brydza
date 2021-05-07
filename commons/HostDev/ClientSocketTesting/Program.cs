@@ -10,8 +10,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GetTableInfoSerializer=ServerSocket.Actions.GetTableInfo.ResponseSerializer;
+using GetTableInfoSerializer = ServerSocket.Actions.GetTableInfo.ResponseSerializer;
 using SitActionRequestSerializer = ServerSocket.Actions.Sit.RequestSerializer;
+using System.Threading;
 
 namespace ClientSocketTesting
 {
@@ -19,14 +20,52 @@ namespace ClientSocketTesting
 	{
 		static bool Authorized = false;
 
-		static void OnRequestResponse(object sender, Request request) {
-			Console.WriteLine(request.ResponseData);
-        }
-		static void OnSignal(object sender, StandardResponseWrapperSerializer signal) {
-			Console.WriteLine(signal.Data);
-        }
+		static ClientSocket ConnectToLobbyAndSit(string username, PlayerTag position)
+		{
+			var clientSocket = new ClientSocket("127.0.0.1");
+			clientSocket.RequestResponseReceived += OnRequestResponse;
+			clientSocket.SignalReceived += OnSignal;
 
-		static ActionsSerializer WrapRequestData(string actionName, JObject data) {
+
+			var authData = new AuthData()
+			{
+				LobbyId = "DEFAULT",
+				Login = username,
+				LobbyPassword = ""
+			};
+
+			var authRequest = clientSocket.SendRequest(authData.GetApiObject());
+
+			while (authRequest.RequestState != RequestState.RESPONSE_RECEIVED)
+			{
+				clientSocket.UpdateCommunication();
+			}
+
+			var sitAction = new SitActionRequestSerializer()
+			{
+				PlaceTag = (int)position
+			};
+			var sitActionRequestData = WrapRequestData("sit", sitAction.GetApiObject());
+			var sitActionRequest = clientSocket.SendRequest(sitActionRequestData.GetApiObject());
+
+			while (sitActionRequest.RequestState != RequestState.RESPONSE_RECEIVED)
+			{
+				clientSocket.UpdateCommunication();
+			}
+			return clientSocket;
+		}
+
+		static void OnRequestResponse(object sender, Request request)
+		{
+			Console.WriteLine(request.ResponseData);
+		}
+		static void OnSignal(object sender, StandardResponseWrapperSerializer signal)
+		{
+			Console.WriteLine(signal.Data);
+		}
+
+		static ActionsSerializer WrapRequestData(string actionName, JObject data)
+		{
 			var result = new ActionsSerializer();
 			result.Actions = new ActionSerializer[1];
 			var tmp = new ActionSerializer();
@@ -37,106 +76,42 @@ namespace ClientSocketTesting
 			result.Actions[0] = tmp;
 
 			return result;
-        }
+		}
 
-		static void Main(string[] args) {
+		static void Main(string[] args)
+		{
+			ClientSocket MaciusSocket = null, PawelekSocket = null, MarcinSocket = null;
 
-			var clientSocket = new ClientSocket("127.0.0.1");
-			clientSocket.RequestResponseReceived += OnRequestResponse;
-			clientSocket.SignalReceived += OnSignal;
+            while (true)
+            {
+				if (MaciusSocket == null)MaciusSocket = ConnectToLobbyAndSit("Macius", PlayerTag.N);
+                else MaciusSocket.UpdateCommunication();
 
+				Thread.Sleep(1000);
 
-			var authData = new AuthData() {
-				LobbyId = "DEFAULT",
-				Login = "Macius",
-				LobbyPassword = ""
-			};
+				if (PawelekSocket == null) PawelekSocket = ConnectToLobbyAndSit("Pawełek", PlayerTag.S);
+				else PawelekSocket.UpdateCommunication();
 
-			var authRequest = clientSocket.SendRequest(authData.GetApiObject());
+				Thread.Sleep(1000);
 
-			while (authRequest.RequestState != RequestState.RESPONSE_RECEIVED){
-				clientSocket.UpdateCommunication();
-            }
+				if (MarcinSocket == null) MarcinSocket = ConnectToLobbyAndSit("Marcin", PlayerTag.W);
+				else MarcinSocket.UpdateCommunication();
 
-			Console.WriteLine("OK");
-
-			var sitAction = new SitActionRequestSerializer() {
-				PlaceTag = 0
-			};
-			var sitActionRequestData = WrapRequestData("sit", sitAction.GetApiObject());
-			var sitActionRequest = clientSocket.SendRequest(sitActionRequestData.GetApiObject());
-
-			while(sitActionRequest.RequestState != RequestState.RESPONSE_RECEIVED) {
-				clientSocket.UpdateCommunication();
-            }
-
-			Console.WriteLine("OK");
-
-            while (true) {
-				System.Threading.Thread.Sleep(1000);
-				Console.WriteLine("OK");
+				Thread.Sleep(1000);
 			}
-
-			//var tableInfoRequestData = WrapRequestData("get-table-info", null);
-			//var tableInfoRequest = clientSocket.SendRequest(tableInfoRequestData.GetApiObject());
-
-			//while(tableInfoRequest.RequestState != RequestState.RESPONSE_RECEIVED) {
-			//	clientSocket.UpdateCommunication();
-   //         }
-
-
-			//var responseActionSerializer = new ActionsSerializer(tableInfoRequest.ResponseData);
-			//responseActionSerializer.Validate();
-
-			//var dataResponseSerializer = new GetTableInfoSerializer(responseActionSerializer.Actions[0].ActionData);
-   //         try
-   //         {
-			//	dataResponseSerializer.Validate();
-			//	//Console.WriteLine(dataResponseSerializer.Status);
-   //         }
-			//catch(Exception ex)
-   //         {
-			//	Console.WriteLine(ex.Message);
-   //         }
-
-			//Match match = new Match();
-			//for (int i = 0; i < 4; i++)
-			//{
-			//	if (dataResponseSerializer.Players[i] != null)
-			//	{
-			//		match.AddPlayer(new Player((PlayerTag)dataResponseSerializer.Players[i].PlayerTag, dataResponseSerializer.Players[i].Username));
-			//	}
-			//}
-
-			//match.Dealer = (PlayerTag)dataResponseSerializer.Dealer;
-			//match.Start();
-
-			//foreach (var contract in dataResponseSerializer.CurrentBidding.ContractList)
-			//{
-			//	if (contract != null)
-			//	{
-			//		var contractObject = new Contract(
-			//			(ContractHeight)contract.ContractHeight,
-			//			(ContractColor)contract.ContractColor,
-			//			(PlayerTag)contract.PlayerTag,
-			//			contract.XEnabled,
-			//			contract.XXEnabled
-			//		);
-			//		Console.WriteLine(contractObject.ToString());
-			//		match.AddBid(contractObject);
-			//	}
-			//}
+			Console.WriteLine("OK");
 		}
 	}
 
-	public class AuthData : BaseSerializer {
-		[SerializerField(apiName:"lobby-id")]
+	public class AuthData : BaseSerializer
+	{
+		[SerializerField(apiName: "lobby-id")]
 		public string LobbyId;
 
-		[SerializerField(apiName:"login")]
+		[SerializerField(apiName: "login")]
 		public string Login;
 
-		[SerializerField(apiName:"lobby-password")]
+		[SerializerField(apiName: "lobby-password")]
 		public string LobbyPassword;
-    }
+	}
 }
