@@ -121,7 +121,16 @@ public class GameManagerScript : MonoBehaviour
             // Jakaś lista?
         }
         else if(signalName == LobbySignalUserSatSerializer.SIGNAL_USER_SAT) {
+            var serializer = new LobbySignalUserSatSerializer(signalData);
+            serializer.Validate();
 
+            if (serializer.Username != UserData.Username) {
+                if (SeatManager.IsSeatTaken((PlayerTag)serializer.PlaceTag)) {
+                    SeatManager.SitOutPlayer((PlayerTag)serializer.PlaceTag);
+                }
+
+                SeatManager.SitPlayer((PlayerTag)serializer.PlaceTag, serializer.Username);
+            }
         }
     }
     private void OnServerSignalReceive(object sender, StandardResponseWrapperSerializer data) {

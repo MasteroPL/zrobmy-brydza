@@ -29,12 +29,16 @@ namespace ServerSocket.Actions.Sit {
                 conn.Session.Set("player", player);
                 Console.WriteLine("Player sat at " + data.PlaceTag + ": " + conn.Session.Get("username"));
 
-                var boardcastData = new LobbySignalUserSatSerializer() {
+                var broadcastData = new LobbySignalUserSatSerializer() {
                     Signal = LobbySignalUserSatSerializer.SIGNAL_USER_SAT,
                     PlaceTag = data.PlaceTag,
                     Username = player.Name
                 };
-                lobby.Broadcast(boardcastData.GetApiObject());
+                var broadcastWrapper = new StandardCommunicateSerializer() {
+                    CommunicateType = StandardCommunicateSerializer.TYPE_LOBBY_SIGNAL,
+                    Data = broadcastData.GetApiObject()
+                };
+                lobby.Broadcast(broadcastWrapper.GetApiObject());
             } catch(SeatTakenException) {
                 data.AddError("PlaceTag", "SEAT_TAKEN", "Miejsce jest już zajęte");
                 data.ThrowException();
