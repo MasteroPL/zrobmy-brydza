@@ -26,6 +26,8 @@ namespace ServerSocket.Models {
         public Match Game;
         public string Password;
         public ClientConnection LobbyOwner = null;
+        public string Id { private set; get; }
+        public LobbiesManager ParentManager { private set; get; }
 
         public bool UsernameAlreadyJoined(string username) {
             foreach(var client in ConnectedClients) {
@@ -36,7 +38,10 @@ namespace ServerSocket.Models {
             return false;
         }
 
-        public Lobby(string password = "") {
+        public Lobby(string lobbyId, string password = "", LobbiesManager parentManager = null) {
+            this.Id = lobbyId;
+            this.ParentManager = parentManager;
+
             // Lista akcji definiowana w konfiguracji
             ActionsManager = new ActionsManager(MainConfig.GAME_ACTIONS);
             Password = password;
@@ -115,7 +120,10 @@ namespace ServerSocket.Models {
                     LobbyOwner = ConnectedClients.First();
                 }
                 else {
-                    Close();
+                    if (ParentManager == null)
+                        Close();
+                    else
+                        ParentManager.CloseLobby(Id);
                 }
             }
             client.Dispose();

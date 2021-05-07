@@ -19,7 +19,7 @@ namespace ServerSocket.Models {
 
         public LobbiesManager(bool createDefaultLobby = true, string defaultLobbyPassword = "") {
             if (createDefaultLobby) {
-                Lobbies.Add("DEFAULT", new Lobby(password: defaultLobbyPassword));
+                Lobbies.Add("DEFAULT", new Lobby("DEFAULT", password: defaultLobbyPassword, parentManager:this));
             }
         }
 
@@ -34,7 +34,7 @@ namespace ServerSocket.Models {
                 throw new DuplicateLobbyIdException();
             }
 
-            var newLobby = new Lobby(lobbyPassword);
+            var newLobby = new Lobby(lobbyId, lobbyPassword, this);
             Lobbies.Add(lobbyId, newLobby);
             LobbyCreated?.Invoke(this, newLobby);
         }

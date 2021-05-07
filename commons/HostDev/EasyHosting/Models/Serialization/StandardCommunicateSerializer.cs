@@ -16,6 +16,7 @@ namespace EasyHosting.Models.Serialization {
         public const string TYPE_LOBBY_SIGNAL = "LOBBY_SIGNAL";
         public const string TYPE_AUTHORIZATION = "AUTHORIZATION";
         public const string TYPE_SERVER_SIGNAL = "SERVER_SIGNAL";
+        public const string TYPE_CONNECTION_CHECK = "CONNECTION_CHECK";
 
         /// <summary>
         /// Określa typ komunikatu
@@ -32,7 +33,7 @@ namespace EasyHosting.Models.Serialization {
         /// <summary>
         /// Określa dane komunikatu
         /// </summary>
-        [SerializerField(apiName: "data", required: true)]
+        [SerializerField(apiName: "data", required: false, defaultValue: null)]
         public JObject Data;
 
         public StandardCommunicateSerializer() : base() { }

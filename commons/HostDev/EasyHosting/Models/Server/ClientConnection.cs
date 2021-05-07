@@ -82,6 +82,7 @@ namespace EasyHosting.Models.Server
 		}
 
 		private DateTime ConnectedAt = DateTime.Now;
+		public DateTime LastActivateAt = DateTime.Now;
 
 		public TimeSpan GetConnectionTime (){
 			return DateTime.Now - ConnectedAt;

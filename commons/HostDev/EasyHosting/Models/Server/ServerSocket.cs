@@ -25,6 +25,8 @@ namespace EasyHosting.Models.Server
         /// </summary>
         protected TimeSpan TimeForAuthorization;
 
+        protected TimeSpan MaxIdleTime;
+
         private bool _Initialized = false;
         /// <summary>
         /// Określa, czy TcpListener został zainicjalizowany i nasłuchuje połączeń
@@ -102,7 +104,7 @@ namespace EasyHosting.Models.Server
                     } catch (ObjectDisposedException) {
                         toRemove.Add(connection);
                     } catch (InvalidOperationException) {
-                        Console.WriteLine("Nie można było wysłać komunikatów do klienta: " + connection.ToString());
+                        toRemove.Add(connection);
                     } catch (Exception) {
                         Console.WriteLine("Nie można było wysłać komunikatów do klienta: " + connection.ToString());
                     }
@@ -118,6 +120,7 @@ namespace EasyHosting.Models.Server
                 toRemove.Clear();
                 foreach (var connection in AuthorizedConnections) {
                     if (connection.DataAvailable) {
+                        connection.LastActivateAt = DateTime.Now;
                         JObject data = connection.GetData();
                         JObject response;
                         canContinue = true;
@@ -185,6 +188,26 @@ namespace EasyHosting.Models.Server
                             }
                         }
                     }
+                    else if(TimeSpan.Compare(DateTime.Now - connection.LastActivateAt, MaxIdleTime) > 0) {
+                        Console.WriteLine("IDLE CHECK");
+                        connection.LastActivateAt = DateTime.Now;
+                        var wrappedResponse = new StandardCommunicateSerializer() {
+                            CommunicateType = StandardCommunicateSerializer.TYPE_CONNECTION_CHECK,
+                            RequestCode = -1,
+                            Data = null
+                        };
+                        try {
+                            connection.WriteData(wrappedResponse.GetApiObject());
+                        } catch (IOException) {
+                            toRemove.Add(connection);
+                        } catch (ObjectDisposedException) {
+                            toRemove.Add(connection);
+                        } catch (InvalidOperationException) {
+                            toRemove.Add(connection);
+                        } catch (Exception) {
+                            Console.WriteLine("Nie można było wysłać komunikatów do klienta: " + connection.ToString());
+                        }
+                    }
                 }
 
                 // Usuwanie zamkniętych połączeń
@@ -229,6 +252,8 @@ namespace EasyHosting.Models.Server
                                         // Informacja dla odbiorcy o poprawnej autoryzacji
                                         connection.WriteData(wrappedResponse.GetApiObject());
                                         connection.Flush();
+
+                                        connection.LastActivateAt = DateTime.Now;
 
                                         currentlyAuthorized.Add(connection);
                                     }
@@ -311,12 +336,13 @@ namespace EasyHosting.Models.Server
             }
         }
 
-        public ServerSocket(System.Net.IPAddress ipAddress = null, int port = 33564, int secondsForAuthorization = 10) {
+        public ServerSocket(System.Net.IPAddress ipAddress = null, int port = 33564, int secondsForAuthorization = 10, int secondsAllowedIdle = 10) {
             if (ipAddress != null) {
                 IpAddress = ipAddress;
             }
             Port = port;
             TimeForAuthorization = TimeSpan.FromSeconds(secondsForAuthorization);
+            MaxIdleTime = TimeSpan.FromSeconds(secondsAllowedIdle);
         }
         /// <summary>
         /// Określa jaka odpowiedź ma być zwrócona do klienta w przypadku udanej autoryzacji
