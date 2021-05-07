@@ -88,6 +88,9 @@ public class GameManagerScript : MonoBehaviour
     [SerializeField] Button StartButton;
     [SerializeField] TextManager TextManager;
 
+    // lista graczy obecnych w lobby
+    LobbyUserSerializer[] LobbyUsers;
+
     /**
      * -1 - neutral state
      * 0  - take everything
@@ -274,8 +277,14 @@ public class GameManagerScript : MonoBehaviour
                         UserData.IsAdmin = false;
                     }
 
-                    if(responseSerializer.GameState == (int)GameState.AWAITING_PLAYERS) {
-                        ReloadTableAwaitingState(responseSerializer);
+                    switch (responseSerializer.GameState)
+                    {
+                        case (int)GameState.AWAITING_PLAYERS:
+                            ReloadTableAwaitingState(responseSerializer);
+                            break;
+                        case (int)GameState.BIDDING:
+                            ReloadTableBiddingState(responseSerializer);
+                            break;
                     }
                     // TODO Inne stany gry
                 }
@@ -321,7 +330,7 @@ public class GameManagerScript : MonoBehaviour
             case ConnectionState.IDLE:
                 UserData.ClientConnection.UpdateCommunication();
                 break;
-        }    
+        }
     }
 
     private void ReloadTableAwaitingState(GetTableInfoSerializer tableData)
@@ -346,25 +355,28 @@ public class GameManagerScript : MonoBehaviour
                 SeatManager.SitPlayer((PlayerTag)tableData.Players[i].PlayerTag, tableData.Players[i].Username);
             }
         }
+
+        LobbyUsers = tableData.LobbyUsers;
     }
 
-    private void ReloadTableBiddingState()
+    private void ReloadTableBiddingState(GetTableInfoSerializer tableData)
     {
         Game = new Game(this);
+        Game.GameState = GameState.BIDDING;
 
         for (int i = 0; i < 4; i++)
         {
-            if (UserData.TableData.Players[i] != null)
+            if (tableData.Players[i] != null)
             {
-                Game.Match.AddPlayer(new Player((PlayerTag)UserData.TableData.Players[i].PlayerTag, UserData.TableData.Players[i].Username));
-                SeatManager.SitPlayer((PlayerTag)UserData.TableData.Players[i].PlayerTag, UserData.TableData.Players[i].Username);
+                Game.Match.AddPlayer(new Player((PlayerTag)tableData.Players[i].PlayerTag, tableData.Players[i].Username));
+                SeatManager.SitPlayer((PlayerTag)tableData.Players[i].PlayerTag, tableData.Players[i].Username);
             }
         }
 
-        Game.Match.Dealer = (PlayerTag)UserData.TableData.Dealer;
+        Game.Match.Dealer = (PlayerTag)tableData.Dealer;
         Game.Match.Start();
 
-        foreach (var contract in UserData.TableData.CurrentBidding.ContractList)
+        foreach (var contract in tableData.CurrentBidding.ContractList)
         {
             if (contract != null)
             {
@@ -378,27 +390,23 @@ public class GameManagerScript : MonoBehaviour
             }
         }
 
-        Game.Match.RoundsNS = UserData.TableData.RoundsNS;
-        Game.Match.RoundsWE = UserData.TableData.RoundsWE;
+        Game.Match.RoundsNS = tableData.RoundsNS;
+        Game.Match.RoundsWE = tableData.RoundsWE;
 
-        Game.Match.History.AddNSHistory(UserData.TableData.PointsNSBelowLine, UserData.TableData.PointsNSAboveLine);
-        Game.Match.History.AddWEHistory(UserData.TableData.PointsWEBelowLine, UserData.TableData.PointsWEAboveLine);
+        Game.Match.History.AddNSHistory(tableData.PointsNSBelowLine, tableData.PointsNSAboveLine);
+        Game.Match.History.AddWEHistory(tableData.PointsWEBelowLine, tableData.PointsWEAboveLine);
 
-        Game.Match.PointsNS[0] = UserData.TableData.PointsNSBelowLine; // [0] - under line, [1] - above line
-        Game.Match.PointsNS[1] = UserData.TableData.PointsNSAboveLine;
+        Game.Match.PointsNS[0] = tableData.PointsNSBelowLine; // [0] - under line, [1] - above line
+        Game.Match.PointsNS[1] = tableData.PointsNSAboveLine;
 
-        Game.Match.PointsWE[0] = UserData.TableData.PointsWEBelowLine; // [0] - under line, [1] - above line
-        Game.Match.PointsWE[1] = UserData.TableData.PointsWEAboveLine;
+        Game.Match.PointsWE[0] = tableData.PointsWEBelowLine; // [0] - under line, [1] - above line
+        Game.Match.PointsWE[1] = tableData.PointsWEAboveLine;
+
+        LobbyUsers = tableData.LobbyUsers;
 
         PlayerTag StartingPlayer = Game.Match.CurrentBidding.CurrentPlayer;
         AuctionModule.InitAuctionModule(Game, StartingPlayer);
         AuctionModule.ReloadDeclarations();
-    }
-
-    public void ReloadTableData()
-    {
-        // Request for data
-
     }
 
     public void ShowHideStartGameButton(bool AllPlayersPresent)
