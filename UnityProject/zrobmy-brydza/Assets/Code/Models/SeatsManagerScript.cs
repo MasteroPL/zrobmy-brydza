@@ -65,7 +65,9 @@ public class SeatsManagerScript : MonoBehaviour
                 UserData.Position = Position;
                 UserData.PositionStart = Position;
                 UserData.Sitting = true;
+                GameManager.UpdateTableCenter(GameManager.Game);
             }
+            GameManager.Game.Match.AddPlayer(new Player(Position, PlayerNickname));
             GameManager.ShowHideStartGameButton(!SeatStates[PlayerTag.N] && !SeatStates[PlayerTag.S] && !SeatStates[PlayerTag.E] && !SeatStates[PlayerTag.W]);
             //Debug.Log("All 4 players: " + (!SeatStates[PlayerTag.N] && !SeatStates[PlayerTag.S] && !SeatStates[PlayerTag.E] && !SeatStates[PlayerTag.W]));
         }
@@ -86,6 +88,9 @@ public class SeatsManagerScript : MonoBehaviour
                 UserData.PositionStart = PlayerTag.NOBODY;
                 UserData.Sitting = false;
             }
+
+            var playerToRemove = GameManager.Game.Match.GetPlayerAt(Position);
+            GameManager.Game.Match.RemovePlayer(playerToRemove);
             GameManager.ShowHideStartGameButton(!SeatStates[PlayerTag.N] && !SeatStates[PlayerTag.S] && !SeatStates[PlayerTag.E] && !SeatStates[PlayerTag.W]);
         }
         //Debug.Log("All 4 players: " + (!SeatStates[PlayerTag.N] && !SeatStates[PlayerTag.S] && !SeatStates[PlayerTag.E] && !SeatStates[PlayerTag.W]));

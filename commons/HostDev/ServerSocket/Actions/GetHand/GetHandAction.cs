@@ -24,28 +24,38 @@ namespace ServerSocket.Actions.GetHand
             Lobby lobby = (Lobby)conn.Session.Get("joined-lobby");
             Match game = lobby.Game;
 
-            Player player = null;
-
-            CardSerializer[] cards = data.Hand;
-            Card[] hand = new Card[13];
-
-            for (int i = 0; i < hand.Length; i++) {
-                hand[i] = new Card((CardFigure)cards[i].Figure, (CardColor)cards[i].Color, (PlayerTag)data.PlayerID, (CardState)cards[i].State);
+            if (data.PlayerID < 0 || data.PlayerID > 3)
+            {
+                data.AddError("PlayerID", "INVALID_POSITION", "Nie masz uprawnień by pobrać dane o ręce danego użytkownika");
+                data.ThrowException();
             }
-
-            foreach (var p in game.PlayerList) {
-                if (p.Tag == (PlayerTag)data.PlayerID) {
-                    player = p;
-                    break;
+            bool playerFound = false;
+            for(int i = 0; i < game.PlayerList.Count; i++)
+            {
+                if (game.PlayerList[i] != null)
+                {
+                    if (game.PlayerList[i].Name == data.Username)
+                    {
+                        playerFound = true;
+                    }
                 }
             }
-
-            try {
-                player.Hand = hand;
-            } catch (Exception e) {
-                // ?????
+            if (!playerFound)
+            {
+                data.AddError("Username", "INVALID_PLAYER", "Nieprawidłowy użytkownik");
+                data.ThrowException();
             }
 
+            CardSerializer[] cards = new CardSerializer[13];
+
+            for (int i = 0; i < game.PlayerList[data.PlayerID].Hand.Length; i++) {
+                cards[i] = new CardSerializer();
+                cards[i].Figure = (int)game.PlayerList[data.PlayerID].Hand[i].Figure;
+                cards[i].Color = (int)game.PlayerList[data.PlayerID].Hand[i].Color;
+                cards[i].State = (int)game.PlayerList[data.PlayerID].Hand[i].CurrentState;
+            }
+
+            resp.Cards = cards;
             return resp;
         }
     }

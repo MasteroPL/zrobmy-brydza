@@ -35,8 +35,9 @@ namespace Assets.Code.Models
             Match.AddPlayer(new Player(PlayerTag.S, "gracz3"));
             Match.AddPlayer(new Player(PlayerTag.W, "gracz4"));*/
 
-            Match.Start();
-            GameState = GameState.BIDDING;
+            //Match.Start();
+            //GameState = GameState.BIDDING;
+            //GameManagerScript.
 
             //Match.PlayerList[0].Hand, Match.PlayerList[1].Hand, Match.PlayerList[2].Hand, Match.PlayerList[3].Hand
             /*GameManagerLib.Models.Card[] MyHand = { };

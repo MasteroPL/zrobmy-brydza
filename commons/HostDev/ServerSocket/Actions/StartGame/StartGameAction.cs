@@ -26,8 +26,7 @@ namespace ServerSocket.Actions.StartGame {
             try
             {
                 game.Start();
-
-                Console.WriteLine();
+                Console.WriteLine("Starting the game...");
                 var broadcastData = new PlayerClickedGameStartSerializer()
                 {
                     Signal = PlayerClickedGameStartSerializer.SIGNAL_PLAYER_READY,

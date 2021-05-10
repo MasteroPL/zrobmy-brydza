@@ -90,7 +90,7 @@ namespace ClientSocketTesting
 
 			int counter = 0;
 
-            while (/*true*/counter++ < 5)
+            while (true)
             {
 				if (MaciusSocket == null)MaciusSocket = ConnectToLobbyAndSit("Macius", PlayerTag.N);
                 else MaciusSocket.UpdateCommunication();

@@ -19,5 +19,6 @@ namespace Assets.Code.UI
         public static ServerSocket.Actions.GetTableInfo.ResponseSerializer TableData = null;
         public static string Username = null;
         public static ClientSocket ClientConnection = null;
+        public static List<GameManagerLib.Models.Card> Cards = null;
     }
 }

@@ -133,8 +133,8 @@ public class GameManagerScript : MonoBehaviour
                 if (SeatManager.IsSeatTaken((PlayerTag)serializer.PlaceTag)) {
                     SeatManager.SitOutPlayer((PlayerTag)serializer.PlaceTag);
                 }
-
                 SeatManager.SitPlayer((PlayerTag)serializer.PlaceTag, serializer.Username);
+                this.UpdateTableCenter(Game);
             }
         }
         // Użytkownik wstał/został wysadzony z wybranego miejsca
@@ -145,8 +145,10 @@ public class GameManagerScript : MonoBehaviour
             var placeTag = (PlayerTag)serializer.PlaceTag;
             if (SeatManager.IsSeatTaken(placeTag)) {
                 if(SeatManager.PlayersNicknames[placeTag] == serializer.Username) {
+                    var index = Game.Match.PlayerList.FindIndex(x => { return x.Tag == placeTag; });
                     SeatManager.SitOutPlayer(placeTag);
                 }
+                this.UpdateTableCenter(Game);
             }
         }
         // Użytkownik wyszedł/został usunięty z lobby
@@ -163,6 +165,7 @@ public class GameManagerScript : MonoBehaviour
 
             TextManager.AddMessage("Użytkownik " + serializer.Username + " odszedł od stołu.");
         }
+        // start gry
         else if(signalName == PlayerClickedGameStartSerializer.SIGNAL_PLAYER_READY) {
             var serializer = new PlayerClickedGameStartSerializer(signalData);
             serializer.Validate();
@@ -170,12 +173,17 @@ public class GameManagerScript : MonoBehaviour
             if (serializer.Username != UserData.Username)
             {
                 Game.Match.Start();
+
+                var getHandRequestData = new ServerSocket.Actions.GetHand.RequestSerializer();
+                getHandRequestData.PlayerID = (int)UserData.Position;
+                getHandRequestData.Username = UserData.Username;
+                PerformServerAction("get-hand", getHandRequestData.GetApiObject(), this.GetHandCallback);
             }
         }
     }
     private void OnServerSignalReceive(object sender, StandardResponseWrapperSerializer data) {
-        Debug.Log(data.CommunicateType);
-        Debug.Log(data.Data);
+        //Debug.Log(data.CommunicateType);
+        //Debug.Log(data.Data);
 
         switch (data.CommunicateType) {
             case "LOBBY_SIGNAL":
@@ -183,7 +191,7 @@ public class GameManagerScript : MonoBehaviour
                 break;
 
             default:
-                Debug.Log("Unrecognized signal");
+                //Debug.Log("Unrecognized signal");
                 break;
         }
     }
@@ -274,7 +282,7 @@ public class GameManagerScript : MonoBehaviour
             var request = CurrentRequest;
             CurrentRequest = null;
             this.CurrentConnectionState = ConnectionState.IDLE;
-            Debug.Log(request.ResponseData);
+            //Debug.Log(request.ResponseData);
             var actionsSerializer = new ActionsSerializer(request.ResponseData);
             actionsSerializer.Validate();
             var responseSerializer = new GetTableInfoSerializer(actionsSerializer.Actions[0].ActionData);
@@ -313,7 +321,7 @@ public class GameManagerScript : MonoBehaviour
         CurrentRequest.ParentSocket.UpdateCommunication();
 
         if(CurrentRequest.RequestState == RequestState.RESPONSE_RECEIVED) {
-            Debug.Log(CurrentRequest.ResponseData);
+            //Debug.Log(CurrentRequest.ResponseData);
             var request = CurrentRequest;
             var requestCallback = CurrentRequestCallback;
             var additionalData = CurrentRequestAddtionalData;
@@ -345,7 +353,7 @@ public class GameManagerScript : MonoBehaviour
                 break;
         }
 
-        if (SeatManager.AllFourPlayersPresent() && UserData.Position != PlayerTag.NOBODY && Game.GameState == GameState.AWAITING_PLAYERS)
+        if (SeatManager.AllFourPlayersPresent() && UserData.Position != PlayerTag.NOBODY && Game.Match.GameState == GameState.STARTING)
         {
             if (StartButton != null) StartButton.gameObject.SetActive(true);
         }
@@ -582,8 +590,7 @@ public class GameManagerScript : MonoBehaviour
         GameObject.Find("Player2IndicatorText").GetComponent<Text>().text = ((PlayerTag)(((int)UserData.Position + 3) % 4)).ToString();
     }
 
-    // this method is implemented in case concrete user switches his place - currently not used
-    public void UpdateTable(Game Game, GameManagerLib.Models.Card[] PlayerHand)
+    public void UpdateTable(Game Game, List<GameManagerLib.Models.Card> PlayerHand)
     {
         UpdateTableCenter(Game);
         switch (UserData.Position)
@@ -606,11 +613,65 @@ public class GameManagerScript : MonoBehaviour
 
     public void StartGame()
     {
-        // send request
-        var requestData = new ServerSocket.Actions.StartGame.RequestSerializer();
-        requestData.PlaceTag = (int)UserData.Position;
-        requestData.Username = UserData.Username;
-        PerformServerAction("start-game", requestData.GetApiObject(), this.StartGameCallback);
+        var startGameRequestData = new ServerSocket.Actions.StartGame.RequestSerializer();
+        startGameRequestData.PlaceTag = (int)UserData.Position;
+        startGameRequestData.Username = UserData.Username;
+        PerformServerAction("start-game", startGameRequestData.GetApiObject(), this.StartGameCallback);
+
+        while (CurrentRequest != null) { }
+
+        var getHandRequestData = new ServerSocket.Actions.GetHand.RequestSerializer();
+        getHandRequestData.PlayerID = (int)UserData.Position;
+        getHandRequestData.Username = UserData.Username;
+        PerformServerAction("get-hand", getHandRequestData.GetApiObject(), this.GetHandCallback);
+    }
+
+    public void GetHandCallback(Request request, ActionsSerializer response, object additionalData)
+    {
+        var data = new ServerSocket.Actions.GetHand.ResponseSerializer(response.Actions[0].ActionData);
+        data.Validate();
+        Debug.Log("GetHandCallback...");
+
+        if (data.Status == "OK")
+        {
+            try
+            {
+                UserData.Cards = new List<GameManagerLib.Models.Card>();
+                for(int i = 0; i < data.Cards.Length; i++)
+                {
+                    UserData.Cards.Add(
+                        new GameManagerLib.Models.Card (
+                            (CardFigure)data.Cards[i].Figure, 
+                            (CardColor)data.Cards[i].Color, 
+                            UserData.Position,
+                            (CardState)data.Cards[i].State
+                        )
+                    );
+                }
+                //this.GiveCardsToPlayer(UserData.Position, UserData.Cards);
+                HiddenCardsOfPlayerN = new List<GameObject>();
+                HiddenCardsOfPlayerE = new List<GameObject>();
+                HiddenCardsOfPlayerS = new List<GameObject>();
+                HiddenCardsOfPlayerW = new List<GameObject>();
+                UpdateTable(Game, UserData.Cards);
+
+                PlayerTag StartingPlayer = Game.Match.CurrentBidding.CurrentPlayer;
+                AuctionModule.InitAuctionModule(Game, StartingPlayer);
+
+                GameObject auctionObject = GameObject.Find("/Canvas/TableCanvas/AuctionDialog");
+                auctionObject.SetActive(true);
+                if (StartButton != null)
+                {
+                    StartButton.gameObject.SetActive(false);
+                }
+                InvokeRepeating("CurrentPlayerLight", 0.5f, 0.05f);
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+                // jakaś obsługa jeśli musi być?
+            }
+        }
     }
 
     public void StartGameCallback(Request request, ActionsSerializer response, object additionalData)
@@ -818,6 +879,26 @@ public class GameManagerScript : MonoBehaviour
             }
         }
         return coordinates;
+    }
+
+    /// <summary>
+    /// Metoda rozdaje karty graczowi
+    /// </summary>
+    /// <param name="PlayerIdentifier">Identyfikator gracza, któremu rozdawane są karty</param>
+    /// <param name="cards">Lista kart na ręce danego gracza. Obiekt listy musi być typu "GameManagerLib.Models.Card", gdzie klasa "Card" musi być poprzedzona przestrzenią nazw - inaczej pojawia się konflikt</param>
+    private void GiveCardsToPlayer(PlayerTag PlayerIdentifier, List<GameManagerLib.Models.Card> cards)
+    {
+        List<float[]> coordinates = CalculateCardsCoordinates(PlayerIdentifier);
+        for (int i = 0; i < cards.Count; i++)
+        {
+            string cardName = CalculateCardName(cards[i]);
+            GameObject card = GameObject.Find(cardName);
+            card.transform.localPosition = new Vector3(coordinates[i][0], coordinates[i][1], coordinates[i][2]);
+
+            card.GetComponent<Card>().PlayerID = PlayerIdentifier;
+            SpriteRenderer sr = card.GetComponent<SpriteRenderer>();
+            sr.sortingOrder = i + 1;
+        }
     }
 
     private void GiveCardsToPlayer(PlayerTag PlayerIdentifier, GameManagerLib.Models.Card[] cards)
