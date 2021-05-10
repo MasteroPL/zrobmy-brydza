@@ -19,21 +19,27 @@ namespace EasyHosting.Models.Serialization
 		/// </summary>
 		public JObject DataOrigin { get; private set; }
 
+		private List<ValidationError> _GlobalErrors = null;
+		public List<ValidationError> GlobalErrors {
+            get { return _GlobalErrors; } private set { _GlobalErrors = value; }
+        }
 		private Dictionary<FieldInfo, List<ValidationError>> _Errors = null;
 		/// <summary>
 		/// Słownik błędów, które wystąpiły podczas walidacji (nazwa pola -> lista błędów dla pola)
 		/// </summary>
 		public Dictionary<FieldInfo, List<ValidationError>> Errors { get { return _Errors; } private set { _Errors = value; } }
 
-		private void AddError(FieldInfo field, ValidationError error) {
+		private void _AddError(FieldInfo field, ValidationError error) {
 			if (!_Errors.ContainsKey(field)) {
 				_Errors.Add(field, new List<ValidationError>());
+				return;
 			}
 			_Errors[field].Add(error);
 		}
 		protected void AddError(string fieldName, ValidationError error) {
 			if(fieldName == null) {
-				AddError((FieldInfo) null, error);
+				_GlobalErrors.Add(error);
+				return;
 			}
 			
 			var fieldInfo = this.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
@@ -42,7 +48,7 @@ namespace EasyHosting.Models.Serialization
 				throw new ArgumentException("Invalid field name. Could not find specified field");
 			}
 
-			AddError(fieldInfo, error);
+			_AddError(fieldInfo, error);
 		}
 		/// <summary>
 		/// Dodaje błąd do listy błędów dla wybranego pola
@@ -53,19 +59,20 @@ namespace EasyHosting.Models.Serialization
 		public void AddError(string fieldName, string errorCode, string errorMessage) {
 			AddError(fieldName, new ValidationError { ErrorCode = errorCode, ErrorMessage = errorMessage });
 		}
-		private void AddErrors(FieldInfo field, IEnumerable<ValidationError> errors) {
+		private void _AddErrors(FieldInfo field, IEnumerable<ValidationError> errors) {
 			foreach(var error in errors) {
-				AddError(field, error);
+				_AddError(field, error);
 			}
 		}
 		protected void AddErrors(string fieldName, IEnumerable<ValidationError> errors) {
 			if (fieldName == null) {
-				AddErrors((FieldInfo)null, errors);
+				_GlobalErrors.AddRange(errors);
+				return;
 			}
 
 			var fieldInfo = this.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
 
-			AddErrors(fieldInfo, errors);
+			_AddErrors(fieldInfo, errors);
 		}
 		protected void AddErrors(Dictionary<string, List<ValidationError>> errors) {
 			foreach (var keyValuePair in errors) {
@@ -73,8 +80,40 @@ namespace EasyHosting.Models.Serialization
 			}
 		}
 
+		public JObject GetErrors() {
+			JObject result = new JObject();
+			FieldInfo field;
+			JArray array;
+			JObject tmp;
+			foreach(var keyValuePair in _Errors) {
+				field = keyValuePair.Key;
+				var fieldMetas = (SerializerFieldAttribute[])field.GetCustomAttributes(typeof(SerializerFieldAttribute), false);
+				var fieldMeta = fieldMetas.First();
+
+				array = new JArray();
+				foreach(var error in keyValuePair.Value) {
+					tmp = new JObject();
+					tmp.Add("error_code", error.ErrorCode);
+					tmp.Add("error_message", error.ErrorMessage);
+					array.Add(tmp);
+                }
+
+				result.Add(fieldMeta.ApiName, array);
+			}
+			array = new JArray();
+			foreach(var error in _GlobalErrors) {
+				tmp = new JObject();
+				tmp.Add("error_code", error.ErrorCode);
+				tmp.Add("error_message", error.ErrorMessage);
+				array.Add(tmp);
+            }
+			result.Add("__global__", array);
+
+			return result;
+        }
+
 		public void ThrowException() {
-			throw new ValidationException(Errors);
+			throw new JsonValidationException(GetErrors());
 		}
 
 		private void Init() {
@@ -97,6 +136,12 @@ namespace EasyHosting.Models.Serialization
 			else {
 				_Errors.Clear();
 			}
+			if(_GlobalErrors == null) {
+				_GlobalErrors = new List<ValidationError>();
+            }
+            else {
+				_GlobalErrors.Clear();
+            }
 		}
 
 		/// <summary>

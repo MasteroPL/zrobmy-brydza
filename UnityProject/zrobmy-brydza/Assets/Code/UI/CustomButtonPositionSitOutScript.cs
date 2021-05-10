@@ -7,6 +7,8 @@ using EasyHosting.Models.Actions;
 
 using LeavePlaceActionRequestSerializer = ServerSocket.Actions.LeavePlace.RequestSerializer;
 using LeavePlaceActionResponseSerializer = ServerSocket.Actions.LeavePlace.ResponseSerializer;
+using SitPlayerOutRequestSerializer = ServerSocket.Actions.SitPlayerOut.RequestSerializer;
+using SitPlayerOutResponseSerializer = ServerSocket.Actions.SitPlayerOut.ResponseSerializer;
 
 namespace Assets.Code.UI
 {
@@ -23,6 +25,18 @@ namespace Assets.Code.UI
             data.Validate();
 
             if (data.Status == "OK") {
+                if (SeatManager.IsSeatTaken(position)) {
+                    SeatManager.SitOutPlayer(position);
+                }
+            }
+        }
+        private void OnSitPlayerOutRequestCallback(Request request, ActionsSerializer response, object additionalData) {
+            var position = (PlayerTag)additionalData;
+
+            var data = new SitPlayerOutResponseSerializer(response.Actions[0].ActionData);
+            data.Validate();
+
+            if(data.Status == "OK") {
                 if (SeatManager.IsSeatTaken(position)) {
                     SeatManager.SitOutPlayer(position);
                 }
@@ -54,10 +68,18 @@ namespace Assets.Code.UI
             bool available = SeatManager.CheckSeatAvailability(buttonID);
             if (!available)
             {
-                if((UserData.Position.ToString()[0] == ReferencedButton.gameObject.name[0]) && UserData.Sitting || UserData.IsAdmin){
-                    var requestData = new LeavePlaceActionRequestSerializer();
-                    requestData.PlaceTag = (int)buttonID;
-                    GameManager.PerformServerAction("leave-place", requestData.GetApiObject(), this.OnLeavePlaceRequestCallback, buttonID);
+                if((UserData.Sitting && UserData.Position.ToString()[0] == ReferencedButton.gameObject.name[0]) || UserData.IsAdmin){
+
+                    if (UserData.Sitting && UserData.Position.ToString()[0] == ReferencedButton.gameObject.name[0]) {
+                        var requestData = new LeavePlaceActionRequestSerializer();
+                        requestData.PlaceTag = (int)buttonID;
+                        GameManager.PerformServerAction("leave-place", requestData.GetApiObject(), this.OnLeavePlaceRequestCallback, buttonID);
+                    }
+                    else {
+                        var requestData = new SitPlayerOutRequestSerializer();
+                        requestData.PlaceTag = (int)buttonID;
+                        GameManager.PerformServerAction("sit-player-out", requestData.GetApiObject(), this.OnSitPlayerOutRequestCallback, buttonID);
+                    }
                 }
             }
         }

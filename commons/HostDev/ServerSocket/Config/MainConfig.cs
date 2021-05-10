@@ -5,6 +5,7 @@ using ServerSocket.Actions.HelloWorld;
 using ServerSocket.Actions.LeavePlace;
 using ServerSocket.Actions.Sit;
 using ServerSocket.Actions.StartGame;
+using ServerSocket.Actions.SitPlayerOut;
 using ServerSocket.Models;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace EasyHosting.Models.Server.Config {
             { "sit", new SitAction() },
             { "leave-place", new LeavePlaceAction() },
             { "start-game", new StartGameAction() }
+            { "sit-player-out", new SitPlayerOutAction() }
         };
 
         private static BridgeServerSocket ServerSocket = null;

@@ -73,6 +73,9 @@
     <Compile Include="Actions\LeaveTable\LeaveTableAction.cs" />
     <Compile Include="Actions\LeaveTable\RequestSerializer.cs" />
     <Compile Include="Actions\LeaveTable\ResponseSerializer.cs" />
+    <Compile Include="Actions\SitPlayerOut\RequestSerializer.cs" />
+    <Compile Include="Actions\SitPlayerOut\ResponseSerializer.cs" />
+    <Compile Include="Actions\SitPlayerOut\SitPlayerOutAction.cs" />
     <Compile Include="Actions\Sit\RequestSerializer.cs" />
     <Compile Include="Actions\Sit\ResponseSerializer.cs" />
     <Compile Include="Actions\Sit\SitAction.cs" />
@@ -99,6 +102,7 @@
     <Compile Include="Serializers\LobbySignalUserJoinedSerializer.cs" />
     <Compile Include="Serializers\LobbySignalUserRemovedSerializer.cs" />
     <Compile Include="Serializers\LobbySignalUserSatSerializer.cs" />
+    <Compile Include="Serializers\LobbySignalUserSittedOutSerializer.cs" />
     <Compile Include="Serializers\LobbyUserSerializer.cs" />
     <Compile Include="Serializers\PlayerClickedGameStartSerializer.cs" />
     <Compile Include="Serializers\PlayerSerializer.cs" />

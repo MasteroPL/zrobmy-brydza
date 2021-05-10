@@ -37,6 +37,16 @@ namespace GameManagerLib.Models
             this.History = new PointsHistory();
         }
 
+        public Player GetPlayerAt(PlayerTag placeTag) {
+            int index = PlayerList.FindIndex((player) => {
+                return player.Tag == placeTag;
+            });
+            if(index != -1) {
+                return PlayerList[index];
+            }
+            return null;
+        }
+
         public bool AddPlayer(Player NewPlayer)
         {
             int Index1 = PlayerList.FindIndex((Player) => { return Player.Name == NewPlayer.Name; });
