@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 namespace ServerSocket.Actions.StartGame {
     public class ResponseSerializer : BaseSerializer {
         [SerializerField(apiName: "status")]
-        public int Status;
+        public string Status;
 
         [SerializerField(apiName: "error")]
         public string Error;

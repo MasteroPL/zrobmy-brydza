@@ -89,8 +89,7 @@ public class GameManagerScript : MonoBehaviour
     [SerializeField] TextManager TextManager;
 
     // lista graczy obecnych w lobby
-    LobbyUserSerializer[] LobbyUsers;
-    const int MAX_USERS_IN_LOBBY = 10;
+    List<LobbyUserData> LobbyUsers;
 
     /**
      * -1 - neutral state
@@ -122,7 +121,7 @@ public class GameManagerScript : MonoBehaviour
             serializer.Validate();
 
             TextManager.AddMessage("Użytkownik " + serializer.Username + " dołączył do stołu.");
-            // Jakaś lista?
+            LobbyUsers.Add(new LobbyUserData(serializer.Username, false));
         }
         else if(signalName == LobbySignalUserSatSerializer.SIGNAL_USER_SAT) {
             var serializer = new LobbySignalUserSatSerializer(signalData);
@@ -134,6 +133,15 @@ public class GameManagerScript : MonoBehaviour
                 }
 
                 SeatManager.SitPlayer((PlayerTag)serializer.PlaceTag, serializer.Username);
+            }
+        }
+        else if(signalName == PlayerClickedGameStartSerializer.SIGNAL_PLAYER_READY) {
+            var serializer = new PlayerClickedGameStartSerializer(signalData);
+            serializer.Validate();
+
+            if (serializer.Username != UserData.Username)
+            {
+                Game.Match.ClickStart((PlayerTag)serializer.PlaceTag);
             }
         }
     }
@@ -189,6 +197,7 @@ public class GameManagerScript : MonoBehaviour
         TakeNothingButton.onClick.AddListener(() => { TakeNothingHandler(); });
         PauseRequestButton.onClick.AddListener(() => { PauseRequestHandler(); });
         QuitButton.onClick.AddListener(() => { QuitHandler(); });
+        StartButton.onClick.AddListener(() => { StartGame(); });
 
         // przycisk "start" pokaze sie tylko gdy bedzie 4 graczy
         if (StartButton != null && UserData.Position != PlayerTag.NOBODY)
@@ -341,10 +350,10 @@ public class GameManagerScript : MonoBehaviour
             }
         }
 
-        LobbyUsers = new LobbyUserSerializer[MAX_USERS_IN_LOBBY];
+        LobbyUsers = new List<LobbyUserData>();
         for(int i = 0; i < tableData.LobbyUsers.Length; i++)
         {
-            LobbyUsers[i] = tableData.LobbyUsers[i];
+            LobbyUsers.Add(new LobbyUserData(tableData.LobbyUsers[i].Username, tableData.LobbyUsers[i].IsSitted, (PlayerTag)tableData.LobbyUsers[i].PlayerTag));
         }
     }
 
@@ -391,10 +400,10 @@ public class GameManagerScript : MonoBehaviour
         Game.Match.PointsWE[0] = tableData.PointsWEBelowLine; // [0] - under line, [1] - above line
         Game.Match.PointsWE[1] = tableData.PointsWEAboveLine;
 
-        LobbyUsers = new LobbyUserSerializer[MAX_USERS_IN_LOBBY];
+        LobbyUsers = new List<LobbyUserData>();
         for (int i = 0; i < tableData.LobbyUsers.Length; i++)
         {
-            LobbyUsers[i] = tableData.LobbyUsers[i];
+            LobbyUsers[i] = new LobbyUserData(tableData.LobbyUsers[i].Username, tableData.LobbyUsers[i].IsSitted, (PlayerTag)tableData.LobbyUsers[i].PlayerTag);
         }
 
         PlayerTag StartingPlayer = Game.Match.CurrentBidding.CurrentPlayer;
@@ -567,7 +576,34 @@ public class GameManagerScript : MonoBehaviour
         GiveHiddenCardsToPlayers(UserData.Position);
     }
 
-    public void StartGame(Game Game, GameManagerLib.Models.Card[] PlayerHand)
+    public void StartGame()
+    {
+        // send request
+        var requestData = new ServerSocket.Actions.StartGame.RequestSerializer();
+        requestData.PlaceTag = (int)UserData.Position;
+        requestData.Username = UserData.Username;
+        PerformServerAction("start-game", requestData.GetApiObject(), this.StartGameCallback);
+    }
+
+    public void StartGameCallback(Request request, ActionsSerializer response, object additionalData)
+    {
+        var data = new ServerSocket.Actions.StartGame.ResponseSerializer(response.Actions[0].ActionData);
+        data.Validate();
+
+        if (data.Status == "OK")
+        {
+            try
+            {
+                Game.Match.Start();
+            }
+            catch(GameManagerLib.Exceptions.WrongGameStateException e)
+            {
+                // TODO
+            }
+        }
+    }
+
+    /*public void StartGame(Game Game, GameManagerLib.Models.Card[] PlayerHand)
     {
         this.Game = Game;
         HiddenCardsOfPlayerN = new List<GameObject>();
@@ -597,9 +633,9 @@ public class GameManagerScript : MonoBehaviour
             StartButton.gameObject.SetActive(false);
         }
         InvokeRepeating("CurrentPlayerLight", 0.5f, 0.05f);
-    }
+    }*/
 
-    public void RestartGame()
+    /*public void RestartGame()
     {
         Game.Match.GameState = GameState.BIDDING;
         if (GameConfig.DevMode)
@@ -620,7 +656,7 @@ public class GameManagerScript : MonoBehaviour
         ReleaseCardsOwners();
         CancelInvoke();
         Game.RestartGame();
-    }
+    }*/
 
     private void ReleaseCardsOwners()
     {
@@ -974,10 +1010,10 @@ public class GameManagerScript : MonoBehaviour
                         UserData.Position = lastTrick.Winner; // for dev mode
                     }
 
-                    if (Game.Match.CurrentGame.IsEnd())
+                    /*if (Game.Match.CurrentGame.IsEnd())
                     {
                         RestartGame(); // restart game if all 13 tricks were put on the table
-                    }
+                    }*/
                 }
             }
         }

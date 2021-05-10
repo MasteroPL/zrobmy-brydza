@@ -30,16 +30,16 @@ namespace Assets.Code.Models
                 return; // if there aren't 4 players to player the game cannot be started
             }
 
-            Match.AddPlayer(new Player(PlayerTag.N, "gracz1"));
+            /*Match.AddPlayer(new Player(PlayerTag.N, "gracz1"));
             Match.AddPlayer(new Player(PlayerTag.E, "gracz2"));
             Match.AddPlayer(new Player(PlayerTag.S, "gracz3"));
-            Match.AddPlayer(new Player(PlayerTag.W, "gracz4"));
+            Match.AddPlayer(new Player(PlayerTag.W, "gracz4"));*/
 
             Match.Start();
             GameState = GameState.BIDDING;
 
             //Match.PlayerList[0].Hand, Match.PlayerList[1].Hand, Match.PlayerList[2].Hand, Match.PlayerList[3].Hand
-            GameManagerLib.Models.Card[] MyHand = { };
+            /*GameManagerLib.Models.Card[] MyHand = { };
             switch (UserData.Position)
             {
                 case PlayerTag.N:
@@ -55,36 +55,7 @@ namespace Assets.Code.Models
                     MyHand = Match.PlayerList[3].Hand;
                     break;
             }
-            GameManagerScript.StartGame(this, MyHand);
-        }
-
-        public void RestartGame()
-        {
-            GameState = GameState.BIDDING;
-
-            //Match.PlayerList[0].Hand, Match.PlayerList[1].Hand, Match.PlayerList[2].Hand, Match.PlayerList[3].Hand
-            GameManagerLib.Models.Card[] MyHand = { };
-            switch (UserData.Position)
-            {
-                case PlayerTag.N:
-                    MyHand = Match.PlayerList[0].Hand;
-                    break;
-                case PlayerTag.E:
-                    MyHand = Match.PlayerList[1].Hand;
-                    break;
-                case PlayerTag.S:
-                    MyHand = Match.PlayerList[2].Hand;
-                    break;
-                case PlayerTag.W:
-                    MyHand = Match.PlayerList[3].Hand;
-                    break;
-            }
-            GameManagerScript.StartGame(this, MyHand);
-        }
-
-        public void ShuffleAndGiveCardsAgain()
-        {
-            GameManagerScript.RestartGame();
+            GameManagerScript.StartGame(this, MyHand);*/
         }
 
         public bool AddBid(ContractHeight Height, ContractColor Color, PlayerTag Declarer, bool XEnabled=false, bool XXEnabled=false)
