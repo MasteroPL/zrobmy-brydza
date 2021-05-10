@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GetTableInfoSerializer = ServerSocket.Actions.GetTableInfo.ResponseSerializer;
 using SitActionRequestSerializer = ServerSocket.Actions.Sit.RequestSerializer;
+using SitPlayerOutActionRequestSerializer = ServerSocket.Actions.SitPlayerOut.RequestSerializer;
 using System.Threading;
 
 namespace ClientSocketTesting
@@ -52,6 +53,11 @@ namespace ClientSocketTesting
 			{
 				clientSocket.UpdateCommunication();
 			}
+
+			if(username.CompareTo("Macius") == 0) {
+				
+            }
+
 			return clientSocket;
 		}
 
@@ -82,6 +88,8 @@ namespace ClientSocketTesting
 		{
 			ClientSocket MaciusSocket = null, PawelekSocket = null, MarcinSocket = null;
 
+			int counter = 0;
+
             while (true)
             {
 				if (MaciusSocket == null)MaciusSocket = ConnectToLobbyAndSit("Macius", PlayerTag.N);
@@ -99,6 +107,16 @@ namespace ClientSocketTesting
 
 				Thread.Sleep(1000);
 			}
+			//var sitPlayerOutAction = new SitPlayerOutActionRequestSerializer() {
+			//	PlaceTag = (int)PlayerTag.W
+			//};
+			//var sitPlayerOutRequestData = WrapRequestData("sit-player-out", sitPlayerOutAction.GetApiObject());
+			//var sitPlayerOutRequest = MaciusSocket.SendRequest(sitPlayerOutRequestData.GetApiObject());
+
+			//while (sitPlayerOutRequest.RequestState != RequestState.RESPONSE_RECEIVED) {
+			//	MaciusSocket.UpdateCommunication();
+			//}
+
 			Console.WriteLine("OK");
 		}
 	}

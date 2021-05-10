@@ -4,6 +4,7 @@ using ServerSocket.Actions.GetTableInfo;
 using ServerSocket.Actions.HelloWorld;
 using ServerSocket.Actions.LeavePlace;
 using ServerSocket.Actions.Sit;
+using ServerSocket.Actions.SitPlayerOut;
 using ServerSocket.Models;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace EasyHosting.Models.Server.Config {
             { "get-table-info", new GetTableInfoAction() },
             { "sit", new SitAction() },
             { "leave-place", new LeavePlaceAction() },
+            { "sit-player-out", new SitPlayerOutAction() }
         };
 
         private static BridgeServerSocket ServerSocket = null;

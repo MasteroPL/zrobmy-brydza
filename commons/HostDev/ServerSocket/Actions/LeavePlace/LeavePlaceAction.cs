@@ -5,6 +5,7 @@ using GameManagerLib.Models;
 using ServerSocket.Models;
 using GameManagerLib.Exceptions;
 using System;
+using ServerSocket.Serializers;
 
 namespace ServerSocket.Actions.LeavePlace{
 
@@ -30,6 +31,20 @@ namespace ServerSocket.Actions.LeavePlace{
                 {                    
                     game.RemovePlayer(player);
                     conn.Session.Remove("player");
+
+                    var username = conn.Session.Get<string>("username");
+
+                    var signal = new LobbySignalUserSittedOutSerializer() {
+                        Signal = LobbySignalUserSittedOutSerializer.SIGNAL_USER_SITTED_OUT,
+                        Message = "User " + username + " joined the lobby",
+                        Username = username
+                    };
+                    var result = new StandardCommunicateSerializer() {
+                        CommunicateType = StandardCommunicateSerializer.TYPE_LOBBY_SIGNAL,
+                        Data = signal.GetApiObject()
+                    };
+                    lobby.Broadcast(result.GetApiObject());
+
                     Console.WriteLine("Player left at " + data.PlaceTag + ": " + conn.Session.Get("username"));
                 }
                 catch (WrongPlayerException) {
