@@ -141,7 +141,7 @@ public class GameManagerScript : MonoBehaviour
 
             if (serializer.Username != UserData.Username)
             {
-                Game.Match.ClickStart((PlayerTag)serializer.PlaceTag);
+                Game.Match.Start();
             }
         }
     }

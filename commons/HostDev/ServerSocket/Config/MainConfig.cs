@@ -18,7 +18,7 @@ namespace EasyHosting.Models.Server.Config {
             { "get-table-info", new GetTableInfoAction() },
             { "sit", new SitAction() },
             { "leave-place", new LeavePlaceAction() },
-            { "start-game", new StartGameAction() }
+            { "start-game", new StartGameAction() },
             { "sit-player-out", new SitPlayerOutAction() }
         };
 
