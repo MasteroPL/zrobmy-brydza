@@ -10,14 +10,10 @@ namespace Assets.Code.Models
     public class LobbyUserData
     {
         public string Username;
-        public bool IsSitted;
-        public PlayerTag PlayerTag;
 
-        public LobbyUserData(string Username, bool IsSitted, PlayerTag Position = PlayerTag.NOBODY)
+        public LobbyUserData(string username)
         {
-            this.Username = Username;
-            this.IsSitted = IsSitted;
-            PlayerTag = Position;
+            this.Username = username;
         }
     }
 }

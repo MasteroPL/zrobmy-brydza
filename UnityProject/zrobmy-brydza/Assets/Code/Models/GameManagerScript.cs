@@ -122,7 +122,7 @@ public class GameManagerScript : MonoBehaviour
             serializer.Validate();
 
             TextManager.AddMessage("Użytkownik " + serializer.Username + " dołączył do stołu.");
-            LobbyUsers.Add(new LobbyUserData(serializer.Username, false));
+            LobbyUsers.Add(new LobbyUserData(serializer.Username));
         }
         // Użytkownik usiadł na wybranym miejscu
         else if(signalName == LobbySignalUserSatSerializer.SIGNAL_USER_SAT) {
@@ -161,6 +161,13 @@ public class GameManagerScript : MonoBehaviour
                 if (SeatManager.IsSeatTaken(placeTag) && SeatManager.PlayersNicknames[placeTag] == serializer.Username) {
                     SeatManager.SitOutPlayer(placeTag);
                 }
+            }
+
+            var index = LobbyUsers.FindIndex((user) => {
+                return user.Username == serializer.Username;
+            });
+            if (index != -1) {
+                LobbyUsers.RemoveAt(index);
             }
 
             TextManager.AddMessage("Użytkownik " + serializer.Username + " odszedł od stołu.");
@@ -389,7 +396,7 @@ public class GameManagerScript : MonoBehaviour
         LobbyUsers = new List<LobbyUserData>();
         for(int i = 0; i < tableData.LobbyUsers.Length; i++)
         {
-            LobbyUsers.Add(new LobbyUserData(tableData.LobbyUsers[i].Username, tableData.LobbyUsers[i].IsSitted, (PlayerTag)tableData.LobbyUsers[i].PlayerTag));
+            LobbyUsers.Add(new LobbyUserData(tableData.LobbyUsers[i].Username));
         }
     }
 
@@ -439,7 +446,7 @@ public class GameManagerScript : MonoBehaviour
         LobbyUsers = new List<LobbyUserData>();
         for (int i = 0; i < tableData.LobbyUsers.Length; i++)
         {
-            LobbyUsers[i] = new LobbyUserData(tableData.LobbyUsers[i].Username, tableData.LobbyUsers[i].IsSitted, (PlayerTag)tableData.LobbyUsers[i].PlayerTag);
+            LobbyUsers[i] = new LobbyUserData(tableData.LobbyUsers[i].Username);
         }
 
         PlayerTag StartingPlayer = Game.Match.CurrentBidding.CurrentPlayer;
