@@ -21,6 +21,8 @@ namespace GameManagerLib.Models
         public int RoundsNS = 0;
         public int RoundsWE = 0;
         public PointsHistory History;
+        public Dictionary<PlayerTag, bool> StartClicked;
+
         public Match() {
             this.PlayerList = new List<Player>();
             this.BiddingList = new List<Bidding>();
@@ -111,7 +113,8 @@ namespace GameManagerLib.Models
 
         public bool Start()
         {
-            if (this.GameState == GameState.STARTING)
+            bool isReady = IsGameReadyToStart();
+            if (isReady)
             {
                 this.GameState = GameState.BIDDING;
                 if (this.StartBidding())
@@ -601,6 +604,11 @@ namespace GameManagerLib.Models
 
         }
 
+        public bool IsGameReadyToStart()
+        {
+            return StartClicked[PlayerTag.N] && StartClicked[PlayerTag.E] && StartClicked[PlayerTag.S] && StartClicked[PlayerTag.W] && GameState == GameState.STARTING;
+        }
+
         public bool CheckAddBid(Contract Contract)
         {
             bool X = Contract.XEnabled;
@@ -619,7 +627,6 @@ namespace GameManagerLib.Models
                 return false;
             }
         }
-
 
         private bool CheckStartBidding()
         {

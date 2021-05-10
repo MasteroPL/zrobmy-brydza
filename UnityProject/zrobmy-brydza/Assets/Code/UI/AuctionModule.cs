@@ -214,19 +214,19 @@ public class AuctionModule : MonoBehaviour
                     AuctionDialog.enabled = false; // hiding dialog
                 }
 
-                if (PassCounter == 4)
+                /*if (PassCounter == 4)
                 {
                     PassCounter = 0;
                     MainModule.GameState = GameState.BIDDING;
                     MainModule.ShuffleAndGiveCardsAgain();
                     /*AuctionState.CurrentPlayer = MainModule.Match.CurrentBidding.CurrentPlayer;
-                    /*if (GameConfig.DevMode)
+                    if (GameConfig.DevMode)
                     {
                         MainModule.UserData.position = MainModule.Match.CurrentBidding.CurrentPlayer; // for dev mode
                     }
-                    AssignAuctionFirstRow();*/
-                }
-                else if (MainModule.Match.CurrentBidding.IsEnd())
+                    AssignAuctionFirstRow();
+                }*/
+                if (MainModule.Match.CurrentBidding.IsEnd())
                 {
                     if(MainModule.Match.CurrentGame.Declarer == PlayerTag.N || MainModule.Match.CurrentGame.Declarer == PlayerTag.S)
                     {
