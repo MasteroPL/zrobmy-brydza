@@ -98,11 +98,22 @@ namespace ServerSocket.Models {
 
             // Komunikat o opuszczeniu Lobby przez użytkownika
             string username = client.Session.Get<string>("username");
+            
             var signal = new LobbySignalUserRemovedSerializer() {
                 Signal = LobbySignalUserRemovedSerializer.SINGAL_USER_REMOVED,
                 Message = "User " + username + " left the lobby",
                 Username = username
             };
+            var player = Game.GetPlayerByUsername(username);
+            if (player != null) {
+                Game.RemovePlayer(player);
+                signal.WasSitted = true;
+                signal.PlaceTag = (int)player.Tag;
+            }
+            else {
+                signal.WasSitted = false;
+            }
+
             var result = new StandardCommunicateSerializer() {
                 CommunicateType = StandardCommunicateSerializer.TYPE_LOBBY_SIGNAL,
                 Data = signal.GetApiObject()

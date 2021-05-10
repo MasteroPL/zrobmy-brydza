@@ -37,7 +37,8 @@ namespace ServerSocket.Actions.LeavePlace{
                     var signal = new LobbySignalUserSittedOutSerializer() {
                         Signal = LobbySignalUserSittedOutSerializer.SIGNAL_USER_SITTED_OUT,
                         Message = "User " + username + " joined the lobby",
-                        Username = username
+                        Username = username,
+                        PlaceTag = (int)player.Tag
                     };
                     var result = new StandardCommunicateSerializer() {
                         CommunicateType = StandardCommunicateSerializer.TYPE_LOBBY_SIGNAL,

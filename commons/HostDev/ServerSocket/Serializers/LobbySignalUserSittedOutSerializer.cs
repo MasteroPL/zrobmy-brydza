@@ -17,6 +17,8 @@ namespace ServerSocket.Serializers {
         public string Message;
         [SerializerField(apiName: "username", required: true)]
         public string Username;
+        [SerializerField(apiName: "place_tag", required: true)]
+        public int PlaceTag;
 
         public LobbySignalUserSittedOutSerializer() : base() { }
         public LobbySignalUserSittedOutSerializer(JObject data) : base(data) { }

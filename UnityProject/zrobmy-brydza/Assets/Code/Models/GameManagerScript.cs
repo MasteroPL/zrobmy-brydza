@@ -116,6 +116,7 @@ public class GameManagerScript : MonoBehaviour
     private void HandleLobbySignal(JObject signalData) {
         var signalName = (string)signalData.GetValue("signal");
 
+        // Nowy użytkownik dołączył do stołu
         if(signalName == LobbySignalUserJoinedSerializer.SIGNAL_USER_JOINED) {
             var serializer = new LobbySignalUserJoinedSerializer(signalData);
             serializer.Validate();
@@ -123,6 +124,7 @@ public class GameManagerScript : MonoBehaviour
             TextManager.AddMessage("Użytkownik " + serializer.Username + " dołączył do stołu.");
             LobbyUsers.Add(new LobbyUserData(serializer.Username, false));
         }
+        // Użytkownik usiadł na wybranym miejscu
         else if(signalName == LobbySignalUserSatSerializer.SIGNAL_USER_SAT) {
             var serializer = new LobbySignalUserSatSerializer(signalData);
             serializer.Validate();
@@ -134,6 +136,32 @@ public class GameManagerScript : MonoBehaviour
 
                 SeatManager.SitPlayer((PlayerTag)serializer.PlaceTag, serializer.Username);
             }
+        }
+        // Użytkownik wstał/został wysadzony z wybranego miejsca
+        else if(signalName == LobbySignalUserSittedOutSerializer.SIGNAL_USER_SITTED_OUT) {
+            var serializer = new LobbySignalUserSittedOutSerializer(signalData);
+            serializer.Validate();
+
+            var placeTag = (PlayerTag)serializer.PlaceTag;
+            if (SeatManager.IsSeatTaken(placeTag)) {
+                if(SeatManager.PlayersNicknames[placeTag] == serializer.Username) {
+                    SeatManager.SitOutPlayer(placeTag);
+                }
+            }
+        }
+        // Użytkownik wyszedł/został usunięty z lobby
+        else if(signalName == LobbySignalUserRemovedSerializer.SINGAL_USER_REMOVED) {
+            var serializer = new LobbySignalUserRemovedSerializer(signalData);
+            serializer.Validate();
+
+            if (serializer.WasSitted) {
+                var placeTag = (PlayerTag)serializer.PlaceTag;
+                if (SeatManager.IsSeatTaken(placeTag) && SeatManager.PlayersNicknames[placeTag] == serializer.Username) {
+                    SeatManager.SitOutPlayer(placeTag);
+                }
+            }
+
+            TextManager.AddMessage("Użytkownik " + serializer.Username + " odszedł od stołu.");
         }
         else if(signalName == PlayerClickedGameStartSerializer.SIGNAL_PLAYER_READY) {
             var serializer = new PlayerClickedGameStartSerializer(signalData);

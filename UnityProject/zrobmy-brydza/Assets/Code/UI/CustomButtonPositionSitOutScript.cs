@@ -21,25 +21,29 @@ namespace Assets.Code.UI
         private void OnLeavePlaceRequestCallback(Request request, ActionsSerializer response, object additionalData) {
             var position = (PlayerTag)additionalData;
 
+            if (((string)response.Actions[0].ActionData.GetValue("status")).CompareTo("OK") != 0) {
+                return;
+            }
+
             var data = new LeavePlaceActionResponseSerializer(response.Actions[0].ActionData);
             data.Validate();
 
-            if (data.Status == "OK") {
-                if (SeatManager.IsSeatTaken(position)) {
-                    SeatManager.SitOutPlayer(position);
-                }
+            if (SeatManager.IsSeatTaken(position)) {
+                SeatManager.SitOutPlayer(position);
             }
         }
         private void OnSitPlayerOutRequestCallback(Request request, ActionsSerializer response, object additionalData) {
             var position = (PlayerTag)additionalData;
 
+            if(((string)response.Actions[0].ActionData.GetValue("status")).CompareTo("OK") != 0) {
+                return;
+            }
+
             var data = new SitPlayerOutResponseSerializer(response.Actions[0].ActionData);
             data.Validate();
 
-            if(data.Status == "OK") {
-                if (SeatManager.IsSeatTaken(position)) {
-                    SeatManager.SitOutPlayer(position);
-                }
+            if (SeatManager.IsSeatTaken(position)) {
+                SeatManager.SitOutPlayer(position);
             }
         }
 

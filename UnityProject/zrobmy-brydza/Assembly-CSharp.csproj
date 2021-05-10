@@ -72,6 +72,7 @@
     <Compile Include="Assets\Code\Models\GameManagerScript.cs" />
     <Compile Include="Assets\Code\Models\HandlerManagerScript.cs" />
     <Compile Include="Assets\Code\Models\JoinLobbyScript.cs" />
+    <Compile Include="Assets\Code\Models\LobbyUserData.cs" />
     <Compile Include="Assets\Code\Models\SeatsManagerScript.cs" />
     <Compile Include="Assets\Code\Models\ServerDialler.cs" />
     <Compile Include="Assets\Code\Models\ServerFormats.cs" />
