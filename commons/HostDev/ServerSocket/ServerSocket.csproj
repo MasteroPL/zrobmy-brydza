@@ -100,6 +100,7 @@
     <Compile Include="Serializers\LobbySignalUserRemovedSerializer.cs" />
     <Compile Include="Serializers\LobbySignalUserSatSerializer.cs" />
     <Compile Include="Serializers\LobbyUserSerializer.cs" />
+    <Compile Include="Serializers\PlayerClickedGameStartSerializer.cs" />
     <Compile Include="Serializers\PlayerSerializer.cs" />
     <Compile Include="Serializers\CardSerializer.cs" />
   </ItemGroup>
