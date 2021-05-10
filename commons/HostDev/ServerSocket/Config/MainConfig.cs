@@ -10,6 +10,7 @@ using ServerSocket.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ServerSocket.Actions.GetHand;
 
 namespace EasyHosting.Models.Server.Config {
     public static class MainConfig {
@@ -19,7 +20,8 @@ namespace EasyHosting.Models.Server.Config {
             { "sit", new SitAction() },
             { "leave-place", new LeavePlaceAction() },
             { "start-game", new StartGameAction() },
-            { "sit-player-out", new SitPlayerOutAction() }
+            { "sit-player-out", new SitPlayerOutAction() },
+            { "get-hand", new GetHandAction() }
         };
 
         private static BridgeServerSocket ServerSocket = null;

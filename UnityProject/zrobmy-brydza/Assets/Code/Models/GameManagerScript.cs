@@ -624,13 +624,6 @@ public class GameManagerScript : MonoBehaviour
         startGameRequestData.PlaceTag = (int)UserData.Position;
         startGameRequestData.Username = UserData.Username;
         PerformServerAction("start-game", startGameRequestData.GetApiObject(), this.StartGameCallback);
-
-        while (CurrentRequest != null) { }
-
-        var getHandRequestData = new ServerSocket.Actions.GetHand.RequestSerializer();
-        getHandRequestData.PlayerID = (int)UserData.Position;
-        getHandRequestData.Username = UserData.Username;
-        PerformServerAction("get-hand", getHandRequestData.GetApiObject(), this.GetHandCallback);
     }
 
     public void GetHandCallback(Request request, ActionsSerializer response, object additionalData)
@@ -685,18 +678,19 @@ public class GameManagerScript : MonoBehaviour
     {
         var data = new ServerSocket.Actions.StartGame.ResponseSerializer(response.Actions[0].ActionData);
         data.Validate();
-
-        if (data.Status == "OK")
+        try
         {
-            try
-            {
-                Game.Match.Start();
-            }
-            catch(GameManagerLib.Exceptions.WrongGameStateException e)
-            {
-                // TODO
-            }
+            Game.Match.Start();
         }
+        catch(GameManagerLib.Exceptions.WrongGameStateException e)
+        {
+            // TODO
+        }
+
+        var getHandRequestData = new ServerSocket.Actions.GetHand.RequestSerializer();
+        getHandRequestData.PlayerID = (int)UserData.Position;
+        getHandRequestData.Username = UserData.Username;
+        PerformServerAction("get-hand", getHandRequestData.GetApiObject(), this.GetHandCallback);
     }
 
     /*public void StartGame(Game Game, GameManagerLib.Models.Card[] PlayerHand)

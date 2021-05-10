@@ -15,6 +15,8 @@ namespace ServerSocket.Actions.GetHand
 
         public override void Validate(bool throwException = true)
         {
+            base.Validate(throwException);
+
             if (PlayerID == -1)
             {
                 ThrowException();
