@@ -17,6 +17,10 @@ namespace ServerSocket.Serializers {
         public string Message;
         [SerializerField(apiName: "username", required: true)]
         public string Username;
+        [SerializerField(apiName: "was_sitted", required:true)]
+        public bool WasSitted;
+        [SerializerField(apiName: "place_tag", required:false)]
+        public int PlaceTag;
 
         public LobbySignalUserRemovedSerializer() : base() { }
         public LobbySignalUserRemovedSerializer(JObject data) : base(data) { }

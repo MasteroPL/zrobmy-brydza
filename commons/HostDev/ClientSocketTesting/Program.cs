@@ -90,7 +90,7 @@ namespace ClientSocketTesting
 
 			int counter = 0;
 
-            while (true)
+            while (/*true*/counter++ < 5)
             {
 				if (MaciusSocket == null)MaciusSocket = ConnectToLobbyAndSit("Macius", PlayerTag.N);
                 else MaciusSocket.UpdateCommunication();
@@ -107,17 +107,17 @@ namespace ClientSocketTesting
 
 				Thread.Sleep(1000);
 			}
-			//var sitPlayerOutAction = new SitPlayerOutActionRequestSerializer() {
-			//	PlaceTag = (int)PlayerTag.W
-			//};
-			//var sitPlayerOutRequestData = WrapRequestData("sit-player-out", sitPlayerOutAction.GetApiObject());
-			//var sitPlayerOutRequest = MaciusSocket.SendRequest(sitPlayerOutRequestData.GetApiObject());
+            var sitPlayerOutAction = new SitPlayerOutActionRequestSerializer() {
+                PlaceTag = (int)PlayerTag.W
+            };
+            var sitPlayerOutRequestData = WrapRequestData("sit-player-out", sitPlayerOutAction.GetApiObject());
+            var sitPlayerOutRequest = MaciusSocket.SendRequest(sitPlayerOutRequestData.GetApiObject());
 
-			//while (sitPlayerOutRequest.RequestState != RequestState.RESPONSE_RECEIVED) {
-			//	MaciusSocket.UpdateCommunication();
-			//}
+            while (sitPlayerOutRequest.RequestState != RequestState.RESPONSE_RECEIVED) {
+                MaciusSocket.UpdateCommunication();
+            }
 
-			Console.WriteLine("OK");
+            Console.WriteLine("OK");
 		}
 	}
 

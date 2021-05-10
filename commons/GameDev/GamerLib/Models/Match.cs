@@ -73,6 +73,15 @@ namespace GameManagerLib.Models
             }
         }
 
+        public Player GetPlayerByUsername(string username) {
+            int index = PlayerList.FindIndex((Player) => { return Player.Name == username; });
+
+            if(index == -1) {
+                return null;
+            }
+            return PlayerList[index];
+        }
+
         public bool RemovePlayer(Player RPlayer)
         {
             int Index1 = PlayerList.FindIndex((Player) => { return Player.Name == RPlayer.Name; });

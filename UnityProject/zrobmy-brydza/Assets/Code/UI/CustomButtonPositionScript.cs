@@ -18,15 +18,16 @@ namespace Assets.Code.UI
         private void OnSitRequestCallback(Request request, ActionsSerializer response, object additionalData) {
             var position = (PlayerTag)additionalData;
 
+            if (((string)response.Actions[0].ActionData.GetValue("status")).CompareTo("OK") != 0) {
+                return;
+            }
+
             var data = new SitActionResponseSerializer(response.Actions[0].ActionData);
             data.Validate();
-
-            if(data.Status == "OK") {
-                if (SeatManager.IsSeatTaken(position)) {
-                    SeatManager.SitOutPlayer(position);
-                }
-                SeatManager.SitPlayer(position, UserData.Username, ClickedByMe: true);
+            if (SeatManager.IsSeatTaken(position)) {
+                SeatManager.SitOutPlayer(position);
             }
+            SeatManager.SitPlayer(position, UserData.Username, ClickedByMe: true);
         }
 
         public void OnPointerEnter(PointerEventData data)
