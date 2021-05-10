@@ -1,4 +1,5 @@
 ﻿using EasyHosting.Meta.Validators;
+using EasyHosting.Models.Serialization;
 using EasyHosting.Models.Server;
 using Newtonsoft.Json.Linq;
 using System;
@@ -108,16 +109,20 @@ namespace EasyHosting.Models.Actions
 				jObjPtr = new JObject();
 				try {
 					jObjPtr = PerformAction(conn, action.Name, action.Data);
-				} catch(ActionNotFoundException e) {
+				} catch (ActionNotFoundException e) {
 					jObjPtr = new JObject();
 					jObjPtr.Add("status", "ERROR");
 					jObjPtr.Add("error_code", ERROR_CODE_NOT_FOUND);
 					jObjPtr.Add("error_message", e.Message);
-				} catch(ActionManagerException e) {
+				} catch (ActionManagerException e) {
 					jObjPtr = new JObject();
 					jObjPtr.Add("status", "ERROR");
 					jObjPtr.Add("error_code", ERROR_CODE_MANAGER_GENERIC);
 					jObjPtr.Add("error_message", e.Message);
+				} catch (JsonValidationException e) {
+					jObjPtr = new JObject();
+					jObjPtr.Add("status", "ERROR");
+					jObjPtr.Add("errors", e.Errors);
 				} catch(Exception e) {
 					jObjPtr = new JObject();
 					jObjPtr.Add("status", "ERROR");
