@@ -18,6 +18,7 @@ using System;
 using Assets.Code.Models.Exceptions;
 using EasyHosting.Models.Client.Serializers;
 using ServerSocket.Serializers;
+using GameManagerLib.Exceptions;
 
 public class GameManagerScript : MonoBehaviour
 {
@@ -185,6 +186,26 @@ public class GameManagerScript : MonoBehaviour
                 getHandRequestData.PlayerID = (int)UserData.Position;
                 getHandRequestData.Username = UserData.Username;
                 PerformServerAction("get-hand", getHandRequestData.GetApiObject(), this.GetHandCallback);
+            }
+        }
+        else if(signalName == LobbySignalNewBidSerializer.SIGNAL_NEW_BID) {
+            var serializer = new LobbySignalNewBidSerializer(signalData);
+            serializer.Validate();
+
+            if (serializer.Username != UserData.Username) {
+                try {
+                    var contract = new Contract(
+                        (ContractHeight)serializer.Height,
+                        (ContractColor)serializer.Color,
+                        (PlayerTag)serializer.PlaceTag,
+                        serializer.X,
+                        serializer.XX
+                    );
+                    Game.Match.AddBid(contract);
+                    AuctionModule.AddContractToList(contract);
+                } catch (WrongBidException) {
+                    // TODO: Pobrać całą licytację jeszcze raz
+                }
             }
         }
     }
@@ -481,12 +502,34 @@ public class GameManagerScript : MonoBehaviour
 
         PerformServerAction("bid", bidData.GetApiObject(), this.BidCallback);
     }
+    private void BidCallback(Request request, ActionsSerializer response, object additionalData) {
+        if (((string)response.Actions[0].ActionData.GetValue("status")).CompareTo("OK") != 0) {
+            return;
+        }
 
-    private void BidCallback(Request request, ActionsSerializer response, object additionalData)
-    {
         var data = new ServerSocket.Actions.Bid.ResponseSerializer(response.Actions[0].ActionData);
         data.Validate();
-        AuctionModule.SendBidRequestCallback(data.Status == "OK");
+
+        try {
+            var contract = new Contract(
+                (ContractHeight)data.Height,
+                (ContractColor)data.Color,
+                UserData.Position,
+                data.X,
+                data.XX
+            );
+            Game.Match.AddBid(contract);
+            AuctionModule.AddContractToList(contract);
+        } catch (WrongBidException) {
+            // TODO: Pobierz całą licytację jeszcze raz
+        }
+
+        //AuctionModule.AuctionState.UpdateContract();
+        //UpdateContractList();
+        //if (GameConfig.DevMode) {
+        //    UserData.Position = MainModule.Match.CurrentBidding.CurrentPlayer; // for dev mode
+        //}
+        //PassCounter = 0;
     }
 
     void OnDestroy()

@@ -86,6 +86,9 @@ namespace ClientSocketTesting
 
 		static void Main(string[] args)
 		{
+			Program2.Main2(args);
+			return;
+
 			ClientSocket MaciusSocket = null, PawelekSocket = null, MarcinSocket = null;
 
 			int counter = 0;
@@ -97,12 +100,12 @@ namespace ClientSocketTesting
 
 				Thread.Sleep(1000);
 
-				if (PawelekSocket == null) PawelekSocket = ConnectToLobbyAndSit("Pawełek", PlayerTag.S);
+				if (PawelekSocket == null) PawelekSocket = ConnectToLobbyAndSit("Pawełek", PlayerTag.W);
 				else PawelekSocket.UpdateCommunication();
 
 				Thread.Sleep(1000);
 
-				if (MarcinSocket == null) MarcinSocket = ConnectToLobbyAndSit("Marcin", PlayerTag.W);
+				if (MarcinSocket == null) MarcinSocket = ConnectToLobbyAndSit("Marcin", PlayerTag.E);
 				else MarcinSocket.UpdateCommunication();
 
 				Thread.Sleep(1000);

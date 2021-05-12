@@ -31,7 +31,7 @@ namespace ServerSocket.Actions.Bid
                 
 
                 if ( !( 
-                        (int)ContractHeight.ONE <= Height && Height <= (int)ContractHeight.SEVEN 
+                        ((int)ContractHeight.ONE <= Height && Height <= (int)ContractHeight.SEVEN)
                         || Height == (int)ContractHeight.NONE 
                       )
                 ) {

@@ -115,20 +115,7 @@ public class AuctionModule : MonoBehaviour
 
         XButton.onClick.AddListener(() => { AuctionState.DeclareX(); });
         XXButton.onClick.AddListener(() => { AuctionState.DeclareXX(); });
-        OKButton.onClick.AddListener(() =>
-        {
-            // "OK" click shouldn't let pass
-            if (AuctionState.ContractCache.ContractHeight == ContractHeight.NONE || AuctionState.ContractCache.ContractColor == ContractColor.NONE)
-            {
-                return;
-            }
-
-            // send request
-            MainModule.GameManagerScript.SendBidRequest(AuctionState.ContractCache.ContractHeight,
-                                                        AuctionState.ContractCache.ContractColor,
-                                                        AuctionState.ContractCache.XEnabled,
-                                                        AuctionState.ContractCache.XXEnabled);
-        });
+        OKButton.onClick.AddListener(SendBidRequest);
         PassButton.onClick.AddListener(() =>
         {
             bool correctlyDeclared = MainModule.AddBid(ContractHeight.NONE, ContractColor.NONE, UserData.Position);
@@ -158,21 +145,19 @@ public class AuctionModule : MonoBehaviour
         });
     }
 
-    /// <summary>
-    /// Callback dla wysłania nowego kontraktu na serwer
-    /// </summary>
-    /// <param name="biddedCorrectly">Informacja czy wysłany kontrakt został zaakceptowany czy też nie</param>
-    public void SendBidRequestCallback(bool biddedCorrectly){
-        if (biddedCorrectly)
-        {
-            AuctionState.UpdateContract();
-            UpdateContractList();
-            if (GameConfig.DevMode)
-            {
-                UserData.Position = MainModule.Match.CurrentBidding.CurrentPlayer; // for dev mode
-            }
-            PassCounter = 0;
+    public void SendBidRequest() {
+        // "OK" click shouldn't let pass
+        if (AuctionState.ContractCache.ContractHeight == ContractHeight.NONE || AuctionState.ContractCache.ContractColor == ContractColor.NONE) {
+            return;
         }
+
+        // send request
+        MainModule.GameManagerScript.SendBidRequest(
+            AuctionState.ContractCache.ContractHeight,
+            AuctionState.ContractCache.ContractColor,
+            AuctionState.ContractCache.XEnabled,
+            AuctionState.ContractCache.XXEnabled
+        );
     }
 
     public void ReleaseListeners()
@@ -252,6 +237,8 @@ public class AuctionModule : MonoBehaviour
         }
     }
 
+    
+
     private string UpdateContractDisplayedText()
     {
         string prefix = "Licytujesz : ";
@@ -273,23 +260,37 @@ public class AuctionModule : MonoBehaviour
         return displayedText;
     }
 
-    void UpdateContractList()
+    public void AddContractToList(Contract contract)
     {
-        switch (MainModule.Match.CurrentBidding.CurrentPlayer)
-        {
+        switch (contract.DeclaredBy) {
             case PlayerTag.N:
-                NPlayerDeclarations.text += MainModule.Match.CurrentBidding.HighestContract.ToString() + "\n";
+                NPlayerDeclarations.text += (contract.ToString() + "\n");
                 break;
             case PlayerTag.E:
-                EPlayerDeclarations.text += MainModule.Match.CurrentBidding.HighestContract.ToString() + "\n";
+                EPlayerDeclarations.text += (contract.ToString() + "\n");
                 break;
             case PlayerTag.S:
-                SPlayerDeclarations.text += MainModule.Match.CurrentBidding.HighestContract.ToString() + "\n";
+                SPlayerDeclarations.text += (contract.ToString() + "\n");
                 break;
             case PlayerTag.W:
-                WPlayerDeclarations.text += MainModule.Match.CurrentBidding.HighestContract.ToString() + "\n";
+                WPlayerDeclarations.text += (contract.ToString() + "\n");
                 break;
         }
+        //switch (MainModule.Match.CurrentBidding.CurrentPlayer)
+        //{
+        //    case PlayerTag.N:
+        //        NPlayerDeclarations.text += MainModule.Match.CurrentBidding.HighestContract.ToString() + "\n";
+        //        break;
+        //    case PlayerTag.E:
+        //        EPlayerDeclarations.text += MainModule.Match.CurrentBidding.HighestContract.ToString() + "\n";
+        //        break;
+        //    case PlayerTag.S:
+        //        SPlayerDeclarations.text += MainModule.Match.CurrentBidding.HighestContract.ToString() + "\n";
+        //        break;
+        //    case PlayerTag.W:
+        //        WPlayerDeclarations.text += MainModule.Match.CurrentBidding.HighestContract.ToString() + "\n";
+        //        break;
+        //}
     }
 
     public void ReloadDeclarations()
