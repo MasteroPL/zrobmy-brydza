@@ -183,8 +183,7 @@ public class GameManagerScript : MonoBehaviour
                 Game.Match.Start();
 
                 var getHandRequestData = new ServerSocket.Actions.GetHand.RequestSerializer();
-                getHandRequestData.PlayerID = (int)UserData.Position;
-                getHandRequestData.Username = UserData.Username;
+                getHandRequestData.PlayerTag = (int)UserData.Position;
                 PerformServerAction("get-hand", getHandRequestData.GetApiObject(), this.GetHandCallback);
             }
         }
@@ -776,8 +775,7 @@ public class GameManagerScript : MonoBehaviour
         }
 
         var getHandRequestData = new ServerSocket.Actions.GetHand.RequestSerializer();
-        getHandRequestData.PlayerID = (int)UserData.Position;
-        getHandRequestData.Username = UserData.Username;
+        getHandRequestData.PlayerTag = (int)UserData.Position;
         PerformServerAction("get-hand", getHandRequestData.GetApiObject(), this.GetHandCallback);
     }
 
