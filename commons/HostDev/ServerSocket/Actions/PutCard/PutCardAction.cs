@@ -84,6 +84,9 @@ namespace ServerSocket.Actions.PutCard
                 data.ThrowException();
             }
 
+            resp.CardFigure = (int)card.Figure;
+            resp.CardColor = (int)card.Color;
+            resp.OwnerPosition = (int)data.CardOwnerPosition;
             return resp;
         }
     }

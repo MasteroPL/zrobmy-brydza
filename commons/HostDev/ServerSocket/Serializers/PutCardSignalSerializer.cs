@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace ServerSocket.Serializers
 {
-    class PutCardSignalSerializer : BaseSerializer
+    public class PutCardSignalSerializer : BaseSerializer
     {
         public const string SIGNAL_USER_PUT_CARD = "USER_PUT_CARD";
 

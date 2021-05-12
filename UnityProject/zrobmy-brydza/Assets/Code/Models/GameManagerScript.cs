@@ -208,6 +208,24 @@ public class GameManagerScript : MonoBehaviour
                 }
             }
         }
+        else if(signalName == PutCardSignalSerializer.SIGNAL_USER_PUT_CARD)
+        {
+            var serializer = new PutCardSignalSerializer(signalData);
+            serializer.Validate();
+
+            if (serializer.Username != UserData.Username)
+            {
+                try
+                {
+                    Player cardOwner = Game.Match.GetPlayerByUsername(serializer.Username);
+                    PutCardOnTable((CardFigure)serializer.CardFigure, (CardColor)serializer.CardColor, cardOwner.Tag);
+                }
+                catch (WrongCardException)
+                {
+                    // TODO: coś zrobić
+                }
+            }
+        }
     }
     private void OnServerSignalReceive(object sender, StandardResponseWrapperSerializer data) {
         //Debug.Log(data.CommunicateType);
@@ -1018,153 +1036,170 @@ public class GameManagerScript : MonoBehaviour
         return "";
     }
 
-    public void putCard(Card card)
+    public void PutCardOnTable(CardFigure Figure, CardColor Color, PlayerTag PlayerPosition)
     {
-        bool putOK = Game.PutCard(card.Figure, card.Color, card.PlayerID);
-        if (putOK)
+        // kładę kartę na stół w logice gry GamerLib
+        Game.Match.NextCard(PlayerPosition, Color, Figure);
+
+        // kładę kartę na stół wizualnie w Unity
+        string cardName = CalculateCardObjectName(Figure, Color);
+
+        float[] newPos = new float[2];
+        if (PlayerPosition == UserData.Position)
         {
-            if (card.CurrentState == CardState.ON_HAND)
+            newPos = CalculatePutCardPosition('D');
+        }
+        else if (PlayerPosition == (PlayerTag)(((int)UserData.Position + 1) % 4))
+        {
+            newPos = CalculatePutCardPosition('L');
+        }
+        else if (PlayerPosition == (PlayerTag)(((int)UserData.Position + 2) % 4))
+        {
+            newPos = CalculatePutCardPosition('U');
+        }
+        else if (PlayerPosition == (PlayerTag)(((int)UserData.Position + 3) % 4))
+        {
+            newPos = CalculatePutCardPosition('R');
+        }
+
+        GameObject cardToPut = GameObject.Find(cardName);
+        cardToPut.transform.localPosition = new Vector3(newPos[0], newPos[1]);
+
+        /*if (Game.Match.CurrentGame.TrickList.Count == 0 && Game.Match.CurrentGame.currentTrick.CardList.Count == 1 && !GameConfig.DevMode)
+        {
+            Game.ShowGrandCards();
+        }
+        if (GameConfig.DevMode)
+        {
+            UserData.Position = (PlayerTag)(((int)UserData.Position + 1) % 4); // for dev mode
+        }*/
+
+        /*if (Game.IsTrickComplete())
+        {
+            Trick lastTrick = Game.Match.CurrentGame.TrickList[Game.Match.CurrentGame.TrickList.Count - 1];
+            GameObject tmp;
+            for (int i = 0; i < lastTrick.CardList.Count; i++)
             {
-                string c = "";
+                string tmpCardName = CalculateCardName(lastTrick.CardList[i]);
+                tmp = GameObject.Find(tmpCardName);
+                tmp.transform.position = new Vector3(-100, 0, 0);
+            }
 
-                switch (card.Color)
-                {
-                    case CardColor.CLUB:
-                        c = "C";
-                        break;
-                    case CardColor.DIAMOND:
-                        c = "D";
-                        break;
-                    case CardColor.HEART:
-                        c = "H";
-                        break;
-                    case CardColor.SPADE:
-                        c = "S";
-                        break;
-                }
+            Text TeamTakenHandsCounterLabel = GameObject.Find("TeamTakenHandsCounterLabel").GetComponent<Text>();
+            int NSTaken = Game.CalculateTeamTricks(PlayerTag.N, PlayerTag.S);
+            int EWTaken = Game.CalculateTeamTricks(PlayerTag.E, PlayerTag.W);
 
-                string cardName = "";
-                if ((int)card.Figure > 9)
-                {
-                    switch ((int)card.Figure)
-                    {
-                        case 10: // 10
-                            cardName = "CARD_T" + c;
-                            break;
-                        case 11: // J
-                            cardName = "CARD_J" + c;
-                            break;
-                        case 12: // Q
-                            cardName = "CARD_Q" + c;
-                            break;
-                        case 13: // K
-                            cardName = "CARD_K" + c;
-                            break;
-                        case 14: // A
-                            cardName = "CARD_A" + c;
-                            break;
-                    }
-                }
-                else
-                {
-                    cardName = "CARD_" + (int)card.Figure + c;
-                }
+            TeamTakenHandsCounterLabel.text = "NS : " + NSTaken.ToString() + "\n";
+            TeamTakenHandsCounterLabel.text += "EW : " + EWTaken.ToString();
 
-                /*float newXpos = 0;
-                float newYpos = 0;
+            if (Game.Match.CurrentGame.Declarer == PlayerTag.N || Game.Match.CurrentGame.Declarer == PlayerTag.S)
+            {
+                PaintContractLabel(NSTaken, EWTaken);
+            }
+            else if (Game.Match.CurrentGame.Declarer == PlayerTag.E || Game.Match.CurrentGame.Declarer == PlayerTag.W)
+            {
+                PaintContractLabel(EWTaken, NSTaken);
+            }
 
-                switch (card.PlayerID) // to reconsider, positions are relative to player who sits
-                {
-                    case PlayerTag.N: // down
-                        newXpos = -3.02f;
-                        newYpos = -1.03f;
-                        break;
-                    case PlayerTag.E: // left
-                        newXpos = -4.19f;
-                        newYpos = 0.41f;
-                        break;
-                    case PlayerTag.S: // up
-                        newXpos = -3.02f;
-                        newYpos = 1.87f;
-                        break;
-                    case PlayerTag.W: // right
-                        newXpos = -1.8f;
-                        newYpos = 0.41f;
-                        break;
-                }*/
+            if (GameConfig.DevMode)
+            {
+                UserData.Position = lastTrick.Winner; // for dev mode
+            }
 
+            //if (Game.Match.CurrentGame.IsEnd())
+            //{
+            //    RestartGame(); // restart game if all 13 tricks were put on the table
+            //}
+        }*/
+    }
 
-                float[] newPos = new float[2];
-                // WARNING! For production 'positionStart' should be replaced with 'position' 
-                if (card.PlayerID == UserData.PositionStart)
-                {
-                    newPos = CalculatePutCardPosition('D');
-                } 
-                else if(card.PlayerID == (PlayerTag)(( (int)UserData.PositionStart + 1) % 4 ))
-                {
-                    newPos = CalculatePutCardPosition('L');
-                }
-                else if (card.PlayerID == (PlayerTag)(((int)UserData.PositionStart + 2) % 4))
-                {
-                    newPos = CalculatePutCardPosition('U');
-                }
-                else if (card.PlayerID == (PlayerTag)(((int)UserData.PositionStart + 3) % 4))
-                {
-                    newPos = CalculatePutCardPosition('R');
-                }
+    private string CalculateCardObjectName(CardFigure Figure, CardColor Color)
+    {
+        string c = "";
+        switch (Color)
+        {
+            case CardColor.CLUB:
+                c = "C";
+                break;
+            case CardColor.DIAMOND:
+                c = "D";
+                break;
+            case CardColor.HEART:
+                c = "H";
+                break;
+            case CardColor.SPADE:
+                c = "S";
+                break;
+        }
 
-                GameObject cardToPut = GameObject.Find(cardName);
-                cardToPut.transform.localPosition = new Vector3(newPos[0], newPos[1]);
-
-                if (Game.Match.CurrentGame.TrickList.Count == 0 && Game.Match.CurrentGame.currentTrick.CardList.Count == 1 && !GameConfig.DevMode)
-                {
-                    Game.ShowGrandCards();
-                }
-                if (GameConfig.DevMode)
-                {
-                    UserData.Position = (PlayerTag)(((int)UserData.Position + 1) % 4); // for dev mode
-                }
-
-                if (Game.IsTrickComplete())
-                {
-                    SleepFor2Seconds();
-                    Trick lastTrick = Game.Match.CurrentGame.TrickList[Game.Match.CurrentGame.TrickList.Count - 1];
-                    GameObject tmp;
-                    for (int i = 0; i < lastTrick.CardList.Count; i++)
-                    {
-                        string tmpCardName = CalculateCardName(lastTrick.CardList[i]);
-                        tmp = GameObject.Find(tmpCardName);
-                        tmp.transform.position = new Vector3(-100, 0, 0);
-                    }
-
-                    Text TeamTakenHandsCounterLabel = GameObject.Find("TeamTakenHandsCounterLabel").GetComponent<Text>();
-                    int NSTaken = Game.CalculateTeamTricks(PlayerTag.N, PlayerTag.S);
-                    int EWTaken = Game.CalculateTeamTricks(PlayerTag.E, PlayerTag.W);
-
-                    TeamTakenHandsCounterLabel.text = "NS : " + NSTaken.ToString() + "\n";
-                    TeamTakenHandsCounterLabel.text += "EW : " + EWTaken.ToString();
-
-                    if (Game.Match.CurrentGame.Declarer == PlayerTag.N || Game.Match.CurrentGame.Declarer == PlayerTag.S)
-                    {
-                        PaintContractLabel(NSTaken, EWTaken);
-                    }
-                    else if (Game.Match.CurrentGame.Declarer == PlayerTag.E || Game.Match.CurrentGame.Declarer == PlayerTag.W)
-                    {
-                        PaintContractLabel(EWTaken, NSTaken);
-                    }
-
-                    if (GameConfig.DevMode)
-                    {
-                        UserData.Position = lastTrick.Winner; // for dev mode
-                    }
-
-                    /*if (Game.Match.CurrentGame.IsEnd())
-                    {
-                        RestartGame(); // restart game if all 13 tricks were put on the table
-                    }*/
-                }
+        string cardName = "";
+        if ((int)Figure > 9)
+        {
+            switch ((int)Figure)
+            {
+                case 10: // 10
+                    cardName = "CARD_T" + c;
+                    break;
+                case 11: // J
+                    cardName = "CARD_J" + c;
+                    break;
+                case 12: // Q
+                    cardName = "CARD_Q" + c;
+                    break;
+                case 13: // K
+                    cardName = "CARD_K" + c;
+                    break;
+                case 14: // A
+                    cardName = "CARD_A" + c;
+                    break;
             }
         }
+        else
+        {
+            cardName = "CARD_" + (int)Figure + c;
+        }
+        return cardName;
+    }
+
+    public void putCard(Card card)
+    {
+        bool canUserPutCard = Game.Match.CheckNextCard(card.PlayerID, card.Color, card.Figure);
+        if (canUserPutCard && card.CurrentState == CardState.ON_HAND)
+        {
+            this.SendPutCardRequest(card.Figure, card.Color, card.PlayerID);
+        }
+    }
+
+    public void PutCardCallback(Request request, ActionsSerializer response, object additionalData)
+    {
+        if (((string)response.Actions[0].ActionData.GetValue("status")).CompareTo("OK") != 0)
+        {
+            return;
+        }
+
+        var data = new ServerSocket.Actions.PutCard.ResponseSerializer(response.Actions[0].ActionData);
+        data.Validate();
+        try
+        {
+            PutCardOnTable((CardFigure)data.CardFigure, (CardColor)data.CardColor, (PlayerTag)data.OwnerPosition);
+        }
+        catch (GameManagerLib.Exceptions.WrongGameStateException e)
+        {
+            // TODO
+        }
+    }
+
+    public void SendPutCardRequest(CardFigure Figure, CardColor Color, PlayerTag OwnerPosition)
+    {
+        var player = Game.Match.GetPlayerAt(OwnerPosition);
+
+        var putCardRequestData = new ServerSocket.Actions.PutCard.RequestSerializer();
+        putCardRequestData.CardOwnerPosition = (int)OwnerPosition;
+        putCardRequestData.Color = (int)Color;
+        putCardRequestData.Figure = (int)Figure;
+        putCardRequestData.Playername = player.Name;
+
+        PerformServerAction("put-card", putCardRequestData.GetApiObject(), this.PutCardCallback);
     }
 
     private void PaintContractLabel(int TakenHands, int EnemyTakenHands)
@@ -1207,11 +1242,6 @@ public class GameManagerScript : MonoBehaviour
                 break;
         }
         return returned;
-    }
-
-    IEnumerator SleepFor2Seconds()
-    {
-        yield return new WaitForSeconds(2);
     }
 
     public bool checkTurn()

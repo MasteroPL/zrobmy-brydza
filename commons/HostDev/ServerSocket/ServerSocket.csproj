@@ -60,6 +60,7 @@
     <Compile Include="Actions\GetTableInfo\ResponseSerializer.cs" />
     <Compile Include="Actions\HelloWorld\HelloWorldAction.cs" />
     <Compile Include="Actions\PutCard\PutCardAction.cs" />
+    <Compile Include="Actions\PutCard\RequestSerializer.cs" />
     <Compile Include="Actions\PutCard\ResponseSerializer.cs" />
     <Compile Include="Actions\SendChat\RequestSerializer.cs" />
     <Compile Include="Actions\SendChat\ResponseSerializer.cs" />
@@ -108,6 +109,7 @@
     <Compile Include="Serializers\PlayerClickedGameStartSerializer.cs" />
     <Compile Include="Serializers\PlayerSerializer.cs" />
     <Compile Include="Serializers\CardSerializer.cs" />
+    <Compile Include="Serializers\PutCardSignalSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

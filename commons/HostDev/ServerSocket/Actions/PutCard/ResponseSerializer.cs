@@ -13,6 +13,12 @@ namespace ServerSocket.Actions.PutCard
     {
         [SerializerField(apiName: "status")]
         public string Status;
+        [SerializerField(apiName: "owner_position")]
+        public int OwnerPosition;
+        [SerializerField(apiName: "figure")]
+        public int CardFigure;
+        [SerializerField(apiName: "color")]
+        public int CardColor;
 
         public ResponseSerializer() : base() { }
         public ResponseSerializer(JObject data) : base(data) { }
