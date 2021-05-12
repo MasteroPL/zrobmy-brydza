@@ -63,6 +63,10 @@ namespace GameManagerLib.Models
         }
         public bool CheckNextCard(Card Card)
         {
+            if(Card.CurrentState != CardState.ON_HAND) {
+                return false;
+            }
+
             if (Card.PlayerID != this.CurrentPlayer)
             {
                 return false;

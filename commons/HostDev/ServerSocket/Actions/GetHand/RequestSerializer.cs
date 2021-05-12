@@ -7,19 +7,15 @@ namespace ServerSocket.Actions.GetHand
 {
     public class RequestSerializer : BaseSerializer
     {
-        [SerializerField(apiName: "player-ID")]
-        public int PlayerID;
-
-        [SerializerField(apiName: "username")]
-        public string Username;
+        [SerializerField(apiName: "player_tag")]
+        public int PlayerTag;
 
         public override void Validate(bool throwException = true)
         {
             base.Validate(throwException);
 
-            if (PlayerID == -1)
-            {
-                ThrowException();
+            if(PlayerTag < 0 || PlayerTag > 3) {
+                AddError("PlayerTag", "INVALID_TAG", "Niepoprawny tag gracza");
             }
         }
 

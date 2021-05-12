@@ -12,9 +12,6 @@ namespace ServerSocket.Actions.PutCard
 {
     public class RequestSerializer : BaseSerializer
     {
-        [SerializerField(apiName: "player_name")]
-        public string Playername;
-
         [SerializerField(apiName: "owner_position")]
         public int CardOwnerPosition;
 

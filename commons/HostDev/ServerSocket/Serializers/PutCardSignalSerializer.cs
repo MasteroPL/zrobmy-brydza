@@ -19,6 +19,8 @@ namespace ServerSocket.Serializers
         public string Message;
         [SerializerField(apiName: "username", required: true)]
         public string Username;
+        [SerializerField(apiName: "owner_position", required: true)]
+        public int OwnerPosition;
         [SerializerField(apiName: "figure", required: true)]
         public int CardFigure;
         [SerializerField(apiName: "color", required: true)]

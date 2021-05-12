@@ -46,6 +46,8 @@ namespace ServerSocket.Actions.Bid
             }
             game.AddBid(contract);
 
+            Console.WriteLine(username + "> Bid: " + contract.ToString());
+
             // Broadcast do pozostałych graczy
             var broadcastData = new LobbySignalNewBidSerializer() {
                 Signal = LobbySignalNewBidSerializer.SIGNAL_NEW_BID,

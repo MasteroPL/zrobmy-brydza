@@ -151,7 +151,7 @@ namespace GameManagerLib.Models
                 {
                     foreach(Card card in PlayerList[i].Hand)
                     {
-                        card.PlayerID = (PlayerTag)i;
+                        card.PlayerID = PlayerList[i].Tag;
                     }
                 }
 

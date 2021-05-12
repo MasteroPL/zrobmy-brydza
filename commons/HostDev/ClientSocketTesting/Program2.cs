@@ -30,6 +30,12 @@ namespace ClientSocketTesting {
 		static void OnSignalMarcin(object sender, StandardResponseWrapperSerializer signal) {
 			Console.WriteLine("[Marcin]>" + signal.Data);
 		}
+		static void OnRequestResponseMarcin2_0(object sender, Request request) {
+			Console.WriteLine("[Marcin2_0]>" + request.ResponseData);
+		}
+		static void OnSignalMarcin2_0(object sender, StandardResponseWrapperSerializer signal) {
+			Console.WriteLine("[Marcin2_0]>" + signal.Data);
+		}
 
 		public static ActionsSerializer WrapRequestData(string actionName, JObject data) {
 			var result = new ActionsSerializer();
@@ -45,11 +51,12 @@ namespace ClientSocketTesting {
 		}
 
 		public static void Main2(string[] args) {
-			ClientSocket MaciusSocket = null, PawelekSocket = null, MarcinSocket = null;
+			ClientSocket MaciusSocket = null, PawelekSocket = null, MarcinSocket = null, Marcin2_0Socket;
 
 			MaciusSocket = new ClientSocket("127.0.0.1");
 			PawelekSocket = new ClientSocket("127.0.0.1");
 			MarcinSocket = new ClientSocket("127.0.0.1");
+			Marcin2_0Socket = new ClientSocket("127.0.0.1");
 
 			MaciusSocket.RequestResponseReceived += OnRequestResponseMacius;
 			MaciusSocket.SignalReceived += OnSignalMacius;
@@ -57,6 +64,8 @@ namespace ClientSocketTesting {
 			PawelekSocket.SignalReceived += OnSignalPawelek;
 			MarcinSocket.RequestResponseReceived += OnRequestResponseMarcin;
 			MarcinSocket.SignalReceived += OnSignalMarcin;
+			Marcin2_0Socket.RequestResponseReceived += OnRequestResponseMarcin2_0;
+			Marcin2_0Socket.SignalReceived += OnSignalMarcin2_0;
 
 			DumbAI MaciusAI = new DumbAI() {
 				ClientSocket = MaciusSocket,
@@ -73,11 +82,18 @@ namespace ClientSocketTesting {
 				Position = PlayerTag.E,
 				Username = "Marcin"
 			};
+			DumbAI Marcin2_0AI = new DumbAIMarcin2_0() {
+				ClientSocket = Marcin2_0Socket,
+				Position = PlayerTag.S,
+				Username = "The_real_marcin"
+			};
 
 			MaciusAI.Init();
 			PawelekAI.Init();
 			MarcinAI.Init();
+			Marcin2_0AI.Init();
 
+			Marcin2_0AI.Authorize();
 			MaciusAI.Authorize();
 			PawelekAI.Authorize();
 			MarcinAI.Authorize();
@@ -85,10 +101,12 @@ namespace ClientSocketTesting {
 			MaciusAI.LoadGame();
 			PawelekAI.LoadGame();
 			MarcinAI.LoadGame();
+			Marcin2_0AI.LoadGame();
 
 			MaciusAI.Sit();
 			PawelekAI.Sit();
 			MarcinAI.Sit();
+			Marcin2_0AI.Sit();
 
 			Console.WriteLine("> Inicjalne ładowanie zakończone");
 
@@ -98,6 +116,8 @@ namespace ClientSocketTesting {
 				PawelekAI.Play();
 				Thread.Sleep(500);
 				MarcinAI.Play();
+				Thread.Sleep(500);
+				Marcin2_0AI.Play();
 				Thread.Sleep(500);
 			}
 		}

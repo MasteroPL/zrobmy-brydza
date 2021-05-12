@@ -17,6 +17,8 @@ using SitActionRequestSerializer = ServerSocket.Actions.Sit.RequestSerializer;
 using SitActionResponseSerializer = ServerSocket.Actions.Sit.ResponseSerializer;
 using BidActionRequestSerializer = ServerSocket.Actions.Bid.RequestSerializer;
 using BidActionResponseSerializer = ServerSocket.Actions.Bid.ResponseSerializer;
+using PutCardActionRequestSerializer = ServerSocket.Actions.PutCard.RequestSerializer;
+using PutCardActionResponseSerializer = ServerSocket.Actions.PutCard.ResponseSerializer;
 using EasyHosting.Models.Client.Serializers;
 using GameManagerLib.Exceptions;
 
@@ -27,6 +29,8 @@ namespace ClientSocketTesting {
         public string Username;
         public PlayerTag Position;
         public List<Card> MyCards = new List<Card>();
+        public List<Card> GrandaCards = null;
+        public bool SendGetHandRequest = false;
 
         public void Init() {
             ClientSocket.SignalReceived += OnServerSignalReceive;
@@ -68,9 +72,8 @@ namespace ClientSocketTesting {
                 var serializer = new PlayerClickedGameStartSerializer(signalData);
                 serializer.Validate();
 
-                if (serializer.Username != Username) {
-                    Game.Start();
-                }
+                Game.Start();
+                SendGetHandRequest = true;
             }
             else if (signalName == LobbySignalNewBidSerializer.SIGNAL_NEW_BID) {
                 var serializer = new LobbySignalNewBidSerializer(signalData);
@@ -96,6 +99,14 @@ namespace ClientSocketTesting {
 
                 if (serializer.Username != Username) {
                     Game.AddPlayer(new Player((PlayerTag)serializer.PlaceTag, serializer.Username));
+                }
+            }
+            else if(signalName == PutCardSignalSerializer.SIGNAL_USER_PUT_CARD) {
+                var serializer = new PutCardSignalSerializer(signalData);
+                serializer.Validate();
+
+                if (serializer.Username != Username) {
+                    Game.CurrentGame.NextCard(new Card((CardFigure)serializer.CardFigure, (CardColor)serializer.CardColor, (PlayerTag)serializer.OwnerPosition));
                 }
             }
         }
@@ -173,12 +184,12 @@ namespace ClientSocketTesting {
 
         public void GetHand() {
             var getHandRequestData = new GetHandActionRequestSerializer() {
-                PlayerID = (int)Position,
-                Username = Username
+                PlayerTag = (int)Position
             };
             PerformServerAction("get-hand", getHandRequestData.GetApiObject(), GetHandCallback);
         }
         protected void GetHandCallback(Request request, ActionsSerializer response, object additionalData) {
+            SendGetHandRequest = false;
             var data = new GetHandActionResponseSerializer(response.Actions[0].ActionData);
             data.Validate();
 
@@ -191,9 +202,34 @@ namespace ClientSocketTesting {
                 ));
             }
         }
+        public void GetGrandpaHand() {
+            var getHandRequestData = new GetHandActionRequestSerializer() {
+                PlayerTag = ((int)Position + 2) % 4
+            };
+            PerformServerAction("get-hand", getHandRequestData.GetApiObject(), GetGrandpaHandCallback);
+        }
+        protected void GetGrandpaHandCallback(Request request, ActionsSerializer response, object additionalData) {
+            var data = new GetHandActionResponseSerializer(response.Actions[0].ActionData);
+            data.Validate();
+            GrandaCards = new List<Card>();
 
-        public void Play() {
+            foreach (var card in data.Cards) {
+                GrandaCards.Add(new Card(
+                    (CardFigure)card.Figure,
+                    (CardColor)card.Color,
+                    (PlayerTag)(((int)Position + 2) % 4),
+                    (CardState)card.State
+                ));
+            }
+        }
+
+        public virtual void Play() {
             ClientSocket.UpdateCommunication();
+
+            if (SendGetHandRequest) {
+                GetHand();
+            }
+
             switch (Game.GameState){
                 case GameState.BIDDING:
                     PlayBidding();
@@ -217,15 +253,45 @@ namespace ClientSocketTesting {
             }
         }
         protected virtual void PlayPlaying() {
-            if(Game.CurrentGame.CurrentPlayer == Position) {
+            if(Game.CurrentBidding.Declarer == Position && GrandaCards == null) {
+                GetGrandpaHand();
+            }
+
+            if(
+                ((int)Game.CurrentBidding.Declarer + 2) % 4 != (int)Position
+                && Game.CurrentGame.CurrentPlayer == Position) {
                 for(int i = 0; i < MyCards.Count; i++) {
                     if (Game.CurrentGame.CheckNextCard(MyCards[i])) {
+                        var data = new PutCardActionRequestSerializer() {
+                            CardOwnerPosition = (int)Position,
+                            Color = (int)MyCards[i].Color,
+                            Figure = (int)MyCards[i].Figure
+                        };
 
-
-                        //PerformServerAction("put-card")
+                        PerformServerAction("put-card", data.GetApiObject(), PutCardCallback, MyCards[i]);
                     }
                 }
             }
+            else if(
+                Game.CurrentBidding.Declarer == Position
+                && ((int)Game.CurrentGame.CurrentPlayer + 2) % 4 == (int)Position
+            ) {
+                for (int i = 0; i < GrandaCards.Count; i++) {
+                    if (Game.CurrentGame.CheckNextCard(GrandaCards[i])) {
+                        var data = new PutCardActionRequestSerializer() {
+                            CardOwnerPosition = ((int)Position + 2) % 4,
+                            Color = (int)MyCards[i].Color,
+                            Figure = (int)MyCards[i].Figure
+                        };
+
+                        PerformServerAction("put-card", data.GetApiObject(), PutCardCallback, GrandaCards[i]);
+                    }
+                }
+            }
+        }
+        protected void PutCardCallback(Request request, ActionsSerializer response, object additionalData) {
+            var card = (Card)additionalData;
+            Game.CurrentGame.NextCard(card);
         }
     }
 }

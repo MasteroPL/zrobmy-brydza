@@ -24,35 +24,50 @@ namespace ServerSocket.Actions.GetHand
             Lobby lobby = (Lobby)conn.Session.Get("joined-lobby");
             Match game = lobby.Game;
 
-            if (data.PlayerID < 0 || data.PlayerID > 3)
-            {
-                data.AddError("PlayerID", "INVALID_POSITION", "Nie masz uprawnień by pobrać dane o ręce danego użytkownika");
+            if (
+                game.GameState != GameState.BIDDING
+                && game.GameState != GameState.PLAYING
+                && game.GameState != GameState.PAUSED
+            ) {
+                data.AddError(null, "INVALID_GAME_STATE", "W tym stanie gry nie można pobrać kart");
                 data.ThrowException();
             }
-            bool playerFound = false;
-            for(int i = 0; i < game.PlayerList.Count; i++)
-            {
-                if (game.PlayerList[i] != null)
-                {
-                    if (game.PlayerList[i].Name == data.Username)
-                    {
-                        playerFound = true;
-                    }
+
+            if (!conn.Session.Has("player")) {
+                data.AddError(null, "INVALID_USER", "Nie masz uprawnień do pobrania kart tego gracza");
+                data.ThrowException();
+            }
+
+            var player = conn.Session.Get<Player>("player");
+            if((int)player.Tag != data.PlayerTag) {
+                if(game.GameState != GameState.PLAYING) {
+                    data.AddError(null, "INVALID_USER", "Nie masz uprawnień do pobrania kart tego gracza");
+                    data.ThrowException();
+                }
+                if(
+                    game.CurrentBidding.Declarer != player.Tag
+                    || ((int)player.Tag + 2)%4 != data.PlayerTag
+                ) {
+                    data.AddError(null, "INVALID_USER", "Nie masz uprawnień do pobrania kart tego gracza");
+                    data.ThrowException();
                 }
             }
-            if (!playerFound)
-            {
-                data.AddError("Username", "INVALID_PLAYER", "Nieprawidłowy użytkownik");
+
+            int playerId = game.PlayerList.FindIndex((p) => {
+                return (int)p.Tag == data.PlayerTag;
+            });
+            if(playerId == -1) {
+                data.AddError(null, "INTERNAL_SERVER_ERROR", "Wystąpił błąd wewnętrzny serwera");
                 data.ThrowException();
             }
 
             CardSerializer[] cards = new CardSerializer[13];
 
-            for (int i = 0; i < game.PlayerList[data.PlayerID].Hand.Length; i++) {
+            for (int i = 0; i < game.PlayerList[playerId].Hand.Length; i++) {
                 cards[i] = new CardSerializer();
-                cards[i].Figure = (int)game.PlayerList[data.PlayerID].Hand[i].Figure;
-                cards[i].Color = (int)game.PlayerList[data.PlayerID].Hand[i].Color;
-                cards[i].State = (int)game.PlayerList[data.PlayerID].Hand[i].CurrentState;
+                cards[i].Figure = (int)game.PlayerList[playerId].Hand[i].Figure;
+                cards[i].Color = (int)game.PlayerList[playerId].Hand[i].Color;
+                cards[i].State = (int)game.PlayerList[playerId].Hand[i].CurrentState;
             }
 
             resp.Cards = cards;
