@@ -134,8 +134,8 @@ public class GameManagerScript : MonoBehaviour
                     SeatManager.SitOutPlayer((PlayerTag)serializer.PlaceTag);
                 }
                 SeatManager.SitPlayer((PlayerTag)serializer.PlaceTag, serializer.Username);
-                this.UpdateTableCenter(Game);
             }
+            this.UpdateTableCenter(Game);
         }
         // Użytkownik wstał/został wysadzony z wybranego miejsca
         else if(signalName == LobbySignalUserSittedOutSerializer.SIGNAL_USER_SITTED_OUT) {
@@ -295,7 +295,7 @@ public class GameManagerScript : MonoBehaviour
             var responseSerializer = new GetTableInfoSerializer(actionsSerializer.Actions[0].ActionData);
             try {
                 responseSerializer.Validate();
-
+                Debug.Log(responseSerializer);
                 if (responseSerializer.Status == "OK") {
                     // Przetwarzanie odpowiedzi
                     if (responseSerializer.NumberOfLobbyUsers == 1) {
@@ -388,7 +388,7 @@ public class GameManagerScript : MonoBehaviour
         {
             if (tableData.Players[i] != null)
             {
-                Game.Match.AddPlayer(new Player((PlayerTag)tableData.Players[i].PlayerTag, tableData.Players[i].Username));
+                //Game.Match.AddPlayer(new Player((PlayerTag)tableData.Players[i].PlayerTag, tableData.Players[i].Username));
                 SeatManager.SitPlayer((PlayerTag)tableData.Players[i].PlayerTag, tableData.Players[i].Username);
             }
         }
