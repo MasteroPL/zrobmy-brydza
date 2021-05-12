@@ -360,6 +360,8 @@ public class GameManagerScript : MonoBehaviour
                 break;
         }
 
+        CheckCurrentPlayerLight();
+
         if (SeatManager.AllFourPlayersPresent() && UserData.Position != PlayerTag.NOBODY && Game.Match.GameState == GameState.STARTING)
         {
             if (StartButton != null) StartButton.gameObject.SetActive(true);
@@ -469,11 +471,22 @@ public class GameManagerScript : MonoBehaviour
         }
     }
 
-    
-    public bool SendBidRequest(ContractHeight Height, ContractColor Color, bool XEnabled, bool XXEnabled)
+    public void SendBidRequest(ContractHeight Height, ContractColor Color, bool XEnabled, bool XXEnabled)
     {
+        var bidData = new ServerSocket.Actions.Bid.RequestSerializer();
+        bidData.Height = (int)Height;
+        bidData.Color = (int)Color;
+        bidData.X = XEnabled;
+        bidData.XX = XXEnabled;
 
-        return true;
+        PerformServerAction("bid", bidData.GetApiObject(), this.BidCallback);
+    }
+
+    private void BidCallback(Request request, ActionsSerializer response, object additionalData)
+    {
+        var data = new ServerSocket.Actions.Bid.ResponseSerializer(response.Actions[0].ActionData);
+        data.Validate();
+        AuctionModule.SendBidRequestCallback(data.Status == "OK");
     }
 
     void OnDestroy()
@@ -555,7 +568,7 @@ public class GameManagerScript : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
-    private void CurrentPlayerLight()
+    private void CheckCurrentPlayerLight()
     {
         GameObject.Find("Player3IndicatorLight").GetComponent<Image>().color = new Color(255f, 255f, 255f, 100f);
         GameObject.Find("Player4IndicatorLight").GetComponent<Image>().color = new Color(255f, 255f, 255f, 100f);
@@ -675,7 +688,6 @@ public class GameManagerScript : MonoBehaviour
                 {
                     StartButton.gameObject.SetActive(false);
                 }
-                InvokeRepeating("CurrentPlayerLight", 0.5f, 0.05f);
             }
             catch (Exception e)
             {
@@ -707,38 +719,6 @@ public class GameManagerScript : MonoBehaviour
         getHandRequestData.Username = UserData.Username;
         PerformServerAction("get-hand", getHandRequestData.GetApiObject(), this.GetHandCallback);
     }
-
-    /*public void StartGame(Game Game, GameManagerLib.Models.Card[] PlayerHand)
-    {
-        this.Game = Game;
-        HiddenCardsOfPlayerN = new List<GameObject>();
-        HiddenCardsOfPlayerE = new List<GameObject>();
-        HiddenCardsOfPlayerS = new List<GameObject>();
-        HiddenCardsOfPlayerW = new List<GameObject>();
-
-        // for dev mode
-        if (GameConfig.DevMode)
-        {
-            GiveCardsToPlayer(PlayerTag.N, Game.Match.PlayerList[0].Hand);
-            GiveCardsToPlayer(PlayerTag.S, Game.Match.PlayerList[2].Hand);
-            GiveCardsToPlayer(PlayerTag.W, Game.Match.PlayerList[3].Hand);
-            GiveCardsToPlayer(PlayerTag.E, Game.Match.PlayerList[1].Hand);
-        } else
-        {
-            UpdateTable(Game, PlayerHand);
-        }
-
-        PlayerTag StartingPlayer = Game.Match.CurrentBidding.CurrentPlayer;
-        AuctionModule.InitAuctionModule(Game, StartingPlayer);
-
-        GameObject auctionObject = GameObject.Find("/Canvas/TableCanvas/AuctionDialog");
-        auctionObject.SetActive(true);
-        if (StartButton != null)
-        {
-            StartButton.gameObject.SetActive(false);
-        }
-        InvokeRepeating("CurrentPlayerLight", 0.5f, 0.05f);
-    }*/
 
     /*public void RestartGame()
     {

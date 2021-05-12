@@ -124,27 +124,10 @@ public class AuctionModule : MonoBehaviour
             }
 
             // send request
-            bool biddedCorrectly = MainModule.GameManagerScript.SendBidRequest(AuctionState.ContractCache.ContractHeight,
-                                                             AuctionState.ContractCache.ContractColor,
-                                                             AuctionState.ContractCache.XEnabled,
-                                                             AuctionState.ContractCache.XXEnabled);
-
-            bool updatedCorrectly = MainModule.AddBid(AuctionState.ContractCache.ContractHeight,
-                                AuctionState.ContractCache.ContractColor,
-                                UserData.Position,
-                                AuctionState.ContractCache.XEnabled,
-                                AuctionState.ContractCache.XXEnabled);
-
-            if (biddedCorrectly)
-            {
-                AuctionState.UpdateContract();
-                UpdateContractList();
-                if (GameConfig.DevMode)
-                {
-                    UserData.Position = MainModule.Match.CurrentBidding.CurrentPlayer; // for dev mode
-                }
-                PassCounter = 0;
-            }
+            MainModule.GameManagerScript.SendBidRequest(AuctionState.ContractCache.ContractHeight,
+                                                        AuctionState.ContractCache.ContractColor,
+                                                        AuctionState.ContractCache.XEnabled,
+                                                        AuctionState.ContractCache.XXEnabled);
         });
         PassButton.onClick.AddListener(() =>
         {
@@ -173,6 +156,23 @@ public class AuctionModule : MonoBehaviour
                 }
             }
         });
+    }
+
+    /// <summary>
+    /// Callback dla wysłania nowego kontraktu na serwer
+    /// </summary>
+    /// <param name="biddedCorrectly">Informacja czy wysłany kontrakt został zaakceptowany czy też nie</param>
+    public void SendBidRequestCallback(bool biddedCorrectly){
+        if (biddedCorrectly)
+        {
+            AuctionState.UpdateContract();
+            UpdateContractList();
+            if (GameConfig.DevMode)
+            {
+                UserData.Position = MainModule.Match.CurrentBidding.CurrentPlayer; // for dev mode
+            }
+            PassCounter = 0;
+        }
     }
 
     public void ReleaseListeners()
