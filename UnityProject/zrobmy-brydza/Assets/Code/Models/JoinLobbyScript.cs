@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using Assets.Code.UI;
 using System;
 using GetTableInfoSerializer = ServerSocket.Actions.GetTableInfo.ResponseSerializer;
+using System.IO;
 
 public class JoinLobbyScript : MonoBehaviour
 {
@@ -95,11 +96,18 @@ public class JoinLobbyScript : MonoBehaviour
         catch(Exception ex)
         {
             // w przypadku gdy nas nie zautoryzuje to nawet nie probujemy pobierac danych stolu bo nie ma po co
+            using (StreamWriter outputFile = new StreamWriter("log.txt")) {
+                outputFile.WriteLine(ex.Message);
+                outputFile.WriteLine(ex.StackTrace);
+            }
             ErrorWindow.SetActive(true);
             return;
         }
         if (status != "OK")
         {
+            using (StreamWriter outputFile = new StreamWriter("log.txt")) {
+                outputFile.WriteLine("wut");
+            }
             ErrorWindow.SetActive(true);
         }
         else
@@ -107,7 +115,7 @@ public class JoinLobbyScript : MonoBehaviour
             UserData.LoggedIn = true;
             UserData.ClientConnection = clientSocket;
             UserData.Username = username;
-            SceneManager.LoadScene(1);
+            SceneManager.LoadScene("Gameplay");
         }
     }
 

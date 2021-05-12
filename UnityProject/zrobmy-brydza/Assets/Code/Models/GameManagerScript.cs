@@ -628,6 +628,10 @@ public class GameManagerScript : MonoBehaviour
 
     public void GetHandCallback(Request request, ActionsSerializer response, object additionalData)
     {
+        if (((string)response.Actions[0].ActionData.GetValue("status")).CompareTo("OK") != 0) {
+            return;
+        }
+
         var data = new ServerSocket.Actions.GetHand.ResponseSerializer(response.Actions[0].ActionData);
         data.Validate();
         Debug.Log("GetHandCallback...");
@@ -676,6 +680,10 @@ public class GameManagerScript : MonoBehaviour
 
     public void StartGameCallback(Request request, ActionsSerializer response, object additionalData)
     {
+        if (((string)response.Actions[0].ActionData.GetValue("status")).CompareTo("OK") != 0) {
+            return;
+        }
+
         var data = new ServerSocket.Actions.StartGame.ResponseSerializer(response.Actions[0].ActionData);
         data.Validate();
         try

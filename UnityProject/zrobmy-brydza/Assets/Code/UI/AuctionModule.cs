@@ -56,7 +56,7 @@ public class AuctionModule : MonoBehaviour
     public void InitAuctionModule(Game MainModule, PlayerTag StartingPlayer)
     {
         this.MainModule = MainModule;
-        AuctionState.Init(StartingPlayer);
+        AuctionState.Init();
 
         DeclaredContractLabel.text = "";
         TeamTakenHandsCounterLabel.text = "";
@@ -70,7 +70,7 @@ public class AuctionModule : MonoBehaviour
         }
 
         // setting visibility of dialog for first render, later it'll be updated according to game state & current player
-        if (AuctionState.CurrentPlayer == UserData.Position)//MainModule.GameManagerScript.UserData.position
+        if (MainModule.Match.CurrentBidding.CurrentPlayer == UserData.Position)//MainModule.GameManagerScript.UserData.position
         {
             AuctionDialog.enabled = true;
             AssignControls();
@@ -133,7 +133,6 @@ public class AuctionModule : MonoBehaviour
             {
                 AuctionState.UpdateContract();
                 UpdateContractList();
-                AuctionState.CurrentPlayer = MainModule.Match.CurrentBidding.CurrentPlayer;
                 if (GameConfig.DevMode)
                 {
                     UserData.Position = MainModule.Match.CurrentBidding.CurrentPlayer; // for dev mode
@@ -147,7 +146,7 @@ public class AuctionModule : MonoBehaviour
             if (correctlyDeclared)
             {
                 PassCounter++;
-                switch (AuctionState.CurrentPlayer)
+                switch (MainModule.Match.CurrentBidding.CurrentPlayer)
                 {
                     case PlayerTag.N:
                         NPlayerDeclarations.text += "pas" + "\n";
@@ -162,7 +161,6 @@ public class AuctionModule : MonoBehaviour
                         WPlayerDeclarations.text += "pas" + "\n";
                         break;
                 }
-                AuctionState.CurrentPlayer = MainModule.Match.CurrentBidding.CurrentPlayer;
                 if (GameConfig.DevMode)
                 {
                     UserData.Position = MainModule.Match.CurrentBidding.CurrentPlayer;
@@ -202,9 +200,9 @@ public class AuctionModule : MonoBehaviour
     {
         if (MainModule != null)
         {
-            if (MainModule.GameState == GameState.BIDDING)
+            if (MainModule.Match.GameState == GameState.BIDDING)
             {
-                if (AuctionState.CurrentPlayer == UserData.Position)
+                if (MainModule.Match.CurrentBidding.CurrentPlayer == UserData.Position)
                 {
                     AuctionDialog.enabled = true;  // showing dialog
                     UpdateContractDisplayedText();
@@ -239,10 +237,10 @@ public class AuctionModule : MonoBehaviour
                     TeamTakenHandsCounterLabel.text = "NS : 0\nEW : 0";
                     MainModule.GameState = GameState.PLAYING;
 
-                    if (GameConfig.DevMode)
-                    {
-                        UserData.Position = MainModule.Match.CurrentGame.CurrentPlayer;
-                    }
+                    //if (GameConfig.DevMode)
+                    //{
+                    //    UserData.Position = MainModule.Match.CurrentGame.CurrentPlayer;
+                    //}
                     AuctionDialog.enabled = false;
                 }
             }
@@ -272,7 +270,7 @@ public class AuctionModule : MonoBehaviour
 
     void UpdateContractList()
     {
-        switch (AuctionState.CurrentPlayer)
+        switch (MainModule.Match.CurrentBidding.CurrentPlayer)
         {
             case PlayerTag.N:
                 NPlayerDeclarations.text += MainModule.Match.CurrentBidding.HighestContract.ToString() + "\n";

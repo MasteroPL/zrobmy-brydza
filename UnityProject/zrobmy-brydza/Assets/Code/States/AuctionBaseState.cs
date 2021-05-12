@@ -10,14 +10,12 @@ public class AuctionBaseState : ScriptableObject
 {
     private List<Contract> PossibleContracts;
     public Contract CurrentContract { get; set; }
-    public PlayerTag CurrentPlayer { get; set; }
     public Contract ContractCache { get; set; }
 
-    public void Init(PlayerTag FirstDeclaringPlayer)
+    public void Init()
     {
         CurrentContract = null;
         ContractCache = new Contract(ContractHeight.NONE, ContractColor.NONE, PlayerTag.NOBODY);
-        CurrentPlayer = FirstDeclaringPlayer;
         PossibleContracts = new List<Contract>();
 
         foreach(int height in System.Enum.GetValues(typeof(ContractHeight))){
