@@ -12,13 +12,11 @@ namespace Assets.Code.Models
     public class Game
     {
         public GameManagerScript GameManagerScript;
-        public GameState GameState;
         public Match Match;
 
         public Game(GameManagerScript GameManagerScript)
         {
             this.GameManagerScript = GameManagerScript;
-            GameState = GameState.AWAITING_PLAYERS;
             Match = new Match();
             this.GameManagerScript.UpdateTableCenter(this);
         }

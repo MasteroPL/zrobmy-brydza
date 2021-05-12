@@ -235,7 +235,6 @@ public class AuctionModule : MonoBehaviour
                         DeclaredContractLabel.text = "Contract:\nEW, " + MainModule.Match.CurrentBidding.HighestContract.ToString();
                     }
                     TeamTakenHandsCounterLabel.text = "NS : 0\nEW : 0";
-                    MainModule.GameState = GameState.PLAYING;
 
                     //if (GameConfig.DevMode)
                     //{

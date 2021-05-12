@@ -295,7 +295,7 @@ public class GameManagerScript : MonoBehaviour
             var responseSerializer = new GetTableInfoSerializer(actionsSerializer.Actions[0].ActionData);
             try {
                 responseSerializer.Validate();
-                Debug.Log(responseSerializer);
+                //Debug.Log(responseSerializer);
                 if (responseSerializer.Status == "OK") {
                     // Przetwarzanie odpowiedzi
                     if (responseSerializer.NumberOfLobbyUsers == 1) {
@@ -373,7 +373,6 @@ public class GameManagerScript : MonoBehaviour
     private void ReloadTableAwaitingState(GetTableInfoSerializer tableData)
     {
         Game = new Game(this);
-        Game.GameState = GameState.AWAITING_PLAYERS;
 
         Game.Match.RoundsNS = tableData.RoundsNS;
         Game.Match.RoundsWE = tableData.RoundsWE;
@@ -388,7 +387,6 @@ public class GameManagerScript : MonoBehaviour
         {
             if (tableData.Players[i] != null)
             {
-                //Game.Match.AddPlayer(new Player((PlayerTag)tableData.Players[i].PlayerTag, tableData.Players[i].Username));
                 SeatManager.SitPlayer((PlayerTag)tableData.Players[i].PlayerTag, tableData.Players[i].Username);
             }
         }
@@ -403,7 +401,6 @@ public class GameManagerScript : MonoBehaviour
     private void ReloadTableBiddingState(GetTableInfoSerializer tableData)
     {
         Game = new Game(this);
-        Game.GameState = GameState.BIDDING;
 
         for (int i = 0; i < 4; i++)
         {
@@ -561,11 +558,11 @@ public class GameManagerScript : MonoBehaviour
         if (Game != null && Game.Match != null)
         {
             string PlayerTagString = "";
-            if (Game.GameState == GameState.BIDDING)
+            if (Game.Match.GameState == GameState.BIDDING)
             {
                 PlayerTagString = Game.Match.CurrentBidding.CurrentPlayer.ToString();
             }
-            else if (Game.GameState == GameState.PLAYING)
+            else if (Game.Match.GameState == GameState.PLAYING)
             {
                 PlayerTagString = Game.Match.CurrentGame.CurrentPlayer.ToString();
             }
@@ -591,10 +588,13 @@ public class GameManagerScript : MonoBehaviour
 
     public void UpdateTableCenter(Game Game)
     {
-        GameObject.Find("Player3IndicatorText").GetComponent<Text>().text = UserData.Position.ToString();
-        GameObject.Find("Player4IndicatorText").GetComponent<Text>().text = ((PlayerTag)(((int)UserData.Position + 1) % 4)).ToString();
-        GameObject.Find("Player1IndicatorText").GetComponent<Text>().text = ((PlayerTag)(((int)UserData.Position + 2) % 4)).ToString();
-        GameObject.Find("Player2IndicatorText").GetComponent<Text>().text = ((PlayerTag)(((int)UserData.Position + 3) % 4)).ToString();
+        if (UserData.Position != PlayerTag.NOBODY)
+        {
+            GameObject.Find("Player3IndicatorText").GetComponent<Text>().text = UserData.Position.ToString();
+            GameObject.Find("Player4IndicatorText").GetComponent<Text>().text = ((PlayerTag)(((int)UserData.Position + 1) % 4)).ToString();
+            GameObject.Find("Player1IndicatorText").GetComponent<Text>().text = ((PlayerTag)(((int)UserData.Position + 2) % 4)).ToString();
+            GameObject.Find("Player2IndicatorText").GetComponent<Text>().text = ((PlayerTag)(((int)UserData.Position + 3) % 4)).ToString();
+        }
     }
 
     public void UpdateTable(Game Game, List<GameManagerLib.Models.Card> PlayerHand)
