@@ -23,15 +23,17 @@ namespace ServerSocket.Actions.Bid
             Lobby lobby = (Lobby)conn.Session.Get("joined-lobby");
             Match game = lobby.Game;
 
-            Player player = null;
+            string username = (string)conn.Session.Get("username");
 
-
-            foreach (var p in game.PlayerList) {
-                if (p.Name == (string)conn.Session.Get("username")) {
-                    player = p;
-                    break;
-                }
+            int playerIndex = game.PlayerList.FindIndex(x => { return username == x.Name; });
+            // gdy nie ma takiego gracza przy stole => wywal wyjątek
+            if (playerIndex == -1)
+            {
+                data.AddError("PlayerUsername", "INVALID_PLAYER", "Nie ma takiego gracza");
+                data.ThrowException();
             }
+
+            var player = game.PlayerList[playerIndex];
 
             try {
                 game.AddBid(new Contract((ContractHeight)data.Height, (ContractColor)data.Color, player.Tag, data.X, data.XX));

@@ -123,13 +123,19 @@ public class AuctionModule : MonoBehaviour
                 return;
             }
 
+            // send request
+            bool biddedCorrectly = MainModule.GameManagerScript.SendBidRequest(AuctionState.ContractCache.ContractHeight,
+                                                             AuctionState.ContractCache.ContractColor,
+                                                             AuctionState.ContractCache.XEnabled,
+                                                             AuctionState.ContractCache.XXEnabled);
+
             bool updatedCorrectly = MainModule.AddBid(AuctionState.ContractCache.ContractHeight,
                                 AuctionState.ContractCache.ContractColor,
                                 UserData.Position,
                                 AuctionState.ContractCache.XEnabled,
                                 AuctionState.ContractCache.XXEnabled);
 
-            if (updatedCorrectly)
+            if (biddedCorrectly)
             {
                 AuctionState.UpdateContract();
                 UpdateContractList();

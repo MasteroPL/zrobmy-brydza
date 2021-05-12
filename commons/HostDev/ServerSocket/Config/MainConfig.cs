@@ -21,7 +21,8 @@ namespace EasyHosting.Models.Server.Config {
             { "leave-place", new LeavePlaceAction() },
             { "start-game", new StartGameAction() },
             { "sit-player-out", new SitPlayerOutAction() },
-            { "get-hand", new GetHandAction() }
+            { "get-hand", new GetHandAction() },
+            { "bid", new BidAction() }
         };
 
         private static BridgeServerSocket ServerSocket = null;

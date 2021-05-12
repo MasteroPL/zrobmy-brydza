@@ -469,6 +469,13 @@ public class GameManagerScript : MonoBehaviour
         }
     }
 
+    
+    public bool SendBidRequest(ContractHeight Height, ContractColor Color, bool XEnabled, bool XXEnabled)
+    {
+
+        return true;
+    }
+
     void OnDestroy()
     {
         UserData.ClientConnection.SignalReceived -= OnServerSignalReceive;
