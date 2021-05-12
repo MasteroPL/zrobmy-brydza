@@ -29,7 +29,7 @@ namespace ClientSocketTesting {
         public string Username;
         public PlayerTag Position;
         public List<Card> MyCards = new List<Card>();
-        public List<Card> GrandaCards = null;
+        public List<Card> GrandpaCards = null;
         public bool SendGetHandRequest = false;
 
         public void Init() {
@@ -193,13 +193,19 @@ namespace ClientSocketTesting {
             var data = new GetHandActionResponseSerializer(response.Actions[0].ActionData);
             data.Validate();
 
+            int index = 0;
+            Card tmp;
+            var player = Game.GetPlayerAt(Position);
             foreach(var card in data.Cards) {
-                MyCards.Add(new Card(
+                tmp = new Card(
                     (CardFigure)card.Figure,
                     (CardColor)card.Color,
                     Position,
                     (CardState)card.State
-                ));
+                );
+                MyCards.Add(tmp);
+                player.Hand[index] = tmp;
+                index++;
             }
         }
         public void GetGrandpaHand() {
@@ -211,15 +217,21 @@ namespace ClientSocketTesting {
         protected void GetGrandpaHandCallback(Request request, ActionsSerializer response, object additionalData) {
             var data = new GetHandActionResponseSerializer(response.Actions[0].ActionData);
             data.Validate();
-            GrandaCards = new List<Card>();
+            GrandpaCards = new List<Card>();
 
+            int index = 0;
+            Card tmp;
+            var player = Game.GetPlayerAt((PlayerTag)(((int)Position + 2) % 4));
             foreach (var card in data.Cards) {
-                GrandaCards.Add(new Card(
+                tmp = new Card(
                     (CardFigure)card.Figure,
                     (CardColor)card.Color,
                     (PlayerTag)(((int)Position + 2) % 4),
                     (CardState)card.State
-                ));
+                );
+                GrandpaCards.Add(tmp);
+                player.Hand[index] = tmp;
+                index++;
             }
         }
 
@@ -253,7 +265,7 @@ namespace ClientSocketTesting {
             }
         }
         protected virtual void PlayPlaying() {
-            if(Game.CurrentBidding.Declarer == Position && GrandaCards == null) {
+            if(Game.CurrentBidding.Declarer == Position && GrandpaCards == null) {
                 GetGrandpaHand();
             }
 
@@ -261,7 +273,11 @@ namespace ClientSocketTesting {
                 ((int)Game.CurrentBidding.Declarer + 2) % 4 != (int)Position
                 && Game.CurrentGame.CurrentPlayer == Position) {
                 for(int i = 0; i < MyCards.Count; i++) {
-                    if (Game.CurrentGame.CheckNextCard(MyCards[i])) {
+                    if (Game.CheckNextCard(
+                        Position,
+                        MyCards[i].Color,
+                        MyCards[i].Figure
+                    )) {
                         var data = new PutCardActionRequestSerializer() {
                             CardOwnerPosition = (int)Position,
                             Color = (int)MyCards[i].Color,
@@ -276,15 +292,19 @@ namespace ClientSocketTesting {
                 Game.CurrentBidding.Declarer == Position
                 && ((int)Game.CurrentGame.CurrentPlayer + 2) % 4 == (int)Position
             ) {
-                for (int i = 0; i < GrandaCards.Count; i++) {
-                    if (Game.CurrentGame.CheckNextCard(GrandaCards[i])) {
+                for (int i = 0; i < GrandpaCards.Count; i++) {
+                    if (Game.CheckNextCard(
+                        (PlayerTag)(((int)Position + 2) % 4),
+                        GrandpaCards[i].Color,
+                        GrandpaCards[i].Figure
+                    )) {
                         var data = new PutCardActionRequestSerializer() {
                             CardOwnerPosition = ((int)Position + 2) % 4,
-                            Color = (int)MyCards[i].Color,
-                            Figure = (int)MyCards[i].Figure
+                            Color = (int)GrandpaCards[i].Color,
+                            Figure = (int)GrandpaCards[i].Figure
                         };
 
-                        PerformServerAction("put-card", data.GetApiObject(), PutCardCallback, GrandaCards[i]);
+                        PerformServerAction("put-card", data.GetApiObject(), PutCardCallback, GrandpaCards[i]);
                     }
                 }
             }

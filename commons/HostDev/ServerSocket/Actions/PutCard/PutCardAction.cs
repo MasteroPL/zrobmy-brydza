@@ -46,7 +46,7 @@ namespace ServerSocket.Actions.PutCard
                     data.ThrowException();
                 }
 
-                if ((data.CardOwnerPosition + 2) % 4 == (int)game.CurrentBidding.Declarer) {
+                if (((int)player.Tag + 2) % 4 == (int)game.CurrentBidding.Declarer) {
                     // Próbujemy wyłożyć kartę kogoś innego niż dziadka
                     data.AddError(null, "INVALID_HAND", "Nie można wyłożyć karty jako dziadek");
                     data.ThrowException();
@@ -79,7 +79,7 @@ namespace ServerSocket.Actions.PutCard
                 data.ThrowException();
             }
 
-            bool canPlayerPutCard = game.CurrentGame.CheckNextCard(card);
+            bool canPlayerPutCard = game.CheckNextCard(cardOwner.Tag, card.Color, card.Figure);
             // gracz nie może wyłożyć tej karty
             if (!canPlayerPutCard) {
                 data.AddError(null, "INVALID_CARD", "Nie można wyłożyć tej karty");

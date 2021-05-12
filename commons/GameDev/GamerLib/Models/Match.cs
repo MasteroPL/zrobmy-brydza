@@ -526,10 +526,11 @@ namespace GameManagerLib.Models
             }
             else
             {
+                var player = GetPlayerAt(CurrentGame.CurrentPlayer);
                 bool noColor = true;
                 for (int i = 0; i < 13; i++)
                 {
-                    if(PlayerList[(int)CurrentGame.CurrentPlayer].Hand[i].Color == TrickColor && PlayerList[(int)CurrentGame.CurrentPlayer].Hand[i].CurrentState == (CardState)(1))
+                    if(player.Hand[i].Color == TrickColor && player.Hand[i].CurrentState == CardState.ON_HAND)
                     {
                         noColor = false;
                     }
