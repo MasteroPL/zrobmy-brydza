@@ -22,11 +22,6 @@ public class Card: MonoBehaviour
 
     void OnMouseDown()
     {
-
-        bool response = GameManager.checkTurn();
-        if (response)
-        {
-            GameManager.putCard(this);
-        }
+        GameManager.putCard(this);
     }
 }

@@ -776,9 +776,10 @@ public class GameManagerScript : MonoBehaviour
 
     public void FetchGrandpaCards()
     {
+        int grandId = ((int)Game.Match.CurrentGame.Declarer + 2) % 4;
         var getGrandpaHandRequestData = new ServerSocket.Actions.GetHand.RequestSerializer();
-        getGrandpaHandRequestData.PlayerTag = (int)UserData.Position;
-        PerformServerAction("get-hand", getGrandpaHandRequestData.GetApiObject(), this.GetGrandpaHandCallback);
+        getGrandpaHandRequestData.PlayerTag = grandId;
+        PerformServerAction("get-hand", getGrandpaHandRequestData.GetApiObject(), this.GetGrandpaHandCallback, (PlayerTag)grandId);
     }
 
     public void GetGrandpaHandCallback(Request request, ActionsSerializer response, object additionalData)
@@ -805,12 +806,14 @@ public class GameManagerScript : MonoBehaviour
                     card = new GameManagerLib.Models.Card(
                                 (CardFigure)data.Cards[i].Figure,
                                 (CardColor)data.Cards[i].Color,
-                                UserData.Position,
+                                grandpaTag,
                                 (CardState)data.Cards[i].State
                             );
                     grandpa.Hand[i] = card;
                     CurrentGrandpaCards.Add(card);
                 }
+
+                this.ShowGrandCards(grandpa.Tag, grandpa.Hand);
             }
             catch (Exception e)
             {
@@ -1166,10 +1169,6 @@ public class GameManagerScript : MonoBehaviour
             }
         }*/
 
-        if (Game.Match.CurrentGame.TrickList.Count == 0 && Game.Match.CurrentGame.currentTrick.CardList.Count == 1 && !GameConfig.DevMode) {
-            this.SendGrandCardsRequest();
-        }
-
         //if (GameConfig.DevMode)
         //{
         //    UserData.Position = (PlayerTag)(((int)UserData.Position + 1) % 4); // for dev mode
@@ -1291,10 +1290,11 @@ public class GameManagerScript : MonoBehaviour
         return cardName;
     }
 
-    public void putCard(Card card)
+    public void putCard(Card card) // Card jako klasa podpięta pod obiekt Unity -> "Card" używane w Game.Match to "GameManagerLib.Models.Card"
     {
         bool canUserPutCard = Game.Match.CheckNextCard(card.PlayerID, card.Color, card.Figure);
-        if (canUserPutCard && card.CurrentState == CardState.ON_HAND)
+        Debug.Log(canUserPutCard);
+        if (canUserPutCard)
         {
             this.SendPutCardRequest(card.Figure, card.Color, card.PlayerID);
         }
@@ -1372,10 +1372,5 @@ public class GameManagerScript : MonoBehaviour
                 break;
         }
         return returned;
-    }
-
-    public bool checkTurn()
-    {
-        return true;
     }
 }
