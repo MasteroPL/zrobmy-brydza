@@ -29,7 +29,7 @@ public class JoinLobbyScript : MonoBehaviour
     void Start()
     {
         JoinButton.onClick.AddListener(() => { JoinLobby(); });
-        BackButton.onClick.AddListener(() => { SceneManager.LoadScene(0); });
+        BackButton.onClick.AddListener(() => { SceneManager.LoadScene("MainMenuScene"); });
         ErrorCloseButton.onClick.AddListener(() => { ErrorWindow.SetActive(false); });
         ErrorFormCloseButton.onClick.AddListener(() => { ErrorFormWindow.SetActive(false); });
     }

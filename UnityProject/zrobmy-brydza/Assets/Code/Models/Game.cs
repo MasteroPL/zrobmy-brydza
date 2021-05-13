@@ -70,13 +70,6 @@ namespace Assets.Code.Models
             return true;
         }
 
-        public void ShowGrandCards()
-        {
-            PlayerTag grand = (PlayerTag)(((int)Match.CurrentGame.Declarer + 2) % 4);
-            GameManagerLib.Models.Card[] grandCards = Match.PlayerList[(int)grand].Hand;
-            GameManagerScript.ShowGrandCards(grand, grandCards);
-        }
-
         public bool PutCard(CardFigure Figure, CardColor Color, PlayerTag owner)
         {
             PlayerTag ownerPartner = (PlayerTag)(((int)owner + 2) % 4);

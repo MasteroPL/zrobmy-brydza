@@ -14,8 +14,8 @@ public class HandlerManagerScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        PlayWithAIButton.onClick.AddListener(() => { SceneManager.LoadScene(1); });
-        PlayViaServerButton.onClick.AddListener(() => { SceneManager.LoadScene(4); });
+        PlayWithAIButton.onClick.AddListener(() => { SceneManager.LoadScene("Gameplay"); });
+        PlayViaServerButton.onClick.AddListener(() => { SceneManager.LoadScene("JoinLobbyView"); });
         QuitButton.onClick.AddListener(() => { Application.Quit(); });
     }
 

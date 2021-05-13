@@ -69,16 +69,15 @@ public class AuctionModule : MonoBehaviour
             UserData.Position = MainModule.Match.CurrentBidding.CurrentPlayer;
         }
 
+        AssignControls();
         // setting visibility of dialog for first render, later it'll be updated according to game state & current player
         if (MainModule.Match.CurrentBidding.CurrentPlayer == UserData.Position)//MainModule.GameManagerScript.UserData.position
         {
             AuctionDialog.enabled = true;
-            AssignControls();
         }
         else
         {
             AuctionDialog.enabled = false;
-            ReleaseListeners();
         }
     }
 
@@ -217,6 +216,7 @@ public class AuctionModule : MonoBehaviour
                 }*/
                 if (MainModule.Match.CurrentBidding.IsEnd())
                 {
+                    Debug.Log("Current bidding is ended");
                     if(MainModule.Match.CurrentGame.Declarer == PlayerTag.N || MainModule.Match.CurrentGame.Declarer == PlayerTag.S)
                     {
                         DeclaredContractLabel.text = "Contract:\nNS, " + MainModule.Match.CurrentBidding.HighestContract.ToString();

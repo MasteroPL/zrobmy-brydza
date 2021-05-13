@@ -211,13 +211,13 @@ public class GameManagerScript : MonoBehaviour
         {
             var serializer = new PutCardSignalSerializer(signalData);
             serializer.Validate();
+            Debug.Log(PutCardSignalSerializer.SIGNAL_USER_PUT_CARD + "|Player who put card: " + serializer.Username + "|Me: " + UserData.Username);
 
             if (serializer.Username != UserData.Username)
             {
                 try
                 {
-                    Player cardOwner = Game.Match.GetPlayerByUsername(serializer.Username);
-                    PutCardOnTable((CardFigure)serializer.CardFigure, (CardColor)serializer.CardColor, cardOwner.Tag);
+                    PutCardOnTable((CardFigure)serializer.CardFigure, (CardColor)serializer.CardColor, serializer.Username);
                 }
                 catch (WrongCardException)
                 {
@@ -625,7 +625,7 @@ public class GameManagerScript : MonoBehaviour
 
     private void QuitHandler()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("MainMenuScene");
     }
 
     private void CheckCurrentPlayerLight()
@@ -721,16 +721,17 @@ public class GameManagerScript : MonoBehaviour
             try
             {
                 UserData.Cards = new List<GameManagerLib.Models.Card>();
-                for(int i = 0; i < data.Cards.Length; i++)
+                GameManagerLib.Models.Card card;
+                for (int i = 0; i < data.Cards.Length; i++)
                 {
-                    UserData.Cards.Add(
-                        new GameManagerLib.Models.Card (
-                            (CardFigure)data.Cards[i].Figure, 
-                            (CardColor)data.Cards[i].Color, 
-                            UserData.Position,
-                            (CardState)data.Cards[i].State
-                        )
-                    );
+                    card = new GameManagerLib.Models.Card(
+                                (CardFigure)data.Cards[i].Figure,
+                                (CardColor)data.Cards[i].Color,
+                                UserData.Position,
+                                (CardState)data.Cards[i].State
+                            );
+                    UserData.Cards.Add(card);
+                    Game.Match.GetPlayerByUsername(UserData.Username).Hand[i] = card;
                 }
                 //this.GiveCardsToPlayer(UserData.Position, UserData.Cards);
                 HiddenCardsOfPlayerN = new List<GameObject>();
@@ -1034,28 +1035,40 @@ public class GameManagerScript : MonoBehaviour
         return "";
     }
 
-    public void PutCardOnTable(CardFigure Figure, CardColor Color, PlayerTag PlayerPosition)
+    public void PutCardOnTable(CardFigure Figure, CardColor Color, string PlayerName)
     {
-        // kładę kartę na stół w logice gry GamerLib
-        Game.Match.NextCard(PlayerPosition, Color, Figure);
+        // ten kawałek jest tylko po to by przechodziła walidacja w GamerLib -> dostajemy sygnał od serwera który ma ZAWSZE rację
+        var Player = Game.Match.GetPlayerByUsername(PlayerName);
+        GameManagerLib.Models.Card card = new GameManagerLib.Models.Card(Figure, Color, Player.Tag, CardState.ON_HAND);
 
-        // kładę kartę na stół wizualnie w Unity
         string cardName = CalculateCardObjectName(Figure, Color);
 
+        //Debug.Log("Putting card on table from player " + PlayerName);
+        // kładę kartę na stół w logice gry GamerLib
+        try
+        {
+            Game.Match.CurrentGame.NextCard(card);
+        }
+        catch (WrongCardException)
+        {
+            Debug.Log("WrongCardException was thrown");
+        }
+
+        // kładę kartę na stół wizualnie w Unity
         float[] newPos = new float[2];
-        if (PlayerPosition == UserData.Position)
+        if (Player.Tag == UserData.Position)
         {
             newPos = CalculatePutCardPosition('D');
         }
-        else if (PlayerPosition == (PlayerTag)(((int)UserData.Position + 1) % 4))
+        else if (Player.Tag == (PlayerTag)(((int)UserData.Position + 1) % 4))
         {
             newPos = CalculatePutCardPosition('L');
         }
-        else if (PlayerPosition == (PlayerTag)(((int)UserData.Position + 2) % 4))
+        else if (Player.Tag == (PlayerTag)(((int)UserData.Position + 2) % 4))
         {
             newPos = CalculatePutCardPosition('U');
         }
-        else if (PlayerPosition == (PlayerTag)(((int)UserData.Position + 3) % 4))
+        else if (Player.Tag == (PlayerTag)(((int)UserData.Position + 3) % 4))
         {
             newPos = CalculatePutCardPosition('R');
         }
@@ -1063,16 +1076,45 @@ public class GameManagerScript : MonoBehaviour
         GameObject cardToPut = GameObject.Find(cardName);
         cardToPut.transform.localPosition = new Vector3(newPos[0], newPos[1]);
 
-        /*if (Game.Match.CurrentGame.TrickList.Count == 0 && Game.Match.CurrentGame.currentTrick.CardList.Count == 1 && !GameConfig.DevMode)
+        // usun zakryta karte z reki gracza => jeśli nie jest ani dziadkiem, ani mną
+        //int grandId = ((int)Game.Match.CurrentGame.Declarer + 2) % 4;
+
+        /*
+         * NIE DZIALA
+        if (Player.Tag != UserData.Position && Player.Tag != (PlayerTag)grandId)
         {
-            Game.ShowGrandCards();
+            switch (Player.Tag)
+            {
+                case PlayerTag.N:
+                    HiddenCardsOfPlayerN[HiddenCardsOfPlayerN.Count - 1].transform.position = new Vector3(-100, 0, 0);
+                    Destroy(HiddenCardsOfPlayerN[HiddenCardsOfPlayerN.Count - 1]);
+                    break;
+                case PlayerTag.E:
+                    HiddenCardsOfPlayerE[HiddenCardsOfPlayerE.Count - 1].transform.position = new Vector3(-100, 0, 0);
+                    Destroy(HiddenCardsOfPlayerE[HiddenCardsOfPlayerE.Count - 1]);
+                    break;
+                case PlayerTag.S:
+                    HiddenCardsOfPlayerS[HiddenCardsOfPlayerS.Count - 1].transform.position = new Vector3(-100, 0, 0);
+                    Destroy(HiddenCardsOfPlayerS[HiddenCardsOfPlayerS.Count - 1]);
+                    break;
+                case PlayerTag.W:
+                    HiddenCardsOfPlayerW[HiddenCardsOfPlayerW.Count - 1].transform.position = new Vector3(-100, 0, 0);
+                    Destroy(HiddenCardsOfPlayerW[HiddenCardsOfPlayerW.Count - 1]);
+                    break;
+            }
+        }*/
+
+        if (Game.Match.CurrentGame.TrickList.Count == 0 && Game.Match.CurrentGame.currentTrick.CardList.Count == 1 && !GameConfig.DevMode)
+        {
+            this.SendGrandCardsRequest();
         }
+
         if (GameConfig.DevMode)
         {
             UserData.Position = (PlayerTag)(((int)UserData.Position + 1) % 4); // for dev mode
-        }*/
+        }
 
-        /*if (Game.IsTrickComplete())
+        if (Game.IsTrickComplete())
         {
             Trick lastTrick = Game.Match.CurrentGame.TrickList[Game.Match.CurrentGame.TrickList.Count - 1];
             GameObject tmp;
@@ -1108,7 +1150,36 @@ public class GameManagerScript : MonoBehaviour
             //{
             //    RestartGame(); // restart game if all 13 tricks were put on the table
             //}
-        }*/
+        }
+    }
+
+    public void SendGrandCardsRequest()
+    {
+        int grandId = ((int)Game.Match.CurrentGame.Declarer + 2) % 4;
+
+        var grandCardsRequestData = new ServerSocket.Actions.GetHand.RequestSerializer();
+        grandCardsRequestData.PlayerTag = grandId;
+        PerformServerAction("get-hand", grandCardsRequestData.GetApiObject(), this.SendGrandCardsCallback);
+    }
+
+    private void SendGrandCardsCallback(Request request, ActionsSerializer response, object additionalData)
+    {
+        if (((string)response.Actions[0].ActionData.GetValue("status")).CompareTo("OK") != 0)
+        {
+            return;
+        }
+
+        var data = new ServerSocket.Actions.GetHand.ResponseSerializer(response.Actions[0].ActionData);
+        data.Validate();
+
+        int grandId = ((int)Game.Match.CurrentGame.Declarer + 2) % 4;
+        Player grandpa = Game.Match.GetPlayerAt((PlayerTag)grandId);
+
+        for(int i = 0; i < 13; i++)
+        {
+            grandpa.Hand[i] = new GameManagerLib.Models.Card((CardFigure)data.Cards[i].Figure, (CardColor)data.Cards[i].Color, grandpa.Tag, (CardState)data.Cards[i].State);
+        }
+        this.ShowGrandCards(grandpa.Tag, grandpa.Hand);
     }
 
     private string CalculateCardObjectName(CardFigure Figure, CardColor Color)
@@ -1179,7 +1250,8 @@ public class GameManagerScript : MonoBehaviour
         data.Validate();
         try
         {
-            PutCardOnTable((CardFigure)data.CardFigure, (CardColor)data.CardColor, (PlayerTag)data.OwnerPosition);
+            var player = Game.Match.GetPlayerAt((PlayerTag)data.OwnerPosition);
+            PutCardOnTable((CardFigure)data.CardFigure, (CardColor)data.CardColor, player.Name);
         }
         catch (GameManagerLib.Exceptions.WrongGameStateException e)
         {
@@ -1195,7 +1267,6 @@ public class GameManagerScript : MonoBehaviour
         putCardRequestData.CardOwnerPosition = (int)OwnerPosition;
         putCardRequestData.Color = (int)Color;
         putCardRequestData.Figure = (int)Figure;
-        putCardRequestData.Playername = player.Name;
 
         PerformServerAction("put-card", putCardRequestData.GetApiObject(), this.PutCardCallback);
     }

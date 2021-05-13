@@ -36,12 +36,12 @@ public class LoginFormHandler : MonoBehaviour
         Debug.Log("Login: " + GameObject.Find("LoginInput").GetComponent<InputField>().text);
         Debug.Log("Haslo: " + GameObject.Find("PasswordInput").GetComponent<InputField>().text);
 
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("MainMenuScene");
     }
 
     void ComeBackClickHandler()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("MainMenuScene");
     }
 
     void PasswordValidation(string PasswordInputValue)

@@ -13,7 +13,7 @@ public class TablesListViewScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GameObject.Find("BackButton").GetComponent<Button>().onClick.AddListener(() => { SceneManager.LoadScene(0); });
+        GameObject.Find("BackButton").GetComponent<Button>().onClick.AddListener(() => { SceneManager.LoadScene("MainMenuScene"); });
         GameObject.Find("CreateNewTableButton").GetComponent<Button>().onClick.AddListener(() => { Debug.Log("Creating new button..."); });
 
         //FetchAndUpdateTables();
@@ -34,7 +34,7 @@ public class TablesListViewScript : MonoBehaviour
         {
             GameObject ListElement = Instantiate(ListElementTemplate);
             ListElement.SetActive(true);
-            ListElement.GetComponent<Button>().onClick.AddListener(() => { SceneManager.LoadScene(1); });
+            ListElement.GetComponent<Button>().onClick.AddListener(() => { SceneManager.LoadScene("Gameplay"); });
             ListElement.GetComponent<Button>().GetComponentInChildren<Text>().text = data[i];
 
             ListElement.transform.SetParent(ListContent.transform, false);
