@@ -89,8 +89,8 @@ public class GameManagerScript : MonoBehaviour
     [SerializeField] Button StartButton;
     [SerializeField] TextManager TextManager;
 
-    public List<Card> MyCards = null;
-    public List<Card> CurrentGrandpaCards = null;
+    public List<GameManagerLib.Models.Card> MyCards = null;
+    public List<GameManagerLib.Models.Card> CurrentGrandpaCards = null;
 
     // lista graczy obecnych w lobby
     List<LobbyUserData> LobbyUsers;
@@ -398,9 +398,17 @@ public class GameManagerScript : MonoBehaviour
                 break;
             case ConnectionState.IDLE:
                 UserData.ClientConnection.UpdateCommunication();
-
-
-
+                if (
+                    Game.Match.GameState == GameState.PLAYING
+                    && (
+                            Game.Match.CurrentGame.TrickList.Count > 0
+                            || (Game.Match.CurrentGame.TrickList.Count == 0 && Game.Match.CurrentGame.currentTrick.CardList.Count > 0)
+                       )
+                    && CurrentGrandpaCards == null
+                )
+                {
+                    this.FetchGrandpaCards();
+                }
                 break;
         }
 
@@ -728,6 +736,7 @@ public class GameManagerScript : MonoBehaviour
             {
                 UserData.Cards = new List<GameManagerLib.Models.Card>();
                 GameManagerLib.Models.Card card;
+                MyCards = new List<GameManagerLib.Models.Card>();
                 for (int i = 0; i < data.Cards.Length; i++)
                 {
                     card = new GameManagerLib.Models.Card(
@@ -738,8 +747,9 @@ public class GameManagerScript : MonoBehaviour
                             );
                     UserData.Cards.Add(card);
                     Game.Match.GetPlayerByUsername(UserData.Username).Hand[i] = card;
+                    MyCards.Add(card);
                 }
-                //this.GiveCardsToPlayer(UserData.Position, UserData.Cards);
+
                 HiddenCardsOfPlayerN = new List<GameObject>();
                 HiddenCardsOfPlayerE = new List<GameObject>();
                 HiddenCardsOfPlayerS = new List<GameObject>();
@@ -754,6 +764,52 @@ public class GameManagerScript : MonoBehaviour
                 if (StartButton != null)
                 {
                     StartButton.gameObject.SetActive(false);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+                // jakaś obsługa jeśli musi być?
+            }
+        }
+    }
+
+    public void FetchGrandpaCards()
+    {
+        var getGrandpaHandRequestData = new ServerSocket.Actions.GetHand.RequestSerializer();
+        getGrandpaHandRequestData.PlayerTag = (int)UserData.Position;
+        PerformServerAction("get-hand", getGrandpaHandRequestData.GetApiObject(), this.GetGrandpaHandCallback);
+    }
+
+    public void GetGrandpaHandCallback(Request request, ActionsSerializer response, object additionalData)
+    {
+        if (((string)response.Actions[0].ActionData.GetValue("status")).CompareTo("OK") != 0)
+        {
+            return;
+        }
+
+        PlayerTag grandpaTag = (PlayerTag)additionalData;
+
+        var data = new ServerSocket.Actions.GetHand.ResponseSerializer(response.Actions[0].ActionData);
+        data.Validate();
+        Debug.Log("GetGrandpaHandCallback...");
+        if (data.Status == "OK")
+        {
+            try
+            {
+                GameManagerLib.Models.Card card;
+                CurrentGrandpaCards = new List<GameManagerLib.Models.Card>();
+                Player grandpa = Game.Match.GetPlayerAt(grandpaTag);
+                for (int i = 0; i < data.Cards.Length; i++)
+                {
+                    card = new GameManagerLib.Models.Card(
+                                (CardFigure)data.Cards[i].Figure,
+                                (CardColor)data.Cards[i].Color,
+                                UserData.Position,
+                                (CardState)data.Cards[i].State
+                            );
+                    grandpa.Hand[i] = card;
+                    CurrentGrandpaCards.Add(card);
                 }
             }
             catch (Exception e)
