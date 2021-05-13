@@ -89,6 +89,9 @@ public class GameManagerScript : MonoBehaviour
     [SerializeField] Button StartButton;
     [SerializeField] TextManager TextManager;
 
+    public List<Card> MyCards = null;
+    public List<Card> CurrentGrandpaCards = null;
+
     // lista graczy obecnych w lobby
     List<LobbyUserData> LobbyUsers;
 
@@ -395,6 +398,9 @@ public class GameManagerScript : MonoBehaviour
                 break;
             case ConnectionState.IDLE:
                 UserData.ClientConnection.UpdateCommunication();
+
+
+
                 break;
         }
 
@@ -1074,7 +1080,7 @@ public class GameManagerScript : MonoBehaviour
         }
 
         GameObject cardToPut = GameObject.Find(cardName);
-        cardToPut.transform.localPosition = new Vector3(newPos[0], newPos[1]);
+        cardToPut.transform.localPosition = new Vector3(newPos[0], newPos[1], -6);
 
         // usun zakryta karte z reki gracza => jeśli nie jest ani dziadkiem, ani mną
         //int grandId = ((int)Game.Match.CurrentGame.Declarer + 2) % 4;
@@ -1104,15 +1110,14 @@ public class GameManagerScript : MonoBehaviour
             }
         }*/
 
-        if (Game.Match.CurrentGame.TrickList.Count == 0 && Game.Match.CurrentGame.currentTrick.CardList.Count == 1 && !GameConfig.DevMode)
-        {
+        if (Game.Match.CurrentGame.TrickList.Count == 0 && Game.Match.CurrentGame.currentTrick.CardList.Count == 1 && !GameConfig.DevMode) {
             this.SendGrandCardsRequest();
         }
 
-        if (GameConfig.DevMode)
-        {
-            UserData.Position = (PlayerTag)(((int)UserData.Position + 1) % 4); // for dev mode
-        }
+        //if (GameConfig.DevMode)
+        //{
+        //    UserData.Position = (PlayerTag)(((int)UserData.Position + 1) % 4); // for dev mode
+        //}
 
         if (Game.IsTrickComplete())
         {
