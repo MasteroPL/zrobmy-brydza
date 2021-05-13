@@ -64,6 +64,11 @@ public class GameManagerScript : MonoBehaviour
     //public UserData UserData;
     [SerializeField] public SeatsManagerScript SeatManager;
 
+    /// <summary>
+    /// W pewnych sytuacjach, na określony czas chcemy ignorować komunikację z serwerem. Ustawiamy wtedy tą flagę na "TRUE"
+    /// </summary>
+    public bool IgnoreCommunication = false;
+
     public Game Game;
     private List<GameObject> HiddenCardsOfPlayerN;
     private List<GameObject> HiddenCardsOfPlayerE;
@@ -388,28 +393,29 @@ public class GameManagerScript : MonoBehaviour
     }
 
     void Update() {
-        switch (this.CurrentConnectionState) {
-            // Przypadek, kiedy ekran nie otrzymal jeszcze informacji od serwera
-            case ConnectionState.PRELOADING:
-                this.HandlePreloading();
-                break;
-            case ConnectionState.LOADING:
-                this.HandleLoading();
-                break;
-            case ConnectionState.IDLE:
-                UserData.ClientConnection.UpdateCommunication();
-                if (
-                    Game.Match.GameState == GameState.PLAYING
-                    && (
-                            Game.Match.CurrentGame.TrickList.Count > 0
-                            || (Game.Match.CurrentGame.TrickList.Count == 0 && Game.Match.CurrentGame.currentTrick.CardList.Count > 0)
-                       )
-                    && CurrentGrandpaCards == null
-                )
-                {
-                    this.FetchGrandpaCards();
-                }
-                break;
+        if (!IgnoreCommunication) {
+            switch (this.CurrentConnectionState) {
+                // Przypadek, kiedy ekran nie otrzymal jeszcze informacji od serwera
+                case ConnectionState.PRELOADING:
+                    this.HandlePreloading();
+                    break;
+                case ConnectionState.LOADING:
+                    this.HandleLoading();
+                    break;
+                case ConnectionState.IDLE:
+                    UserData.ClientConnection.UpdateCommunication();
+                    if (
+                        Game.Match.GameState == GameState.PLAYING
+                        && (
+                                Game.Match.CurrentGame.TrickList.Count > 0
+                                || (Game.Match.CurrentGame.TrickList.Count == 0 && Game.Match.CurrentGame.currentTrick.CardList.Count > 0)
+                           )
+                        && CurrentGrandpaCards == null
+                    ) {
+                        this.FetchGrandpaCards();
+                    }
+                    break;
+            }
         }
 
         CheckCurrentPlayerLight();
@@ -737,6 +743,7 @@ public class GameManagerScript : MonoBehaviour
                 UserData.Cards = new List<GameManagerLib.Models.Card>();
                 GameManagerLib.Models.Card card;
                 MyCards = new List<GameManagerLib.Models.Card>();
+                var player = Game.Match.GetPlayerAt(UserData.Position);
                 for (int i = 0; i < data.Cards.Length; i++)
                 {
                     card = new GameManagerLib.Models.Card(
@@ -746,7 +753,8 @@ public class GameManagerScript : MonoBehaviour
                                 (CardState)data.Cards[i].State
                             );
                     UserData.Cards.Add(card);
-                    Game.Match.GetPlayerByUsername(UserData.Username).Hand[i] = card;
+                    
+                    player.Hand[i] = card;
                     MyCards.Add(card);
                 }
 
@@ -1100,11 +1108,16 @@ public class GameManagerScript : MonoBehaviour
         return "";
     }
 
-    public void PutCardOnTable(CardFigure Figure, CardColor Color, string PlayerName)
+    public void PutCardOnTable(CardFigure Figure, CardColor Color, string PlayerName, GameManagerLib.Models.Card cardOrigin = null)
     {
         // ten kawałek jest tylko po to by przechodziła walidacja w GamerLib -> dostajemy sygnał od serwera który ma ZAWSZE rację
+        GameManagerLib.Models.Card card;
         var Player = Game.Match.GetPlayerByUsername(PlayerName);
-        GameManagerLib.Models.Card card = new GameManagerLib.Models.Card(Figure, Color, Player.Tag, CardState.ON_HAND);
+
+        if (cardOrigin == null)
+            card = new GameManagerLib.Models.Card(Figure, Color, Player.Tag, CardState.ON_HAND);
+        else
+            card = cardOrigin;
 
         string cardName = CalculateCardObjectName(Figure, Color);
 
@@ -1176,41 +1189,47 @@ public class GameManagerScript : MonoBehaviour
 
         if (Game.IsTrickComplete())
         {
-            Trick lastTrick = Game.Match.CurrentGame.TrickList[Game.Match.CurrentGame.TrickList.Count - 1];
-            GameObject tmp;
-            for (int i = 0; i < lastTrick.CardList.Count; i++)
-            {
-                string tmpCardName = CalculateCardName(lastTrick.CardList[i]);
-                tmp = GameObject.Find(tmpCardName);
-                tmp.transform.position = new Vector3(-100, 0, 0);
-            }
+            IgnoreCommunication = true;
 
-            Text TeamTakenHandsCounterLabel = GameObject.Find("TeamTakenHandsCounterLabel").GetComponent<Text>();
-            int NSTaken = Game.CalculateTeamTricks(PlayerTag.N, PlayerTag.S);
-            int EWTaken = Game.CalculateTeamTricks(PlayerTag.E, PlayerTag.W);
-
-            TeamTakenHandsCounterLabel.text = "NS : " + NSTaken.ToString() + "\n";
-            TeamTakenHandsCounterLabel.text += "EW : " + EWTaken.ToString();
-
-            if (Game.Match.CurrentGame.Declarer == PlayerTag.N || Game.Match.CurrentGame.Declarer == PlayerTag.S)
-            {
-                PaintContractLabel(NSTaken, EWTaken);
-            }
-            else if (Game.Match.CurrentGame.Declarer == PlayerTag.E || Game.Match.CurrentGame.Declarer == PlayerTag.W)
-            {
-                PaintContractLabel(EWTaken, NSTaken);
-            }
-
-            if (GameConfig.DevMode)
-            {
-                UserData.Position = lastTrick.Winner; // for dev mode
-            }
-
-            //if (Game.Match.CurrentGame.IsEnd())
-            //{
-            //    RestartGame(); // restart game if all 13 tricks were put on the table
-            //}
+            // Opóźnienie pół sekundy przed tym jak karty znikną
+            StartCoroutine(OnTrickCompleteWithDelay(0.5f));                
         }
+    }
+    IEnumerator OnTrickCompleteWithDelay(float time) {
+        yield return new WaitForSeconds(time);
+
+        Trick lastTrick = Game.Match.CurrentGame.TrickList[Game.Match.CurrentGame.TrickList.Count - 1];
+        GameObject tmp;
+        for (int i = 0; i < lastTrick.CardList.Count; i++) {
+            string tmpCardName = CalculateCardName(lastTrick.CardList[i]);
+            tmp = GameObject.Find(tmpCardName);
+            tmp.transform.position = new Vector3(-100, 0, 0);
+        }
+
+        Text TeamTakenHandsCounterLabel = GameObject.Find("TeamTakenHandsCounterLabel").GetComponent<Text>();
+        int NSTaken = Game.CalculateTeamTricks(PlayerTag.N, PlayerTag.S);
+        int EWTaken = Game.CalculateTeamTricks(PlayerTag.E, PlayerTag.W);
+
+        TeamTakenHandsCounterLabel.text = "NS : " + NSTaken.ToString() + "\n";
+        TeamTakenHandsCounterLabel.text += "EW : " + EWTaken.ToString();
+
+        if (Game.Match.CurrentGame.Declarer == PlayerTag.N || Game.Match.CurrentGame.Declarer == PlayerTag.S) {
+            PaintContractLabel(NSTaken, EWTaken);
+        }
+        else if (Game.Match.CurrentGame.Declarer == PlayerTag.E || Game.Match.CurrentGame.Declarer == PlayerTag.W) {
+            PaintContractLabel(EWTaken, NSTaken);
+        }
+
+        if (GameConfig.DevMode) {
+            UserData.Position = lastTrick.Winner; // for dev mode
+        }
+
+        IgnoreCommunication = false;
+
+        //if (Game.Match.CurrentGame.IsEnd())
+        //{
+        //    RestartGame(); // restart game if all 13 tricks were put on the table
+        //}
     }
 
     public void SendGrandCardsRequest()
@@ -1307,12 +1326,13 @@ public class GameManagerScript : MonoBehaviour
             return;
         }
 
+        var cardOrigin = (GameManagerLib.Models.Card)additionalData;
         var data = new ServerSocket.Actions.PutCard.ResponseSerializer(response.Actions[0].ActionData);
         data.Validate();
         try
         {
             var player = Game.Match.GetPlayerAt((PlayerTag)data.OwnerPosition);
-            PutCardOnTable((CardFigure)data.CardFigure, (CardColor)data.CardColor, player.Name);
+            PutCardOnTable((CardFigure)data.CardFigure, (CardColor)data.CardColor, player.Name, cardOrigin);
         }
         catch (GameManagerLib.Exceptions.WrongGameStateException e)
         {
@@ -1323,13 +1343,24 @@ public class GameManagerScript : MonoBehaviour
     public void SendPutCardRequest(CardFigure Figure, CardColor Color, PlayerTag OwnerPosition)
     {
         var player = Game.Match.GetPlayerAt(OwnerPosition);
+        GameManagerLib.Models.Card cardOrigin = null;
+        GameManagerLib.Models.Card tmp;
+        for(int i = 0; i < player.Hand.Length; i++) {
+            tmp = player.Hand[i];
+            if(tmp.Color == Color && tmp.Figure == Figure) {
+                cardOrigin = tmp;
+                break;
+            }
+        }
 
-        var putCardRequestData = new ServerSocket.Actions.PutCard.RequestSerializer();
-        putCardRequestData.CardOwnerPosition = (int)OwnerPosition;
-        putCardRequestData.Color = (int)Color;
-        putCardRequestData.Figure = (int)Figure;
+        if (cardOrigin != null) {
+            var putCardRequestData = new ServerSocket.Actions.PutCard.RequestSerializer();
+            putCardRequestData.CardOwnerPosition = (int)OwnerPosition;
+            putCardRequestData.Color = (int)Color;
+            putCardRequestData.Figure = (int)Figure;
 
-        PerformServerAction("put-card", putCardRequestData.GetApiObject(), this.PutCardCallback);
+            PerformServerAction("put-card", putCardRequestData.GetApiObject(), this.PutCardCallback, cardOrigin);
+        }
     }
 
     private void PaintContractLabel(int TakenHands, int EnemyTakenHands)
