@@ -33,30 +33,39 @@ namespace ServerSocket.Actions.GetHand
                 data.ThrowException();
             }
 
-            if (!conn.Session.Has("player")) {
-                data.AddError(null, "INVALID_USER", "Nie masz uprawnień do pobrania kart tego gracza");
-                data.ThrowException();
-            }
-
-            var player = conn.Session.Get<Player>("player");
-            if((int)player.Tag != data.PlayerTag) {
-                if(game.GameState != GameState.PLAYING) {
+            // Przypadek jeśli karty dziadka nie są jeszcze publiczne
+            if(!(
+                game.GameState == GameState.PLAYING
+                && (
+                    game.CurrentGame.TrickList.Count > 0 
+                    || (game.CurrentGame.TrickList.Count == 0 && game.CurrentGame.currentTrick.CardList.Count > 0)
+                )
+            )) {
+                if (!conn.Session.Has("player")) {
                     data.AddError(null, "INVALID_USER", "Nie masz uprawnień do pobrania kart tego gracza");
                     data.ThrowException();
                 }
-                if(
-                    game.CurrentBidding.Declarer != player.Tag
-                    || ((int)player.Tag + 2)%4 != data.PlayerTag
-                ) {
-                    data.AddError(null, "INVALID_USER", "Nie masz uprawnień do pobrania kart tego gracza");
-                    data.ThrowException();
+
+                var player = conn.Session.Get<Player>("player");
+                if ((int)player.Tag != data.PlayerTag) {
+                    if (game.GameState != GameState.PLAYING) {
+                        data.AddError(null, "INVALID_USER", "Nie masz uprawnień do pobrania kart tego gracza");
+                        data.ThrowException();
+                    }
+                    if (
+                        game.CurrentBidding.Declarer != player.Tag
+                        || ((int)player.Tag + 2) % 4 != data.PlayerTag
+                    ) {
+                        data.AddError(null, "INVALID_USER", "Nie masz uprawnień do pobrania kart tego gracza");
+                        data.ThrowException();
+                    }
                 }
             }
 
             int playerId = game.PlayerList.FindIndex((p) => {
                 return (int)p.Tag == data.PlayerTag;
             });
-            if(playerId == -1) {
+            if (playerId == -1) {
                 data.AddError(null, "INTERNAL_SERVER_ERROR", "Wystąpił błąd wewnętrzny serwera");
                 data.ThrowException();
             }
