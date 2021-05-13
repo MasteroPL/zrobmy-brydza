@@ -531,13 +531,15 @@ public class GameManagerScript : MonoBehaviour
 
     public void SendBidRequest(ContractHeight Height, ContractColor Color, bool XEnabled, bool XXEnabled)
     {
-        var bidData = new ServerSocket.Actions.Bid.RequestSerializer();
-        bidData.Height = (int)Height;
-        bidData.Color = (int)Color;
-        bidData.X = XEnabled;
-        bidData.XX = XXEnabled;
+        if (CurrentConnectionState == ConnectionState.IDLE) {
+            var bidData = new ServerSocket.Actions.Bid.RequestSerializer();
+            bidData.Height = (int)Height;
+            bidData.Color = (int)Color;
+            bidData.X = XEnabled;
+            bidData.XX = XXEnabled;
 
-        PerformServerAction("bid", bidData.GetApiObject(), this.BidCallback);
+            PerformServerAction("bid", bidData.GetApiObject(), this.BidCallback);
+        }
     }
     private void BidCallback(Request request, ActionsSerializer response, object additionalData) {
         if (((string)response.Actions[0].ActionData.GetValue("status")).CompareTo("OK") != 0) {
@@ -720,10 +722,12 @@ public class GameManagerScript : MonoBehaviour
 
     public void StartGame()
     {
-        var startGameRequestData = new ServerSocket.Actions.StartGame.RequestSerializer();
-        startGameRequestData.PlaceTag = (int)UserData.Position;
-        startGameRequestData.Username = UserData.Username;
-        PerformServerAction("start-game", startGameRequestData.GetApiObject(), this.StartGameCallback);
+        if (CurrentConnectionState == ConnectionState.IDLE) {
+            var startGameRequestData = new ServerSocket.Actions.StartGame.RequestSerializer();
+            startGameRequestData.PlaceTag = (int)UserData.Position;
+            startGameRequestData.Username = UserData.Username;
+            PerformServerAction("start-game", startGameRequestData.GetApiObject(), this.StartGameCallback);
+        }
     }
 
     public void GetHandCallback(Request request, ActionsSerializer response, object additionalData)
@@ -1121,6 +1125,25 @@ public class GameManagerScript : MonoBehaviour
 
         string cardName = CalculateCardObjectName(Figure, Color);
 
+        int grandId = ((int)Game.Match.CurrentGame.Declarer + 2) % 4;
+
+        if (Player.Tag != UserData.Position && Player.Tag != (PlayerTag)grandId) {
+            switch (Player.Tag) {
+                case PlayerTag.N:
+                    HiddenCardsOfPlayerN[12 - Game.Match.CurrentGame.TrickList.Count].transform.localPosition = new Vector3(-100, 0, 0);
+                    break;
+                case PlayerTag.E:
+                    HiddenCardsOfPlayerE[12 - Game.Match.CurrentGame.TrickList.Count].transform.localPosition = new Vector3(-100, 0, 0);
+                    break;
+                case PlayerTag.S:
+                    HiddenCardsOfPlayerS[12 - Game.Match.CurrentGame.TrickList.Count].transform.localPosition = new Vector3(-100, 0, 0);
+                    break;
+                case PlayerTag.W:
+                    HiddenCardsOfPlayerW[12 - Game.Match.CurrentGame.TrickList.Count].transform.localPosition = new Vector3(-100, 0, 0);
+                    break;
+            }
+        }
+
         //Debug.Log("Putting card on table from player " + PlayerName);
         // kładę kartę na stół w logice gry GamerLib
         try
@@ -1153,34 +1176,6 @@ public class GameManagerScript : MonoBehaviour
 
         GameObject cardToPut = GameObject.Find(cardName);
         cardToPut.transform.localPosition = new Vector3(newPos[0], newPos[1], -6);
-
-        // usun zakryta karte z reki gracza => jeśli nie jest ani dziadkiem, ani mną
-        //int grandId = ((int)Game.Match.CurrentGame.Declarer + 2) % 4;
-
-        /*
-         * NIE DZIALA
-        if (Player.Tag != UserData.Position && Player.Tag != (PlayerTag)grandId)
-        {
-            switch (Player.Tag)
-            {
-                case PlayerTag.N:
-                    HiddenCardsOfPlayerN[HiddenCardsOfPlayerN.Count - 1].transform.position = new Vector3(-100, 0, 0);
-                    Destroy(HiddenCardsOfPlayerN[HiddenCardsOfPlayerN.Count - 1]);
-                    break;
-                case PlayerTag.E:
-                    HiddenCardsOfPlayerE[HiddenCardsOfPlayerE.Count - 1].transform.position = new Vector3(-100, 0, 0);
-                    Destroy(HiddenCardsOfPlayerE[HiddenCardsOfPlayerE.Count - 1]);
-                    break;
-                case PlayerTag.S:
-                    HiddenCardsOfPlayerS[HiddenCardsOfPlayerS.Count - 1].transform.position = new Vector3(-100, 0, 0);
-                    Destroy(HiddenCardsOfPlayerS[HiddenCardsOfPlayerS.Count - 1]);
-                    break;
-                case PlayerTag.W:
-                    HiddenCardsOfPlayerW[HiddenCardsOfPlayerW.Count - 1].transform.position = new Vector3(-100, 0, 0);
-                    Destroy(HiddenCardsOfPlayerW[HiddenCardsOfPlayerW.Count - 1]);
-                    break;
-            }
-        }*/
 
         //if (GameConfig.DevMode)
         //{
@@ -1353,7 +1348,7 @@ public class GameManagerScript : MonoBehaviour
             }
         }
 
-        if (cardOrigin != null) {
+        if (cardOrigin != null && CurrentConnectionState == ConnectionState.IDLE) {
             var putCardRequestData = new ServerSocket.Actions.PutCard.RequestSerializer();
             putCardRequestData.CardOwnerPosition = (int)OwnerPosition;
             putCardRequestData.Color = (int)Color;
