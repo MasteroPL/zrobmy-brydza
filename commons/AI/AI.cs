@@ -518,6 +518,168 @@ namespace AI
 
             return points;
         }
+        // ROZGRYWKA
+        public int PutCard(List<int> trick, List<int> history, int atu, List<int> highestCards )
+        {
+            if(trick.Count == 0)
+            {
+
+            }
+            if (trick.Count == 1)
+            {
+                int color = trick[0] % 10;
+                List<int> cards = getList(color);
+                int highestCard = highestCards[color - 1];
+                if(cards.Contains(highestCard))
+                {
+                    this.AI_hand.RemoveCard(highestCard);
+                    return highestCard;
+                }
+
+                if(cards.Count == 0)
+                {
+                    if(atu == 0 | getList(atu).Count == 0)
+                    {
+                        return this.AI_hand.DropAndRemoveCard();
+                    }
+                    else
+                    {
+                        List<int> atuCards = getList(atu);
+                        int atuCard = FindLowest(atuCards);
+                        this.AI_hand.RemoveCard(atuCard);
+                        return atuCard;
+                    }
+                }
+                int card = FindLowest(cards);
+                this.AI_hand.RemoveCard(card);
+                return card;
+            }
+            if (trick.Count == 2)
+            {
+                int color = trick[0] % 10;
+                List<int> cards = getList(color);
+                int highestCard = highestCards[color - 1];
+
+                if (cards.Count == 0)
+                {
+                    if ((atu == 0 | getList(atu).Count == 0) & trick[0] != highestCard)
+                    {
+                        return this.AI_hand.DropAndRemoveCard();
+                    }
+                    else
+                    {
+                        List<int> atuCards = getList(atu);
+                        int atuCard = FindLowest(atuCards);
+                        if (trick[1]%10 != atu | trick[1] < atuCard)
+                        {
+                            this.AI_hand.RemoveCard(atuCard);
+                            return atuCard;
+                        }
+                        else
+                        {
+                            atuCard = FindHigherThan(trick[1], cards);
+                            if( atuCard == -1)
+                            {
+                                return this.AI_hand.DropAndRemoveCard(); // TODO czy nie atu !!!!!!!!!!!!!!!
+                            }
+                            else
+                            {
+                                this.AI_hand.RemoveCard(atuCard);
+                                return atuCard;
+                            }
+                        }
+                        
+                    }
+                }
+                int card = FindHighest(cards);
+                if(card-30 >= trick[0] & trick[1]%10 != atu) //TODO wszytskie karty
+                {
+                    this.AI_hand.RemoveCard(card);
+                    return card;
+                }
+                else
+                {
+                    card = FindLowest(cards);
+                    this.AI_hand.RemoveCard(card);
+                    return card;
+
+                }
+
+            }
+            if (trick.Count == 3)
+            {
+          
+
+            }
+        }
+
+        public List<int> getList(int color)
+        {
+            if(color == 1)
+            {
+                return this.AI_hand.C;
+            }
+            if (color == 2)
+            {
+                return this.AI_hand.D;
+            }
+            if (color == 3)
+            {
+                return this.AI_hand.H;
+            }
+            if (color == 4)
+            {
+                return this.AI_hand.S;
+            }
+
+            return null;
+        }
+
+        public int FindLowest( List<int>cards)
+        {
+            int min = cards[0];
+            for (int i = 1;i < cards.Count; i++)
+            {
+                if(cards[i]< min)
+                {
+                    min = cards[i];
+                }
+            }
+            return min;
+        }
+
+        public int FindHighest(List<int> cards)
+        {
+            int max = cards[0];
+            for (int i = 1; i < cards.Count; i++)
+            {
+                if (cards[i] > max)
+                {
+                    max = cards[i];
+                }
+            }
+            return max;
+        }
+        public int FindHigherThan(int hisCard, List<int> cards)
+        {
+            int max = FindHighest(cards);
+
+            if(max < hisCard)
+            {
+                return -1;
+            }
+            else
+            {   
+                for(int i = 0; i < cards.Count; i++)
+                {
+                    if(cards[i] < max & cards[i] > hisCard)
+                    {
+                        max = cards[i];
+                    }
+                }
+                return max;
+            }
+        }
 
         public class Hand
         {
@@ -531,6 +693,70 @@ namespace AI
                 this.D = D;
                 this.H = H;
                 this.S = S;
+            }
+            public void RemoveCard(int card)
+            {
+                if (card % 10 == 1)
+                {
+                    this.C.Remove(card);
+                }
+                if (card % 10 == 2)
+                {
+                    this.D.Remove(card);
+                }
+                if (card % 10 == 3)
+                {
+                    this.H.Remove(card);
+                }
+                if (card % 10 == 4)
+                {
+                    this.S.Remove(card);
+                }
+            }
+
+            public int DropAndRemoveCard()
+            {
+ 
+                if(C.Count >= D.Count & C.Count >= H.Count & C.Count >= S.Count)
+                {
+                    int min = FindLowest(C);
+                    this.RemoveCard(min);
+                    return min;
+                }
+
+                if (D.Count > C.Count & D.Count >= H.Count & D.Count >= S.Count)
+                {
+                    int min = FindLowest(D);
+                    this.RemoveCard(min);
+                    return min;
+                }
+
+                if (H.Count > C.Count & H.Count > D.Count & H.Count >= S.Count)
+                {
+                    int min = FindLowest(H);
+                    this.RemoveCard(min);
+                    return min;
+                }
+
+                if (S.Count > H.Count & S.Count > D.Count & S.Count > H.Count)
+                {
+                    int min = FindLowest(S);
+                    this.RemoveCard(min);
+                    return min;
+                }
+                return 0;
+            }
+            public int FindLowest(List<int> cards)
+            {
+                int min = cards[0];
+                for (int i = 1; i < cards.Count; i++)
+                {
+                    if (cards[i] < min)
+                    {
+                        min = cards[i];
+                    }
+                }
+                return min;
             }
         }
     }
