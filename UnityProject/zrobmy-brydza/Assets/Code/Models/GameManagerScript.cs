@@ -893,11 +893,11 @@ public class GameManagerScript : MonoBehaviour
         List<float[]> coordinates = new List<float[]>();
         if ((int)Position == (int)UserData.Position) // down
         {
-            for(int i = 0; i < 13; i++)
+            for (int i = 0; i < 13; i++)
             {
                 float[] tmp = new float[3];
                 tmp[0] = myCardsX[i];
-                tmp[1] = -2.58f; // previous y value: -3.28f;
+                tmp[1] = -3.28f; //-2.58f; // previous y value: -3.28f;
                 tmp[2] = -i;
                 coordinates.Add(tmp);
             }
@@ -919,7 +919,7 @@ public class GameManagerScript : MonoBehaviour
             {
                 float[] tmp = new float[3];
                 tmp[0] = myCardsX[i];
-                tmp[1] = 2.78f; // previous y value: 3.07f;
+                tmp[1] = 3.28f;// 2.78f; // previous y value: 3.07f;
                 tmp[2] = -i;
                 coordinates.Add(tmp);
             }
