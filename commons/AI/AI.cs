@@ -526,7 +526,7 @@ namespace AI
             int[] ColorPoints = new int[4];
             for (int i = 0; i < ColorPoints.Length; i++)
             {
-                ColorPoints[i]
+                ColorPoints[i] = 0;
             }
 
             for (int i = 0; i < this.AI_hand.C.Count; i++)
