@@ -87,9 +87,6 @@ public class GameManagerScript : MonoBehaviour
     [SerializeField] Button PointsButton;
 
     // przyciski przydatne podczas gry - "biore wszystko", "nie biore nic", "pauza", "wyjdź" (taunt jest oddzielnie)
-    [SerializeField] Button TakeEverythingButton;
-    [SerializeField] Button TakeNothingButton;
-    [SerializeField] Button PauseRequestButton;
     [SerializeField] Button QuitButton;
     [SerializeField] Button StartButton;
     [SerializeField] TextManager TextManager;
@@ -99,14 +96,6 @@ public class GameManagerScript : MonoBehaviour
 
     // lista graczy obecnych w lobby
     List<LobbyUserData> LobbyUsers;
-
-    /**
-     * -1 - neutral state
-     * 0  - take everything
-     * 1  - take nothing
-     */
-    private int ButtonPanelCanvasState = -1;
-    private bool RequestingForPause = false;
 
     public static ActionsSerializer WrapRequestData(string actionName, JObject data) {
         var result = new ActionsSerializer();
@@ -120,7 +109,6 @@ public class GameManagerScript : MonoBehaviour
 
         return result;
     }
-
 
     private void HandleLobbySignal(JObject signalData) {
         var signalName = (string)signalData.GetValue("signal");
@@ -282,9 +270,6 @@ public class GameManagerScript : MonoBehaviour
         PointsButton.onClick.AddListener(() => { TextManager.PointsButton(Game); });
         TextManager.ChatButton(); // inicjalnie otwarty jest panel chatu
 
-        TakeEverythingButton.onClick.AddListener(() => { TakeEverythingHandler(); });
-        TakeNothingButton.onClick.AddListener(() => { TakeNothingHandler(); });
-        PauseRequestButton.onClick.AddListener(() => { PauseRequestHandler(); });
         QuitButton.onClick.AddListener(() => { QuitHandler(); });
         StartButton.onClick.AddListener(() => { StartGame(); });
 
@@ -541,6 +526,7 @@ public class GameManagerScript : MonoBehaviour
             PerformServerAction("bid", bidData.GetApiObject(), this.BidCallback);
         }
     }
+
     private void BidCallback(Request request, ActionsSerializer response, object additionalData) {
         if (((string)response.Actions[0].ActionData.GetValue("status")).CompareTo("OK") != 0) {
             return;
@@ -579,70 +565,8 @@ public class GameManagerScript : MonoBehaviour
         if (AuctionButton) AuctionButton.onClick.RemoveAllListeners();
         if (PointsButton) PointsButton.onClick.RemoveAllListeners();
 
-        if (TakeEverythingButton) TakeEverythingButton.onClick.RemoveAllListeners();
-        if (TakeNothingButton) TakeNothingButton.onClick.RemoveAllListeners();
-        if (PauseRequestButton) PauseRequestButton.onClick.RemoveAllListeners();
         if (QuitButton) QuitButton.onClick.RemoveAllListeners();
         if (StartButton) StartButton.onClick.RemoveAllListeners();
-    }
-
-    private void TakeEverythingHandler()
-    {
-        Debug.Log("I'm taking everything");
-        if (ButtonPanelCanvasState != 0)
-        {
-            ButtonPanelCanvasState = 0;
-        } 
-        else
-        {
-            ButtonPanelCanvasState = -1;
-        }
-        UpdateButtonPanelCanvas();
-    }
-
-    private void TakeNothingHandler()
-    {
-        Debug.Log("I take nothing");
-        if (ButtonPanelCanvasState != 1)
-        {
-            ButtonPanelCanvasState = 1;
-        }
-        else
-        {
-            ButtonPanelCanvasState = -1;
-        }
-        UpdateButtonPanelCanvas();
-    }
-
-    private void PauseRequestHandler()
-    {
-        Debug.Log("Pause request");
-        RequestingForPause = !RequestingForPause;
-        UpdateButtonPanelCanvas();
-    }
-
-    private void UpdateButtonPanelCanvas()
-    {
-        TakeEverythingButton.image.color = new Color32(255, 255, 255, 255);
-        TakeNothingButton.image.color = new Color32(255, 255, 255, 255);
-        if(ButtonPanelCanvasState == 0)
-        {
-            TakeEverythingButton.image.color = new Color32(0, 0, 0, 255);
-        } 
-        else if(ButtonPanelCanvasState == 1)
-        {
-            TakeNothingButton.image.color = new Color32(0, 0, 0, 255);
-        }
-
-        PauseRequestButton.image.color = new Color32(255, 255, 255, 255);
-        if (RequestingForPause)
-        {
-            PauseRequestButton.image.color = new Color32(0, 0, 0, 255);
-        } 
-        else
-        {
-            PauseRequestButton.image.color = new Color32(255, 255, 255, 255);
-        }
     }
 
     private void QuitHandler()
@@ -1226,36 +1150,7 @@ public class GameManagerScript : MonoBehaviour
         //    RestartGame(); // restart game if all 13 tricks were put on the table
         //}
     }
-
-    public void SendGrandCardsRequest()
-    {
-        int grandId = ((int)Game.Match.CurrentGame.Declarer + 2) % 4;
-
-        var grandCardsRequestData = new ServerSocket.Actions.GetHand.RequestSerializer();
-        grandCardsRequestData.PlayerTag = grandId;
-        PerformServerAction("get-hand", grandCardsRequestData.GetApiObject(), this.SendGrandCardsCallback);
-    }
-
-    private void SendGrandCardsCallback(Request request, ActionsSerializer response, object additionalData)
-    {
-        if (((string)response.Actions[0].ActionData.GetValue("status")).CompareTo("OK") != 0)
-        {
-            return;
-        }
-
-        var data = new ServerSocket.Actions.GetHand.ResponseSerializer(response.Actions[0].ActionData);
-        data.Validate();
-
-        int grandId = ((int)Game.Match.CurrentGame.Declarer + 2) % 4;
-        Player grandpa = Game.Match.GetPlayerAt((PlayerTag)grandId);
-
-        for(int i = 0; i < 13; i++)
-        {
-            grandpa.Hand[i] = new GameManagerLib.Models.Card((CardFigure)data.Cards[i].Figure, (CardColor)data.Cards[i].Color, grandpa.Tag, (CardState)data.Cards[i].State);
-        }
-        this.ShowGrandCards(grandpa.Tag, grandpa.Hand);
-    }
-
+    
     private string CalculateCardObjectName(CardFigure Figure, CardColor Color)
     {
         string c = "";
