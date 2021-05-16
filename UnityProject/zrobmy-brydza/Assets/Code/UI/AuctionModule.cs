@@ -48,6 +48,8 @@ public class AuctionModule : MonoBehaviour
     [SerializeField] Text SPlayerDeclarations;
     [SerializeField] Text WPlayerDeclarations;
 
+    [SerializeField] GameManagerScript GameManager;
+
     // Contract label
     [SerializeField] Text DeclaredContractLabel;
 

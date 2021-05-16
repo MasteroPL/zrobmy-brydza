@@ -101,6 +101,13 @@ namespace ClientSocketTesting {
                     Game.AddPlayer(new Player((PlayerTag)serializer.PlaceTag, serializer.Username));
                 }
             }
+            else if(signalName == LobbySignalUserSittedOutSerializer.SIGNAL_USER_SITTED_OUT) {
+                var serializer = new LobbySignalUserSittedOutSerializer(signalData);
+                serializer.Validate();
+
+                var player = Game.GetPlayerAt((PlayerTag)serializer.PlaceTag);
+                Game.RemovePlayer(player);
+            }
             else if(signalName == PutCardSignalSerializer.SIGNAL_USER_PUT_CARD) {
                 var serializer = new PutCardSignalSerializer(signalData);
                 serializer.Validate();

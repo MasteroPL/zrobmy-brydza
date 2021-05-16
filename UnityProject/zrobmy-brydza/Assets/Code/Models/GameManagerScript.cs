@@ -19,6 +19,7 @@ using Assets.Code.Models.Exceptions;
 using EasyHosting.Models.Client.Serializers;
 using ServerSocket.Serializers;
 using GameManagerLib.Exceptions;
+using ServerSocket.Models;
 
 public class GameManagerScript : MonoBehaviour
 {
@@ -75,6 +76,9 @@ public class GameManagerScript : MonoBehaviour
     private List<GameObject> HiddenCardsOfPlayerS;
     private List<GameObject> HiddenCardsOfPlayerW;
 
+    public LobbyState LobbyState = LobbyState.IDLE;
+    bool LobbyOwner = true;
+
     private ConnectionState _CurrentConnectionState = ConnectionState.PRELOADING;
     public ConnectionState CurrentConnectionState { get { return _CurrentConnectionState;  } private set { _CurrentConnectionState = value; } }
     private Request CurrentRequest = null;
@@ -90,6 +94,7 @@ public class GameManagerScript : MonoBehaviour
     [SerializeField] Button QuitButton;
     [SerializeField] Button StartButton;
     [SerializeField] TextManager TextManager;
+    [SerializeField] Canvas GameStoppedDialog;
 
     public List<GameManagerLib.Models.Card> MyCards = null;
     public List<GameManagerLib.Models.Card> CurrentGrandpaCards = null;
@@ -176,6 +181,7 @@ public class GameManagerScript : MonoBehaviour
 
             if (serializer.Username != UserData.Username)
             {
+                LobbyState = LobbyState.IN_GAME;
                 Game.Match.Start();
 
                 var getHandRequestData = new ServerSocket.Actions.GetHand.RequestSerializer();
@@ -220,6 +226,12 @@ public class GameManagerScript : MonoBehaviour
                     // TODO: coś zrobić
                 }
             }
+        }
+        else if(signalName == LobbySignalLobbyStateChangedSerializer.SIGNAL_LOBBY_STATE_CHANGED) {
+            var serializer = new LobbySignalLobbyStateChangedSerializer(signalData);
+            serializer.Validate();
+
+            LobbyState = (LobbyState)serializer.LobbyState;
         }
     }
     private void OnServerSignalReceive(object sender, StandardResponseWrapperSerializer data) {
@@ -405,13 +417,21 @@ public class GameManagerScript : MonoBehaviour
 
         CheckCurrentPlayerLight();
 
-        if (SeatManager.AllFourPlayersPresent() && UserData.Position != PlayerTag.NOBODY && Game.Match.GameState == GameState.STARTING)
-        {
-            if (StartButton != null) StartButton.gameObject.SetActive(true);
-        }
-        else
-        {
-            if (StartButton != null) StartButton.gameObject.SetActive(false);
+        if (Game != null) {
+            if (SeatManager.AllFourPlayersPresent() && (Game.Match.GameState == GameState.STARTING || LobbyState == LobbyState.IDLE)) {
+                if (LobbyOwner) {
+                    StartButton.gameObject.SetActive(true);
+                    GameStoppedDialog.gameObject.SetActive(false);
+                }
+            }
+            else if (Game.Match.GameState != GameState.AWAITING_PLAYERS && LobbyState == LobbyState.IDLE) {
+                GameStoppedDialog.gameObject.SetActive(true);
+                StartButton.gameObject.SetActive(false);
+            }
+            else {
+                if (StartButton != null) StartButton.gameObject.SetActive(false);
+                GameStoppedDialog.gameObject.SetActive(false);
+            }
         }
     }
 
@@ -494,24 +514,6 @@ public class GameManagerScript : MonoBehaviour
         PlayerTag StartingPlayer = Game.Match.CurrentBidding.CurrentPlayer;
         AuctionModule.InitAuctionModule(Game, StartingPlayer);
         AuctionModule.ReloadDeclarations();
-    }
-
-    public void ShowHideStartGameButton(bool AllPlayersPresent)
-    {
-        if (AllPlayersPresent && UserData.Position != PlayerTag.NOBODY)
-        {
-            if (StartButton != null)
-            {
-                StartButton.gameObject.SetActive(true);
-            }
-        }
-        else
-        {
-            if (StartButton != null)
-            {
-                StartButton.gameObject.SetActive(false);
-            }
-        }
     }
 
     public void SendBidRequest(ContractHeight Height, ContractColor Color, bool XEnabled, bool XXEnabled)
@@ -767,13 +769,16 @@ public class GameManagerScript : MonoBehaviour
 
         var data = new ServerSocket.Actions.StartGame.ResponseSerializer(response.Actions[0].ActionData);
         data.Validate();
-        try
-        {
-            Game.Match.Start();
+        if (Game.Match.GameState == GameState.STARTING) {
+            try {
+                LobbyState = LobbyState.IN_GAME;
+                Game.Match.Start();
+            } catch (GameManagerLib.Exceptions.WrongGameStateException e) {
+                // TODO
+            }
         }
-        catch(GameManagerLib.Exceptions.WrongGameStateException e)
-        {
-            // TODO
+        else {
+            LobbyState = LobbyState.IN_GAME;
         }
 
         var getHandRequestData = new ServerSocket.Actions.GetHand.RequestSerializer();
@@ -856,7 +861,32 @@ public class GameManagerScript : MonoBehaviour
             if (player != (int)MyPosition && player != (int)PlayerTag.NOBODY)
             {
                 List<float[]> coordinates = CalculateCardsCoordinates((PlayerTag)player);
-                for (int i = 0; i < 13; i++)
+
+                int numOfCards = 13;
+                if(Game.Match.GameState == GameState.PLAYING) {
+                    int tmp1 = Game.Match.CurrentGame.currentTrick.CardList.Count;
+                    int tmp2 = (int)Game.Match.CurrentGame.CurrentPlayer;
+                    int tmp3 = tmp1 - tmp2;
+                    if (tmp3 < 0) tmp3 += 4;
+
+                    PlayerTag tmpFirstPlacer = (PlayerTag)tmp3;
+                    int tmpThisPlayerId = (int)player;
+                    int tmpFirstPlacerId = (int)tmpFirstPlacer;
+                    if(tmpThisPlayerId < tmpFirstPlacerId) {
+                        tmpThisPlayerId += 4;
+                    }
+
+                    if(tmpThisPlayerId >= tmpFirstPlacerId + tmp1) {
+                        numOfCards = 13 - Game.Match.CurrentGame.TrickList.Count;
+                    }
+                    else {
+                        numOfCards = 12 - Game.Match.CurrentGame.TrickList.Count;
+                        if (numOfCards < 0) numOfCards = 0;
+                    }
+
+                }
+
+                for (int i = 0; i < numOfCards; i++)
                 {
                     GameObject card = Instantiate(hiddenCard);
                     card.transform.localPosition = new Vector3(coordinates[i][0] + CardsObject.gameObject.transform.position.x, coordinates[i][1] + CardsObject.gameObject.transform.position.y, 0);
@@ -1099,7 +1129,7 @@ public class GameManagerScript : MonoBehaviour
         }
 
         GameObject cardToPut = GameObject.Find(cardName);
-        cardToPut.transform.localPosition = new Vector3(newPos[0], newPos[1], -6);
+        cardToPut.transform.localPosition = new Vector3(newPos[0], newPos[1], -1);
 
         //if (GameConfig.DevMode)
         //{

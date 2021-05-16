@@ -27,6 +27,11 @@ namespace ServerSocket.Actions.Bid
             Lobby lobby = (Lobby)conn.Session.Get("joined-lobby");
             Match game = lobby.Game;
 
+            if (lobby.LobbyState != LobbyState.IN_GAME) {
+                data.AddError(null, "INVALID_LOBBY_STATE", "Nie można licytować w tym stanie lobby");
+                data.ThrowException();
+            }
+
             string username = (string)conn.Session.Get("username");
 
             int playerIndex = game.PlayerList.FindIndex(x => { return username == x.Name; });

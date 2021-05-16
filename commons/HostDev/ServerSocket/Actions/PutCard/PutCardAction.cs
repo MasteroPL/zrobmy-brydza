@@ -26,6 +26,11 @@ namespace ServerSocket.Actions.PutCard
             Lobby lobby = (Lobby)conn.Session.Get("joined-lobby");
             Match game = lobby.Game;
 
+            if(lobby.LobbyState != LobbyState.IN_GAME) {
+                data.AddError(null, "INVALID_LOBBY_STATE", "Nie można wyłożyć karty w tym stanie lobby");
+                data.ThrowException();
+            }
+
             if(game.GameState != GameState.PLAYING) {
                 data.AddError(null, "INVALID_GAME_STATE", "Gra nie jest w poprawnym stanie do tej akcji");
                 data.ThrowException();

@@ -21,6 +21,9 @@ namespace GameManagerLib.Models
         public int RoundsNS = 0;
         public int RoundsWE = 0;
         public PointsHistory History;
+        public Card[][] PlayerHandsCache = {
+            null, null, null, null
+        };
 
         public Match() {
             this.PlayerList = new List<Player>();
@@ -57,8 +60,17 @@ namespace GameManagerLib.Models
                     PlayerList.Add(NewPlayer);
                     if (this.PlayerList.Count == 4) 
                     {
-                        this.GameState = GameState.STARTING;
-                        this.Dealer = NewPlayer.Tag;
+                        if (this.GameState == GameState.AWAITING_PLAYERS) {
+                            this.GameState = GameState.STARTING;
+                            this.Dealer = NewPlayer.Tag;
+                        }
+                    }
+
+                    if (PlayerHandsCache[(int)NewPlayer.Tag] != null) {
+                        NewPlayer.Hand = PlayerHandsCache[(int)NewPlayer.Tag];
+                    }
+                    else {
+                        PlayerHandsCache[(int)NewPlayer.Tag] = NewPlayer.Hand;
                     }
 
                     return true;
@@ -89,7 +101,9 @@ namespace GameManagerLib.Models
             if (Index1 != -1)
             {
                 PlayerList.RemoveAt(Index1);
-                this.GameState = GameState.AWAITING_PLAYERS;
+                if (this.GameState == GameState.STARTING) {
+                    this.GameState = GameState.AWAITING_PLAYERS;
+                }
                 return true;
             }
             else
@@ -142,10 +156,18 @@ namespace GameManagerLib.Models
 
                 // metoda "GetShuffledPlayersCards" zostala stworzona specjalnie na potrzeby brydza - Shuffler jest napisany by tasowac dowolnego typu obiekty 
                 List<List<Card>> PlayersCards = Shuffler.GetShuffledPlayersCards(ShuffledCards);
-                PlayerList[0].Hand = PlayersCards[0].OrderBy(c => c.Figure).OrderBy(c => c.Color).ToArray();
-                PlayerList[1].Hand = PlayersCards[1].OrderBy(c => c.Figure).OrderBy(c => c.Color).ToArray();
-                PlayerList[2].Hand = PlayersCards[2].OrderBy(c => c.Figure).OrderBy(c => c.Color).ToArray();
-                PlayerList[3].Hand = PlayersCards[3].OrderBy(c => c.Figure).OrderBy(c => c.Color).ToArray();
+                var tmp = new Card[][] {
+                    PlayersCards[0].OrderBy(c => c.Figure).OrderBy(c => c.Color).ToArray(),
+                    PlayersCards[1].OrderBy(c => c.Figure).OrderBy(c => c.Color).ToArray(),
+                    PlayersCards[2].OrderBy(c => c.Figure).OrderBy(c => c.Color).ToArray(),
+                    PlayersCards[3].OrderBy(c => c.Figure).OrderBy(c => c.Color).ToArray()
+                };
+
+                for (int i = 0; i < 4; i++) {
+                    for(int j = 0; j < 13; j++) {
+                        PlayerList[i].Hand[j] = tmp[i][j];
+                    }
+                }
 
                 for(int i = 0; i < 4; i++)
                 {

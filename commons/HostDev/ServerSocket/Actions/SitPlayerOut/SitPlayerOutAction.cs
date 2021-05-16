@@ -24,12 +24,6 @@ namespace ServerSocket.Actions.SitPlayerOut {
 
             Lobby lobby = conn.Session.Get<Lobby>("joined-lobby");
             Match game = lobby.Game;
-            
-            // Przypadek nieprawidłowego stanu gry
-            if(game.GameState != GameState.AWAITING_PLAYERS && game.GameState != GameState.GAME_FINISHED) {
-                data.AddError(null, "GAME_STATE_INVALID", "Nie można usunąć gracza, kiedy gra jest w aktualnym stanie");
-                data.ThrowException();
-            }
 
             // Check czy ktokolwiek w ogóle siedzi na tym miejscu
             var playerAtPlace = lobby.Game.GetPlayerAt((PlayerTag)data.PlaceTag);
@@ -48,6 +42,8 @@ namespace ServerSocket.Actions.SitPlayerOut {
 
             // Lepiej jeśli cokolwiek zepsuje się po usunięciu gracza ze stołu. Wtedy rozgrywkę będzie można kontynuować mimo błędu
             lobby.Game.RemovePlayer(playerAtPlace);
+
+            lobby.SetLobbyState(LobbyState.IDLE); // Jeśli Lobby miało rozpoczętą grę, zostanie zapauzowane
 
             var username = playerAtPlace.Name;
             var signal = new LobbySignalUserSittedOutSerializer() {
