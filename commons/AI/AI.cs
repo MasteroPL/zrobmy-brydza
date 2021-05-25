@@ -23,7 +23,8 @@ namespace AI
             this.Find_Color();
         }
 
-        public void Find_Color (){
+        public void Find_Color()
+        {
             if (this.AI_hand.S.Count >= 5)
             {
                 this.Colors5 = 4;
@@ -52,7 +53,7 @@ namespace AI
         public int Bid(List<int> history)
         {
             int bid = AI_Bid(history);
-            while(bid > 75)
+            while (bid > 75)
             {
                 bid = bid - 10;
             }
@@ -62,14 +63,14 @@ namespace AI
         {
             int history_length = history.Count;
             int round = history_length / 4 + 1;
-            int bid = 0 ;
+            int bid = 0;
             int highest_bid = 0;
 
             int i = 1;
             while (highest_bid <= 10)
             {
-                
-                if(history_length < i)
+
+                if (history_length < i)
                 {
                     break;
                 }
@@ -81,7 +82,7 @@ namespace AI
             if (history_length < 4)
             {
 
-                if((history_length >= 2 &&  history[history_length - 2] == 0) | history_length < 2)
+                if ((history_length >= 2 && history[history_length - 2] == 0) | history_length < 2)
                 {
                     if (this.Points >= 18)
                     {
@@ -117,7 +118,7 @@ namespace AI
 
                         if (bid > highest_bid)
                         {
-                            if(bid == 10)
+                            if (bid == 10)
                             {
                                 bid = 11;
                             }
@@ -127,7 +128,7 @@ namespace AI
                         else
                         {
                             bid = bid + 10;
-                            if(bid == 20 && highest_bid < 20)
+                            if (bid == 20 && highest_bid < 20)
                             {
                                 return 1;
                             }
@@ -149,11 +150,11 @@ namespace AI
                 {
                     return FirstResponse(history_length, history, highest_bid);
                 }
-                
+
             }
             else //kolejne kółka
             {
-                if(this.pass)
+                if (this.pass)
                 {
                     return 0;
                 }
@@ -164,11 +165,11 @@ namespace AI
                         return 0;
                     }
 
-                    if(history_length >= 6 )
+                    if (history_length >= 6)
                     {
                         //mamy ponad 11 punktów gadamy z partnerem
                         //TODO
-                        if(history_length >= 6)
+                        if (history_length >= 6)
                         {
                             if (history[history_length - 6] != 0)
                             {
@@ -188,18 +189,18 @@ namespace AI
                 {
                     first = true;
                 }
-                   
-                if(first)
+
+                if (first)
                 {
                     int last_my = history[history_length - 4];
                     int last_p = history[history_length - 2];
 
                     if (last_my % 10 == last_p % 10) // ten sam kolor 
                     {
-                        if(last_my % 10 == 3 || last_my % 10 == 4)
+                        if (last_my % 10 == 3 || last_my % 10 == 4)
                         {
 
-                            if(this.Points >= 16)
+                            if (this.Points >= 16)
                             {
                                 bid = last_p + 20; //czwórka
                             }
@@ -207,7 +208,7 @@ namespace AI
                             {
                                 return 0;
                             }
-                            else if(history[history_length - 3] >= last_p -10)
+                            else if (history[history_length - 3] >= last_p - 10)
                             {
                                 return 0;
                             }
@@ -228,7 +229,7 @@ namespace AI
                             }
                             else
                             {
-                                if(this.Points > 16)
+                                if (this.Points > 16)
                                 {
                                     bid = 35;
                                 }
@@ -240,7 +241,7 @@ namespace AI
                             {
                                 bid = 35;
                             }
-                            else if(last_p > last_my - 10 & history[history_length - 3] -10 < last_p )
+                            else if (last_p > last_my - 10 & history[history_length - 3] - 10 < last_p)
                             {
                                 bid = 35;
                             }
@@ -252,19 +253,19 @@ namespace AI
                     }
                     else // oba licytujo inne kolory
                     {
-                        if(last_p == 12)
+                        if (last_p == 12)
                         {
                             bid = 15;
                         }
-                        else if(last_p % 10 == 3 )
+                        else if (last_p % 10 == 3)
                         {
-                           if( this.AI_hand.H.Count >= 3)
-                           {
-                                if(this.Points == 16)
+                            if (this.AI_hand.H.Count >= 3)
+                            {
+                                if (this.Points == 16)
                                 {
                                     bid = 43;
                                 }
-                                else if(last_p > last_my - 10 & history[history_length - 3] - 10 < last_p)
+                                else if (last_p > last_my - 10 & history[history_length - 3] - 10 < last_p)
                                 {
                                     bid = 43;
                                 }
@@ -272,7 +273,7 @@ namespace AI
                                 {
                                     return 0;
                                 }
-                           }
+                            }
                         }
                         else if (last_p % 10 == 4)
                         {
@@ -294,7 +295,7 @@ namespace AI
                         }
                         else if (last_p == 22 & last_my == 11)
                         {
-                            if(this.Points > 16)
+                            if (this.Points > 16)
                             {
                                 bid = 35;
                             }
@@ -305,7 +306,7 @@ namespace AI
                         }
                         else if (last_p % 10 == 5 | last_p % 10 == 1 | last_p % 10 == 2)
                         {
-                            if(this.Points > 16)
+                            if (this.Points > 16)
                             {
                                 bid = 35;
                             }
@@ -323,7 +324,7 @@ namespace AI
 
                 }
 
-                if(bid > highest_bid)
+                if (bid > highest_bid)
                 {
                     return bid;
                 }
@@ -429,7 +430,7 @@ namespace AI
                 else
                 {
                     bid = 10 + Colors5;
-                    if(partner_bid == 11 & Colors5 == 2)
+                    if (partner_bid == 11 & Colors5 == 2)
                     {
                         bid = bid + 10;
                     }
@@ -563,7 +564,7 @@ namespace AI
                 }
             }
 
-            if(atu == 0 )
+            if (atu == 0)
             {
                 ColorPoints[0] = ColorPoints[0] + this.AI_hand.C.Count;
                 ColorPoints[1] = ColorPoints[1] + this.AI_hand.D.Count;
@@ -580,27 +581,27 @@ namespace AI
 
             if (defense == false & atu != 5)
             {
-                ColorPoints[atu-1] = 10000000;
+                ColorPoints[atu - 1] = 10000000;
             }
-            for (int i = 0; i < ColorPoints.Length; i++ )
+            for (int i = 0; i < ColorPoints.Length; i++)
             {
                 for (int j = 0; j < ColorPoints.Length; j++)
                 {
                     if (ColorPoints[j] == ColorPoints.Max())
                     {
-                        ColorPriorityList[i] = j+1;
+                        ColorPriorityList[i] = j + 1;
                         ColorPoints[j] = -10000;
                         break;
                     }
                 }
-            } 
-            
-        } 
+            }
 
-        public int PutCard(List<int> trick, int atu )
+        }
+
+        public int PutCard(List<int> trick, int atu)
         {
-            
-            if(trick.Count == 0)
+
+            if (trick.Count == 0)
             {
                 int index = 0;
                 List<int> cp = getList(ColorPriorityList[index]);
@@ -611,7 +612,7 @@ namespace AI
                 }
                 int color = ColorPriorityList[index];
                 List<int> cards = getList(ColorPriorityList[index]);
-                if(FindHighest(cards, color) == this.CardsHistory.HighestCard(ColorPriorityList[index]-1)
+                if (FindHighest(cards, color) == this.CardsHistory.HighestCard(ColorPriorityList[index]))
                 {
                     int card = FindHighest(cards, color);
                     this.AI_hand.RemoveCard(card);
@@ -629,28 +630,28 @@ namespace AI
             {
                 int color = trick[0] % 10;
                 List<int> cards = getList(color);
-                int highestCard = this.CardsHistory.HighestCard(color - 1);
-                if(cards.Contains(highestCard))
+                int highestCard = this.CardsHistory.HighestCard(color);
+                if (cards.Contains(highestCard))
                 {
                     this.AI_hand.RemoveCard(highestCard);
                     return highestCard;
                 }
 
-                if(cards.Count == 0)
+                if (cards.Count == 0)
                 {
-                    if(atu == 0 | getList(atu).Count == 0)
+                    if (atu == 0 | getList(atu).Count == 0)
                     {
                         return this.AI_hand.DropAndRemoveCard(atu);
                     }
                     else
                     {
                         List<int> atuCards = getList(atu);
-                        int atuCard = FindLowest(atuCards,atu);
+                        int atuCard = FindLowest(atuCards, atu);
                         this.AI_hand.RemoveCard(atuCard);
                         return atuCard;
                     }
                 }
-                int card = FindLowest(cards,color);
+                int card = FindLowest(cards, color);
                 this.AI_hand.RemoveCard(card);
                 return card;
             }
@@ -658,7 +659,7 @@ namespace AI
             {
                 int color = trick[0] % 10;
                 List<int> cards = getList(color);
-                int highestCard = this.CardsHistory.HighestCard(color - 1);
+                int highestCard = this.CardsHistory.HighestCard(color);
 
                 if (cards.Count == 0)
                 {
@@ -669,8 +670,8 @@ namespace AI
                     else
                     {
                         List<int> atuCards = getList(atu);
-                        int atuCard = FindLowest(atuCards,atu);
-                        if (trick[1]%10 != atu | trick[1] < atuCard)
+                        int atuCard = FindLowest(atuCards, atu);
+                        if (trick[1] % 10 != atu | trick[1] < atuCard)
                         {
                             this.AI_hand.RemoveCard(atuCard);
                             return atuCard;
@@ -678,7 +679,7 @@ namespace AI
                         else
                         {
                             atuCard = FindHigherThan(trick[1], cards, atu);
-                            if( atuCard == -1)
+                            if (atuCard == -1)
                             {
                                 return this.AI_hand.DropAndRemoveCard(atu);
                             }
@@ -692,14 +693,14 @@ namespace AI
                 }
 
                 int card = FindHighest(cards, color);
-                if(card-30 >= trick[0] & trick[1]%10 != atu & card > trick[1]) //TODO wszytskie karty np poszedł król dama walet
+                if (card - 30 >= trick[0] & trick[1] % 10 != atu & card > trick[1]) //TODO wszytskie karty np poszedł król dama walet
                 {
                     this.AI_hand.RemoveCard(card);
                     return card;
                 }
                 else
                 {
-                    card = FindLowest(cards,color);
+                    card = FindLowest(cards, color);
                     this.AI_hand.RemoveCard(card);
                     return card;
 
@@ -711,11 +712,11 @@ namespace AI
                 int color = trick[0] % 10;
                 List<int> cards = getList(color);
                 int winner = CurrentWinner(trick, atu);
-                if(winner == 1)
+                if (winner == 1)
                 {
                     if (cards.Count == 0)
                     {
-                        return this.AI_hand.DropAndRemoveCard(atu); 
+                        return this.AI_hand.DropAndRemoveCard(atu);
                     }
                     else
                     {
@@ -723,7 +724,7 @@ namespace AI
                         this.AI_hand.RemoveCard(card);
                         return card;
                     }
-                        
+
                 }
 
                 if (cards.Count == 0)
@@ -734,12 +735,12 @@ namespace AI
                     }
                     else
                     {
-                        if(trick[winner] % 10 == atu)
+                        if (trick[winner] % 10 == atu)
                         {
                             int atuCard = FindHigherThan(trick[1], cards, atu);
                             if (atuCard == -1)
                             {
-                                return this.AI_hand.DropAndRemoveCard(atu); 
+                                return this.AI_hand.DropAndRemoveCard(atu);
                             }
                             else
                             {
@@ -751,7 +752,7 @@ namespace AI
                         else
                         {
                             List<int> atuCards = getList(atu);
-                            int atuCard = FindLowest(atuCards,atu);
+                            int atuCard = FindLowest(atuCards, atu);
                             this.AI_hand.RemoveCard(atuCard);
                             return atuCard;
                         }
@@ -787,7 +788,7 @@ namespace AI
 
         public List<int> getList(int color)
         {
-            if(color == 1)
+            if (color == 1)
             {
                 return this.AI_hand.C;
             }
@@ -807,12 +808,12 @@ namespace AI
             return null;
         }
 
-        public int FindLowest( List<int>cards, int color)
+        public int FindLowest(List<int> cards, int color)
         {
             int min = cards[0];
-            for (int i = 1;i < cards.Count; i++)
+            for (int i = 1; i < cards.Count; i++)
             {
-                if(cards[i]< min)
+                if (cards[i] < min)
                 {
                     min = cards[i];
                 }
@@ -836,15 +837,15 @@ namespace AI
         {
             int max = FindHighest(cards, color);
 
-            if(max < hisCard)
+            if (max < hisCard)
             {
                 return -1;
             }
             else
-            {   
-                for(int i = 0; i < cards.Count; i++)
+            {
+                for (int i = 0; i < cards.Count; i++)
                 {
-                    if(cards[i] < max & cards[i] > hisCard)
+                    if (cards[i] < max & cards[i] > hisCard)
                     {
                         max = cards[i];
                     }
@@ -857,19 +858,19 @@ namespace AI
         {
             int max = trick[0];
             int winner = 0;
-            for (int i = 1; i < 3;i++)
+            for (int i = 1; i < 3; i++)
             {
-                if(trick[i] % 10 == atu & max %10 != atu)
+                if (trick[i] % 10 == atu & max % 10 != atu)
                 {
                     winner = i;
                     max = trick[i];
                 }
-                if(max % 10 == atu & trick[i] == atu & trick[i] > max )
+                if (max % 10 == atu & trick[i] == atu & trick[i] > max)
                 {
                     winner = i;
                     max = trick[i];
                 }
-                if (max % 10 == trick[0] %10  & trick[i] % 10  == trick[0] % 10 & trick[i] > max )
+                if (max % 10 == trick[0] % 10 & trick[i] % 10 == trick[0] % 10 & trick[i] > max)
                 {
                     winner = i;
                     max = trick[i];
@@ -913,8 +914,8 @@ namespace AI
 
             public int DropAndRemoveCard(int atu)
             {
- 
-                if((C.Count >= D.Count | atu == 2 ) & (C.Count >= H.Count | atu == 3) & (C.Count >= S.Count | atu == 4))
+
+                if ((C.Count >= D.Count | atu == 2) & (C.Count >= H.Count | atu == 3) & (C.Count >= S.Count | atu == 4))
                 {
                     int min = FindLowest(C);
                     this.RemoveCard(min);
@@ -969,26 +970,31 @@ namespace AI
                 this.D = D;
                 this.H = H;
                 this.S = S;
-                Cards.Append(this.C);
-                Cards.Append(this.D);
-                Cards.Append(this.H);
-                Cards.Append(this.S);
-
+                Cards = new List<List<int>>();
             }
 
             public void AddTrick(int C, int D, int H, int S)
-            {   
+            {
                 this.C.Append(C);
                 this.D.Append(D);
                 this.H.Append(H);
                 this.S.Append(S);
+                Cards = new List<List<int>>();
+                Cards.Append(this.C);
+                Cards.Append(this.D);
+                Cards.Append(this.H);
+                Cards.Append(this.S);
             }
 
             public int HighestCard(int color)
             {
-                int i = 13;
-
-                while(Cards[i].Contains(i))
+                int i = 14;
+                if (Cards.Count == 0)
+                {
+                    return i * 10 + color;
+                } 
+                
+                while (Cards[color - 1].Contains(i))
                 {
                     i--;
                 }
@@ -996,4 +1002,5 @@ namespace AI
                 return i * 10 + color;
             }
         }
+    }
 }
