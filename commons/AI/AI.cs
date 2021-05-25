@@ -9,6 +9,7 @@ namespace AI
     class AI
     {
         public Hand AI_hand;
+        public PlayedCards CardsHistory;
         public int Points;
         public int Colors5;
         public bool pass = false;
@@ -17,6 +18,7 @@ namespace AI
         public AI(List<int> C, List<int> D, List<int> H, List<int> S)
         {
             this.AI_hand = new Hand(C, D, H, S);
+            this.CardsHistory = new AI.PlayedCards(C, D, H, S);
             this.Points = Count_Points();
             this.Find_Color();
         }
