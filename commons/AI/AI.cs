@@ -597,7 +597,7 @@ namespace AI
             
         } 
 
-        public int PutCard(List<int> trick, int atu, List<int> highestCards )
+        public int PutCard(List<int> trick, int atu )
         {
             
             if(trick.Count == 0)
@@ -611,7 +611,7 @@ namespace AI
                 }
                 int color = ColorPriorityList[index];
                 List<int> cards = getList(ColorPriorityList[index]);
-                if(FindHighest(cards, color) == highestCards[ColorPriorityList[index]-1])
+                if(FindHighest(cards, color) == this.CardsHistory.HighestCard(ColorPriorityList[index]-1)
                 {
                     int card = FindHighest(cards, color);
                     this.AI_hand.RemoveCard(card);
@@ -629,7 +629,7 @@ namespace AI
             {
                 int color = trick[0] % 10;
                 List<int> cards = getList(color);
-                int highestCard = highestCards[color - 1];
+                int highestCard = this.CardsHistory.HighestCard(color - 1);
                 if(cards.Contains(highestCard))
                 {
                     this.AI_hand.RemoveCard(highestCard);
@@ -658,7 +658,7 @@ namespace AI
             {
                 int color = trick[0] % 10;
                 List<int> cards = getList(color);
-                int highestCard = highestCards[color - 1];
+                int highestCard = this.CardsHistory.HighestCard(color - 1);
 
                 if (cards.Count == 0)
                 {
