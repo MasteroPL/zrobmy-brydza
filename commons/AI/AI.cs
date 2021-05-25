@@ -678,7 +678,7 @@ namespace AI
                             atuCard = FindHigherThan(trick[1], cards, atu);
                             if( atuCard == -1)
                             {
-                                return this.AI_hand.DropAndRemoveCard(atu); // TODO czy nie atu !!!!!!!!!!!!!!!
+                                return this.AI_hand.DropAndRemoveCard(atu);
                             }
                             else
                             {
@@ -713,7 +713,7 @@ namespace AI
                 {
                     if (cards.Count == 0)
                     {
-                        return this.AI_hand.DropAndRemoveCard(atu); // TODO czy nie atu !!!!!!!!!!!!!!!
+                        return this.AI_hand.DropAndRemoveCard(atu); 
                     }
                     else
                     {
@@ -737,7 +737,7 @@ namespace AI
                             int atuCard = FindHigherThan(trick[1], cards, atu);
                             if (atuCard == -1)
                             {
-                                return this.AI_hand.DropAndRemoveCard(atu); // TODO czy nie atu !!!!!!!!!!!!!!!
+                                return this.AI_hand.DropAndRemoveCard(atu); 
                             }
                             else
                             {
@@ -954,5 +954,44 @@ namespace AI
                 return min;
             }
         }
-    }
+        public class PlayedCards
+        {
+            public List<List<int>> Cards;
+            public List<int> C;
+            public List<int> D;
+            public List<int> H;
+            public List<int> S;
+            public PlayedCards(List<int> C, List<int> D, List<int> H, List<int> S)
+            {
+                this.C = C;
+                this.D = D;
+                this.H = H;
+                this.S = S;
+                Cards.Append(this.C);
+                Cards.Append(this.D);
+                Cards.Append(this.H);
+                Cards.Append(this.S);
+
+            }
+
+            public void AddTrick(int C, int D, int H, int S)
+            {   
+                this.C.Append(C);
+                this.D.Append(D);
+                this.H.Append(H);
+                this.S.Append(S);
+            }
+
+            public int HighestCard(int color)
+            {
+                int i = 13;
+
+                while(Cards[i].Contains(i))
+                {
+                    i--;
+                }
+
+                return i * 10 + color;
+            }
+        }
 }
