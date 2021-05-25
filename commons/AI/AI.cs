@@ -638,7 +638,7 @@ namespace AI
                 {
                     if(atu == 0 | getList(atu).Count == 0)
                     {
-                        return this.AI_hand.DropAndRemoveCard();
+                        return this.AI_hand.DropAndRemoveCard(atu);
                     }
                     else
                     {
@@ -662,7 +662,7 @@ namespace AI
                 {
                     if ((atu == 0 | getList(atu).Count == 0) & trick[0] != highestCard)
                     {
-                        return this.AI_hand.DropAndRemoveCard();
+                        return this.AI_hand.DropAndRemoveCard(atu);
                     }
                     else
                     {
@@ -678,7 +678,7 @@ namespace AI
                             atuCard = FindHigherThan(trick[1], cards, atu);
                             if( atuCard == -1)
                             {
-                                return this.AI_hand.DropAndRemoveCard(); // TODO czy nie atu !!!!!!!!!!!!!!!
+                                return this.AI_hand.DropAndRemoveCard(atu); // TODO czy nie atu !!!!!!!!!!!!!!!
                             }
                             else
                             {
@@ -690,7 +690,7 @@ namespace AI
                 }
 
                 int card = FindHighest(cards, color);
-                if(card-30 >= trick[0] & trick[1]%10 != atu & card > trick[1]) //TODO wszytskie karty
+                if(card-30 >= trick[0] & trick[1]%10 != atu & card > trick[1]) //TODO wszytskie karty np poszedł król dama walet
                 {
                     this.AI_hand.RemoveCard(card);
                     return card;
@@ -713,7 +713,7 @@ namespace AI
                 {
                     if (cards.Count == 0)
                     {
-                        return this.AI_hand.DropAndRemoveCard(); // TODO czy nie atu !!!!!!!!!!!!!!!
+                        return this.AI_hand.DropAndRemoveCard(atu); // TODO czy nie atu !!!!!!!!!!!!!!!
                     }
                     else
                     {
@@ -728,7 +728,7 @@ namespace AI
                 {
                     if (atu == 0 | getList(atu).Count == 0)
                     {
-                        return this.AI_hand.DropAndRemoveCard();
+                        return this.AI_hand.DropAndRemoveCard(atu);
                     }
                     else
                     {
@@ -737,7 +737,7 @@ namespace AI
                             int atuCard = FindHigherThan(trick[1], cards, atu);
                             if (atuCard == -1)
                             {
-                                return this.AI_hand.DropAndRemoveCard(); // TODO czy nie atu !!!!!!!!!!!!!!!
+                                return this.AI_hand.DropAndRemoveCard(atu); // TODO czy nie atu !!!!!!!!!!!!!!!
                             }
                             else
                             {
@@ -909,31 +909,31 @@ namespace AI
                 }
             }
 
-            public int DropAndRemoveCard()
+            public int DropAndRemoveCard(int atu)
             {
  
-                if(C.Count >= D.Count & C.Count >= H.Count & C.Count >= S.Count)
+                if((C.Count >= D.Count | atu == 2 ) & (C.Count >= H.Count | atu == 3) & (C.Count >= S.Count | atu == 4))
                 {
                     int min = FindLowest(C);
                     this.RemoveCard(min);
                     return min * 10 + 1;
                 }
 
-                if (D.Count > C.Count & D.Count >= H.Count & D.Count >= S.Count)
+                if ((D.Count > C.Count | atu == 1) & (D.Count >= H.Count | atu == 3) & (D.Count >= S.Count | atu == 4))
                 {
                     int min = FindLowest(D);
                     this.RemoveCard(min);
                     return min * 10 + 2;
                 }
 
-                if (H.Count > C.Count & H.Count > D.Count & H.Count >= S.Count)
+                if ((H.Count > C.Count | atu == 1) & (H.Count > D.Count | atu == 2) & (H.Count >= S.Count | atu == 4))
                 {
                     int min = FindLowest(H);
                     this.RemoveCard(min);
                     return min * 10 + 3;
                 }
 
-                if (S.Count > H.Count & S.Count > D.Count & S.Count > H.Count)
+                if ((S.Count > C.Count | atu == 1) & (S.Count > D.Count | atu == 2) & (S.Count > H.Count | atu == 3))
                 {
                     int min = FindLowest(S);
                     this.RemoveCard(min);
