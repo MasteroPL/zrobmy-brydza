@@ -99,6 +99,9 @@
     <Compile Include="Serializers\BiddingSerializer.cs" />
     <Compile Include="Serializers\ChatMessageSerializer.cs" />
     <Compile Include="Serializers\ContractSerializer.cs" />
+    <Compile Include="Serializers\LobbySignalGameFinishedSerializer.cs" />
+    <Compile Include="Serializers\LobbySignalGameStartedNextBiddingSerializer.cs" />
+    <Compile Include="Serializers\LobbySignalGameStateChangedSerializer.cs" />
     <Compile Include="Serializers\LobbySignalLobbyStateChangedSerializer.cs" />
     <Compile Include="Serializers\LobbySignalNewBidSerializer.cs" />
     <Compile Include="Serializers\LobbySignalsSerializer.cs" />

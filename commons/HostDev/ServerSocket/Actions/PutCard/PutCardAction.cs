@@ -110,6 +110,30 @@ namespace ServerSocket.Actions.PutCard
             };
             lobby.Broadcast(broadcastWrapper.GetApiObject());
 
+            if(game.GameState == GameState.BIDDING) {
+                var bData = new LobbySignalGameStartedNextBiddingSerializer() {
+                    Signal = LobbySignalGameStartedNextBiddingSerializer.SIGNAL_GAME_STARTED_NEXT_BIDDING
+                };
+                var bWrapper = new StandardCommunicateSerializer() {
+                    CommunicateType = StandardCommunicateSerializer.TYPE_LOBBY_SIGNAL,
+                    Data = bData.GetApiObject()
+                };
+                lobby.Broadcast(bWrapper.GetApiObject());
+            }
+            else if(game.GameState == GameState.GAME_FINISHED) {
+                var bData = new LobbySignalGameFinishedSerializer() {
+                    Signal = LobbySignalGameFinishedSerializer.SIGNAL_GAME_FINISHED,
+                    Winner = (game.RoundsNS == 2) ? (short)0 : (short)1,
+                    PointsNE = game.PointsNS[0] + game.PointsNS[1],
+                    PointsWE = game.PointsWE[0] + game.PointsWE[1]
+                };
+                var bWrapper = new StandardCommunicateSerializer() {
+                    CommunicateType = StandardCommunicateSerializer.TYPE_LOBBY_SIGNAL,
+                    Data = bData.GetApiObject()
+                };
+                lobby.Broadcast(bWrapper.GetApiObject());
+            }
+
             resp.CardFigure = (int)card.Figure;
             resp.CardColor = (int)card.Color;
             resp.OwnerPosition = (int)data.CardOwnerPosition;

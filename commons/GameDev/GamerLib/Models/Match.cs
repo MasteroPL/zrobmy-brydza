@@ -148,7 +148,7 @@ namespace GameManagerLib.Models
             }
 
         }
-        private bool StartBidding()
+        public bool StartBidding()
         {
             if (this.GameState == GameState.BIDDING)
             {

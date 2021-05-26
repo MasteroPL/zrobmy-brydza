@@ -233,6 +233,22 @@ public class GameManagerScript : MonoBehaviour
 
             LobbyState = (LobbyState)serializer.LobbyState;
         }
+        else if(signalName == LobbySignalGameStartedNextBiddingSerializer.SIGNAL_GAME_STARTED_NEXT_BIDDING) {
+
+            Game.Match.ClearPlayerHands();
+            
+            if (CurrentGrandpaCards != null)
+                CurrentGrandpaCards.Clear();
+            CurrentGrandpaCards = null;
+            // SendGetHandRequest = true;
+
+            // TODO Rozpoczac licytacje
+
+            if (Game.Match.GameState != GameState.BIDDING) {
+                Game.Match.GameState = GameState.BIDDING;
+                Game.Match.StartBidding();
+            }
+        }
     }
     private void OnServerSignalReceive(object sender, StandardResponseWrapperSerializer data) {
         //Debug.Log(data.CommunicateType);
