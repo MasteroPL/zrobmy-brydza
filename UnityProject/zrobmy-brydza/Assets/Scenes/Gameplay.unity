@@ -7580,6 +7580,10 @@ MonoBehaviour:
   hiddenCard: {fileID: 8431683507535610254}
   AuctionModule: {fileID: 1847781509}
   SeatManager: {fileID: 1384238558}
+  DeclaredContractLabel: {fileID: 1900271857}
+  DeclaredContractLabelBackground: {fileID: 1981548268}
+  TeamTakenHandsCounterLabel: {fileID: 652037762}
+  TeamTakenHandsCounterLabelBackground: {fileID: 1990164029}
   IgnoreCommunication: 0
   LobbyState: 0
   ChatButton: {fileID: 489002808}
@@ -10375,6 +10379,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88569fac59b3c2a4d8a87222b2e257d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NS: {fileID: 200422111}
+  WE: {fileID: 2032120695}
 --- !u!4 &1073802092
 Transform:
   m_ObjectHideFlags: 0
@@ -12443,7 +12449,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 106.47339, y: 35.07489}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1373166919

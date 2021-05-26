@@ -117,40 +117,14 @@ public class AuctionModule : MonoBehaviour
         XButton.onClick.AddListener(() => { AuctionState.DeclareX(); });
         XXButton.onClick.AddListener(() => { AuctionState.DeclareXX(); });
         OKButton.onClick.AddListener(SendBidRequest);
-        PassButton.onClick.AddListener(() =>
-        {
-            bool correctlyDeclared = MainModule.AddBid(ContractHeight.NONE, ContractColor.NONE, UserData.Position);
-            if (correctlyDeclared)
-            {
-                PassCounter++;
-                switch (MainModule.Match.CurrentBidding.CurrentPlayer)
-                {
-                    case PlayerTag.N:
-                        NPlayerDeclarations.text += "pas" + "\n";
-                        break;
-                    case PlayerTag.E:
-                        EPlayerDeclarations.text += "pas" + "\n";
-                        break;
-                    case PlayerTag.S:
-                        SPlayerDeclarations.text += "pas" + "\n";
-                        break;
-                    case PlayerTag.W:
-                        WPlayerDeclarations.text += "pas" + "\n";
-                        break;
-                }
-                if (GameConfig.DevMode)
-                {
-                    UserData.Position = MainModule.Match.CurrentBidding.CurrentPlayer;
-                }
-            }
-        });
+        PassButton.onClick.AddListener(SendBidRequest);
     }
 
     public void SendBidRequest() {
         // "OK" click shouldn't let pass
-        if (AuctionState.ContractCache.ContractHeight == ContractHeight.NONE || AuctionState.ContractCache.ContractColor == ContractColor.NONE) {
-            return;
-        }
+        //if (AuctionState.ContractCache.ContractHeight == ContractHeight.NONE || AuctionState.ContractCache.ContractColor == ContractColor.NONE) {
+        //    return;
+        //}
 
         // send request
         MainModule.GameManagerScript.SendBidRequest(

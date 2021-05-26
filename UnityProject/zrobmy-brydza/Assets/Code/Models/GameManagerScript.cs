@@ -65,6 +65,11 @@ public class GameManagerScript : MonoBehaviour
     //public UserData UserData;
     [SerializeField] public SeatsManagerScript SeatManager;
 
+    [SerializeField] GameObject DeclaredContractLabel;
+    [SerializeField] GameObject DeclaredContractLabelBackground;
+    [SerializeField] GameObject TeamTakenHandsCounterLabel;
+    [SerializeField] GameObject TeamTakenHandsCounterLabelBackground;
+
     /// <summary>
     /// W pewnych sytuacjach, na określony czas chcemy ignorować komunikację z serwerem. Ustawiamy wtedy tą flagę na "TRUE"
     /// </summary>
@@ -184,9 +189,9 @@ public class GameManagerScript : MonoBehaviour
                 LobbyState = LobbyState.IN_GAME;
                 Game.Match.Start();
 
-                var getHandRequestData = new ServerSocket.Actions.GetHand.RequestSerializer();
-                getHandRequestData.PlayerTag = (int)UserData.Position;
-                PerformServerAction("get-hand", getHandRequestData.GetApiObject(), this.GetHandCallback);
+                //var getHandRequestData = new ServerSocket.Actions.GetHand.RequestSerializer();
+                //getHandRequestData.PlayerTag = (int)UserData.Position;
+                //PerformServerAction("get-hand", getHandRequestData.GetApiObject(), this.GetHandCallback);
             }
         }
         else if(signalName == LobbySignalNewBidSerializer.SIGNAL_NEW_BID) {
@@ -204,6 +209,17 @@ public class GameManagerScript : MonoBehaviour
                     );
                     Game.Match.AddBid(contract);
                     AuctionModule.AddContractToList(contract);
+
+                    if (Game.Match.CurrentBidding.IsEnd()) {
+                        if (Game.Match.CurrentGame.Declarer == PlayerTag.N || Game.Match.CurrentGame.Declarer == PlayerTag.S) {
+                            DeclaredContractLabel.GetComponent<Text>().text = "Contract:\nNS, " + Game.Match.CurrentBidding.HighestContract.ToString();
+                        }
+                        else if (Game.Match.CurrentGame.Declarer == PlayerTag.E || Game.Match.CurrentGame.Declarer == PlayerTag.W) {
+                            DeclaredContractLabel.GetComponent<Text>().text = "Contract:\nEW, " + Game.Match.CurrentBidding.HighestContract.ToString();
+                        }
+                        TeamTakenHandsCounterLabel.GetComponent<Text>().text = "NS : 0\nEW : 0";
+                    }
+
                 } catch (WrongBidException) {
                     // TODO: Pobrać całą licytację jeszcze raz
                 }
@@ -234,9 +250,14 @@ public class GameManagerScript : MonoBehaviour
             LobbyState = (LobbyState)serializer.LobbyState;
         }
         else if(signalName == LobbySignalGameStartedNextBiddingSerializer.SIGNAL_GAME_STARTED_NEXT_BIDDING) {
+            var serializer = new LobbySignalGameStartedNextBiddingSerializer(signalData);
+            serializer.Validate();
 
             Game.Match.ClearPlayerHands();
-            
+
+            if (MyCards != null)
+                MyCards.Clear();
+            MyCards = null;
             if (CurrentGrandpaCards != null)
                 CurrentGrandpaCards.Clear();
             CurrentGrandpaCards = null;
@@ -248,6 +269,18 @@ public class GameManagerScript : MonoBehaviour
                 Game.Match.GameState = GameState.BIDDING;
                 Game.Match.StartBidding();
             }
+
+            Game.Match.PointsNS[0] = serializer.PointsNSBelowLine;
+            Game.Match.PointsNS[1] = serializer.PointsNSAboveLine;
+            Game.Match.PointsWE[0] = serializer.PointsWEBelowLine;
+            Game.Match.PointsWE[1] = serializer.PointsWEAboveLine;
+            Game.Match.RoundsNS = serializer.RoundsNS;
+            Game.Match.RoundsWE = serializer.RoundsWE;
+
+            TextManager.setNSPointsValue(Game.Match.PointsNS[1].ToString(), Game.Match.PointsNS[0].ToString(), Game.Match.RoundsNS.ToString());
+            TextManager.setWEPointsValue(Game.Match.PointsWE[1].ToString(), Game.Match.PointsWE[0].ToString(), Game.Match.RoundsWE.ToString());
+
+            ClearContractLabelPaint();
         }
     }
     private void OnServerSignalReceive(object sender, StandardResponseWrapperSerializer data) {
@@ -289,8 +322,8 @@ public class GameManagerScript : MonoBehaviour
 
     void Start()
     {
-        GameObject.Find("TeamTakenHandsCounterLabel").GetComponent<Text>().text = "";
-        GameObject.Find("DeclaredContractLabel").GetComponent<Text>().text = "";
+        TeamTakenHandsCounterLabel.GetComponent<Text>().text = "";
+        DeclaredContractLabel.GetComponent<Text>().text = "";
 
         // przypisanie click handlerów do przyciskow panelu chatu/licytacji/punktacji
         ChatButton.onClick.AddListener(() => { TextManager.ChatButton(); });
@@ -417,7 +450,15 @@ public class GameManagerScript : MonoBehaviour
                     break;
                 case ConnectionState.IDLE:
                     UserData.ClientConnection.UpdateCommunication();
-                    if (
+                    if(
+                        MyCards == null
+                        && (Game.Match.GameState == GameState.BIDDING || Game.Match.GameState == GameState.PLAYING)
+                    ) {
+                        var getHandRequestData = new ServerSocket.Actions.GetHand.RequestSerializer();
+                        getHandRequestData.PlayerTag = (int)UserData.Position;
+                        PerformServerAction("get-hand", getHandRequestData.GetApiObject(), this.GetHandCallback);
+                    }
+                    else if (
                         Game.Match.GameState == GameState.PLAYING
                         && (
                                 Game.Match.CurrentGame.TrickList.Count > 0
@@ -1171,12 +1212,12 @@ public class GameManagerScript : MonoBehaviour
             tmp.transform.position = new Vector3(-100, 0, 0);
         }
 
-        Text TeamTakenHandsCounterLabel = GameObject.Find("TeamTakenHandsCounterLabel").GetComponent<Text>();
+        Text TeamTakenHandsCounterLabelText = TeamTakenHandsCounterLabel.GetComponent<Text>();
         int NSTaken = Game.CalculateTeamTricks(PlayerTag.N, PlayerTag.S);
         int EWTaken = Game.CalculateTeamTricks(PlayerTag.E, PlayerTag.W);
 
-        TeamTakenHandsCounterLabel.text = "NS : " + NSTaken.ToString() + "\n";
-        TeamTakenHandsCounterLabel.text += "EW : " + EWTaken.ToString();
+        TeamTakenHandsCounterLabelText.text = "NS : " + NSTaken.ToString() + "\n";
+        TeamTakenHandsCounterLabelText.text += "EW : " + EWTaken.ToString();
 
         if (Game.Match.CurrentGame.Declarer == PlayerTag.N || Game.Match.CurrentGame.Declarer == PlayerTag.S) {
             PaintContractLabel(NSTaken, EWTaken);
@@ -1305,15 +1346,23 @@ public class GameManagerScript : MonoBehaviour
         {
             if (6 + (int)Game.Match.CurrentBidding.HighestContract.ContractHeight <= TakenHands)
             {
-                GameObject.Find("TeamTakenHandsCounterLabelBackground").GetComponent<Image>().color = new Color32(29, 143, 35, 255);
-                GameObject.Find("DeclaredContractLabelBackground").GetComponent<Image>().color = new Color32(29, 143, 35, 255);
+                TeamTakenHandsCounterLabelBackground.GetComponent<Image>().color = new Color32(29, 143, 35, 255);
+                DeclaredContractLabelBackground.GetComponent<Image>().color = new Color32(29, 143, 35, 255);
             }
             else if (EnemyTakenHands > 13 - 6 - (int)Game.Match.CurrentBidding.HighestContract.ContractHeight)
             {
-                GameObject.Find("TeamTakenHandsCounterLabelBackground").GetComponent<Image>().color = new Color32(219, 31, 35, 255);
-                GameObject.Find("DeclaredContractLabelBackground").GetComponent<Image>().color = new Color32(219, 31, 35, 255);
+                TeamTakenHandsCounterLabelBackground.GetComponent<Image>().color = new Color32(219, 31, 35, 255);
+                DeclaredContractLabelBackground.GetComponent<Image>().color = new Color32(219, 31, 35, 255);
             }
         }
+        else {
+            TeamTakenHandsCounterLabelBackground.GetComponent<Image>().color = new Color32(0, 0, 0, 0);
+            DeclaredContractLabelBackground.GetComponent<Image>().color = new Color32(0, 0, 0, 0);
+        }
+    }
+    private void ClearContractLabelPaint() {
+        TeamTakenHandsCounterLabelBackground.GetComponent<Image>().color = new Color32(0, 0, 0, 0);
+        DeclaredContractLabelBackground.GetComponent<Image>().color = new Color32(0, 0, 0, 0);
     }
 
     private float[] CalculatePutCardPosition(char Position)

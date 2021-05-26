@@ -16,7 +16,15 @@ namespace GameManagerLib.Models
         public List<Bidding> BiddingList;
         public GameInfo CurrentGame;
         public List<GameInfo> GameList;
+        /// <summary>
+        /// 0 - pod kreską
+        /// 1 - nad kreską
+        /// </summary>
         public int[] PointsNS; // 0 - pod kreską; 1 - nad kreską
+        /// <summary>
+        /// 0 - pod kreską
+        /// 1 - nad kreską
+        /// </summary>
         public int[] PointsWE;
         public int RoundsNS = 0;
         public int RoundsWE = 0;
