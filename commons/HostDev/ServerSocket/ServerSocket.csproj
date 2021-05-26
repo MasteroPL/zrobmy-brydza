@@ -62,6 +62,9 @@
     <Compile Include="Actions\PutCard\PutCardAction.cs" />
     <Compile Include="Actions\PutCard\RequestSerializer.cs" />
     <Compile Include="Actions\PutCard\ResponseSerializer.cs" />
+    <Compile Include="Actions\RetrieveTableData\RequestSerializer.cs" />
+    <Compile Include="Actions\RetrieveTableData\ResponseSerializer.cs" />
+    <Compile Include="Actions\RetrieveTableData\RetrieveTableDataAction.cs" />
     <Compile Include="Actions\SendChat\RequestSerializer.cs" />
     <Compile Include="Actions\SendChat\ResponseSerializer.cs" />
     <Compile Include="Actions\SendChat\SendChatAction.cs" />
@@ -99,6 +102,7 @@
     <Compile Include="Serializers\BiddingSerializer.cs" />
     <Compile Include="Serializers\ChatMessageSerializer.cs" />
     <Compile Include="Serializers\ContractSerializer.cs" />
+    <Compile Include="Serializers\GameInfoSerializer.cs" />
     <Compile Include="Serializers\LobbySignalNewBidSerializer.cs" />
     <Compile Include="Serializers\LobbySignalsSerializer.cs" />
     <Compile Include="Serializers\LobbySignalUserJoinedSerializer.cs" />
@@ -106,10 +110,12 @@
     <Compile Include="Serializers\LobbySignalUserSatSerializer.cs" />
     <Compile Include="Serializers\LobbySignalUserSittedOutSerializer.cs" />
     <Compile Include="Serializers\LobbyUserSerializer.cs" />
+    <Compile Include="Serializers\MatchSerializer.cs" />
     <Compile Include="Serializers\PlayerClickedGameStartSerializer.cs" />
     <Compile Include="Serializers\PlayerSerializer.cs" />
     <Compile Include="Serializers\CardSerializer.cs" />
     <Compile Include="Serializers\PutCardSignalSerializer.cs" />
+    <Compile Include="Serializers\TrickSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
