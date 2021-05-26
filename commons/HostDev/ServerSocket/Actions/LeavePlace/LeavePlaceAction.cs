@@ -32,6 +32,8 @@ namespace ServerSocket.Actions.LeavePlace{
                     game.RemovePlayer(player);
                     conn.Session.Remove("player");
 
+                    lobby.SetLobbyState(LobbyState.IDLE);
+
                     var username = conn.Session.Get<string>("username");
 
                     var signal = new LobbySignalUserSittedOutSerializer() {

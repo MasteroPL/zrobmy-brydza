@@ -77,41 +77,36 @@ namespace AI
             kakuter3.SetColorPriorityList(null, atu, false);
             kakuter4.SetColorPriorityList(null, atu, true);
 
-            List<int> highestCards = new List<int>();
-            highestCards.Add(141);
-            highestCards.Add(142);
-            highestCards.Add(143);
-            highestCards.Add(144);
-            trick.Add(kakuter2.PutCard(trick,atu,highestCards));
-            trick.Add(kakuter3.PutCard(trick, atu, highestCards));
-            trick.Add(kakuter4.PutCard(trick, atu, highestCards));
-            trick.Add(kakuter1.PutCard(trick, atu, highestCards));
+
+            trick.Add(kakuter2.PutCard(trick,atu));
+            trick.Add(kakuter3.PutCard(trick, atu));
+            trick.Add(kakuter4.PutCard(trick, atu));
+            trick.Add(kakuter1.PutCard(trick, atu));
 
             Console.WriteLine(trick[0]);
             Console.WriteLine(trick[1]);
             Console.WriteLine(trick[2]);
             Console.WriteLine(trick[3]);
 
-            highestCards[0] = 131;
             trick = new List<int>();
 
-            trick.Add(kakuter2.PutCard(trick, atu, highestCards));
-            trick.Add(kakuter3.PutCard(trick, atu, highestCards));
-            trick.Add(kakuter4.PutCard(trick, atu, highestCards));
-            trick.Add(kakuter1.PutCard(trick, atu, highestCards));
+            trick.Add(kakuter2.PutCard(trick, atu));
+            trick.Add(kakuter3.PutCard(trick, atu));
+            trick.Add(kakuter4.PutCard(trick, atu));
+            trick.Add(kakuter1.PutCard(trick, atu));
 
             Console.WriteLine(trick[0]);
             Console.WriteLine(trick[1]);
             Console.WriteLine(trick[2]);
             Console.WriteLine(trick[3]);
 
-            highestCards[0] = 111;
+
             trick = new List<int>();
 
-            trick.Add(kakuter3.PutCard(trick, atu, highestCards));
-            trick.Add(kakuter4.PutCard(trick, atu, highestCards));
-            trick.Add(kakuter1.PutCard(trick, atu, highestCards));
-            trick.Add(kakuter2.PutCard(trick, atu, highestCards));
+            trick.Add(kakuter3.PutCard(trick, atu));
+            trick.Add(kakuter4.PutCard(trick, atu));
+            trick.Add(kakuter1.PutCard(trick, atu));
+            trick.Add(kakuter2.PutCard(trick, atu));
 
             Console.WriteLine(trick[0]);
             Console.WriteLine(trick[1]);

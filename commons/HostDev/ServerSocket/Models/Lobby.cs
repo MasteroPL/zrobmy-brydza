@@ -29,6 +29,8 @@ namespace ServerSocket.Models {
         public string Id { private set; get; }
         public LobbiesManager ParentManager { private set; get; }
 
+        public LobbyState LobbyState { private set; get; }
+
         public bool UsernameAlreadyJoined(string username) {
             foreach(var client in ConnectedClients) {
                 if(client.Session.Get<string>("username").CompareTo(username) == 0) {
@@ -45,11 +47,35 @@ namespace ServerSocket.Models {
             // Lista akcji definiowana w konfiguracji
             ActionsManager = new ActionsManager(MainConfig.GAME_ACTIONS);
             Password = password;
+            LobbyState = LobbyState.IDLE;
 
             Game = new Match();
         }
         ~Lobby() {
             Dispose();
+        }
+        /// <summary>
+        /// Zmienia stan lobby jeśli jest inny niż podany w argumencie "newState"
+        /// </summary>
+        /// <param name="newState">Nowy stan do ustawienia</param>
+        /// <param name="sendBroadcast">Określa czy należy wysłać broadcast do graczy o zmianie stanu lobby (jeżeli nastąpi zmiana stanu)</param>
+        public void SetLobbyState(LobbyState newState, bool sendBroadcast=true) {
+            if(newState != LobbyState) {
+                LobbyState = newState;
+
+                if (sendBroadcast) {
+                    // Broadcast do graczy
+                    var broadcastData = new LobbySignalLobbyStateChangedSerializer() {
+                        Signal = LobbySignalLobbyStateChangedSerializer.SIGNAL_LOBBY_STATE_CHANGED,
+                        LobbyState = (int)LobbyState
+                    };
+                    var broadcastWrapper = new StandardCommunicateSerializer() {
+                        CommunicateType = StandardCommunicateSerializer.TYPE_LOBBY_SIGNAL,
+                        Data = broadcastData.GetApiObject()
+                    };
+                    Broadcast(broadcastWrapper.GetApiObject());
+                }
+            }
         }
 
         public void Join(ClientConnection newConnection) {
@@ -109,6 +135,8 @@ namespace ServerSocket.Models {
                 Game.RemovePlayer(player);
                 signal.WasSitted = true;
                 signal.PlaceTag = (int)player.Tag;
+
+                SetLobbyState(LobbyState.IDLE); // Użytkownik siedział przy stole, jeśli gra była w trakcie, należy ją zapauzować
             }
             else {
                 signal.WasSitted = false;
@@ -191,4 +219,14 @@ namespace ServerSocket.Models {
             } catch (ArgumentException) { }
         }
     }
+
+    /// <summary>
+    /// Lobby może być w dwóch stanach:
+    /// * IDLE - tj. rozgrywka nie jest rozpoczęta, lub z dowolnych przyczyn została zapauzowana
+    /// * IN_GAME - tj. rozgrywka jest w trakcie trwania
+    /// </summary>
+    public enum LobbyState {
+        IDLE = 0,
+        IN_GAME = 1
+    };
 }

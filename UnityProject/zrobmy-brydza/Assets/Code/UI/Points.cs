@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class Points : MonoBehaviour
 {
+    [SerializeField] GameObject AuctionList;
+
     private void Start()
     {
         GameObject textfield;
-        textfield = GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/AuctionList/" + this.name);
+        textfield = AuctionList;
         textfield.GetComponent<UnityEngine.UI.Text>().text = this.value;
     }
     [SerializeField] string value;

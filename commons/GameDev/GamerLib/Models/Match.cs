@@ -17,13 +17,25 @@ namespace GameManagerLib.Models
         public List<Bidding> BiddingList;
         public GameInfo CurrentGame;
         public List<GameInfo> GameList;
+        /// <summary>
+        /// 0 - pod kreską
+        /// 1 - nad kreską
+        /// </summary>
         public int[] PointsNS; // 0 - pod kreską; 1 - nad kreską
+        /// <summary>
+        /// 0 - pod kreską
+        /// 1 - nad kreską
+        /// </summary>
         public int[] PointsWE;
         public int RoundsNS = 0;
         public int RoundsWE = 0;
         public PointsHistory History;
+        public Card[][] PlayerHandsCache = {
+            null, null, null, null
+        };
+        public bool EnableCardsShufflingAndDistributing = true;
 
-        public Match() {
+        public Match(bool enableCardsShufflingAndDistributing = true) {
             this.PlayerList = new List<Player>();
             this.BiddingList = new List<Bidding>();
             this.GameList = new List<GameInfo>();
@@ -35,6 +47,7 @@ namespace GameManagerLib.Models
             this.PointsWE[0] = 0;
             this.PointsWE[1] = 0;
             this.History = new PointsHistory();
+            this.EnableCardsShufflingAndDistributing = enableCardsShufflingAndDistributing;
         }
 
         public Player GetPlayerAt(PlayerTag placeTag) {
@@ -58,8 +71,17 @@ namespace GameManagerLib.Models
                     PlayerList.Add(NewPlayer);
                     if (this.PlayerList.Count == 4) 
                     {
-                        this.GameState = GameState.STARTING;
-                        this.Dealer = NewPlayer.Tag;
+                        if (this.GameState == GameState.AWAITING_PLAYERS) {
+                            this.GameState = GameState.STARTING;
+                            this.Dealer = NewPlayer.Tag;
+                        }
+                    }
+
+                    if (PlayerHandsCache[(int)NewPlayer.Tag] != null) {
+                        NewPlayer.Hand = PlayerHandsCache[(int)NewPlayer.Tag];
+                    }
+                    else {
+                        PlayerHandsCache[(int)NewPlayer.Tag] = NewPlayer.Hand;
                     }
 
                     return true;
@@ -90,7 +112,9 @@ namespace GameManagerLib.Models
             if (Index1 != -1)
             {
                 PlayerList.RemoveAt(Index1);
-                this.GameState = GameState.AWAITING_PLAYERS;
+                if (this.GameState == GameState.STARTING) {
+                    this.GameState = GameState.AWAITING_PLAYERS;
+                }
                 return true;
             }
             else
@@ -133,26 +157,34 @@ namespace GameManagerLib.Models
             }
 
         }
-        private bool StartBidding()
+        public bool StartBidding()
         {
             if (this.GameState == GameState.BIDDING)
             {
-                List<Card> deck = GenerateDeck();
-                CardShuffler<Card> Shuffler = new CardShuffler<Card>(deck);
-                List<Card> ShuffledCards = Shuffler.Shuffle();
+                if (EnableCardsShufflingAndDistributing) {
+                    List<Card> deck = GenerateDeck();
+                    CardShuffler<Card> Shuffler = new CardShuffler<Card>(deck);
+                    List<Card> ShuffledCards = Shuffler.Shuffle();
 
-                // metoda "GetShuffledPlayersCards" zostala stworzona specjalnie na potrzeby brydza - Shuffler jest napisany by tasowac dowolnego typu obiekty 
-                List<List<Card>> PlayersCards = Shuffler.GetShuffledPlayersCards(ShuffledCards);
-                PlayerList[0].Hand = PlayersCards[0].OrderBy(c => c.Figure).OrderBy(c => c.Color).ToArray();
-                PlayerList[1].Hand = PlayersCards[1].OrderBy(c => c.Figure).OrderBy(c => c.Color).ToArray();
-                PlayerList[2].Hand = PlayersCards[2].OrderBy(c => c.Figure).OrderBy(c => c.Color).ToArray();
-                PlayerList[3].Hand = PlayersCards[3].OrderBy(c => c.Figure).OrderBy(c => c.Color).ToArray();
+                    // metoda "GetShuffledPlayersCards" zostala stworzona specjalnie na potrzeby brydza - Shuffler jest napisany by tasowac dowolnego typu obiekty 
+                    List<List<Card>> PlayersCards = Shuffler.GetShuffledPlayersCards(ShuffledCards);
+                    var tmp = new Card[][] {
+                        PlayersCards[0].OrderBy(c => c.Figure).OrderBy(c => c.Color).ToArray(),
+                        PlayersCards[1].OrderBy(c => c.Figure).OrderBy(c => c.Color).ToArray(),
+                        PlayersCards[2].OrderBy(c => c.Figure).OrderBy(c => c.Color).ToArray(),
+                        PlayersCards[3].OrderBy(c => c.Figure).OrderBy(c => c.Color).ToArray()
+                    };
 
-                for(int i = 0; i < 4; i++)
-                {
-                    foreach(Card card in PlayerList[i].Hand)
-                    {
-                        card.PlayerID = PlayerList[i].Tag;
+                    for (int i = 0; i < 4; i++) {
+                        for (int j = 0; j < 13; j++) {
+                            PlayerList[i].Hand[j] = tmp[i][j];
+                        }
+                    }
+
+                    for (int i = 0; i < 4; i++) {
+                        foreach (Card card in PlayerList[i].Hand) {
+                            card.PlayerID = PlayerList[i].Tag;
+                        }
                     }
                 }
 
@@ -163,6 +195,14 @@ namespace GameManagerLib.Models
             else
             {
                 return false;
+            }
+        }
+
+        public void ClearPlayerHands() {
+            for(int i = 0; i < PlayerList.Count; i++) {
+                for(int j = 0; j < 13; j++) {
+                    PlayerList[i].Hand[j] = null;
+                }
             }
         }
 
@@ -252,7 +292,12 @@ namespace GameManagerLib.Models
                     this.GameState = GameState.BIDDING;
                     this.AddPoints(CurrentGame);
                     this.CheckPoints();
-                    StartBidding();
+
+                    // Gra się skończyła a to mi następną lictację zaczynało. REALLY?
+                    if (GameState != GameState.GAME_FINISHED) {
+                        StartBidding();
+                    }
+
                     return true;
                 }
                 return true;
@@ -455,7 +500,7 @@ namespace GameManagerLib.Models
                     {
                         this.PointsNS[1] += 500;
                     }
-                    this.GameState = (GameState)(5);
+                    this.GameState = GameState.GAME_FINISHED;
                 }
                 this.History.Round();
             }

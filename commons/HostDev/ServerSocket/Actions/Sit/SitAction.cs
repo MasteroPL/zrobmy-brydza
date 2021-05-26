@@ -23,6 +23,11 @@ namespace ServerSocket.Actions.Sit {
             Lobby lobby = (Lobby)conn.Session.Get("joined-lobby");
             Match game = lobby.Game;
 
+            if(lobby.LobbyState != LobbyState.IDLE) {
+                data.AddError(null, "INVALID_LOBBY_STATE", "Nie można usiąść w tym momencie gry");
+                data.ThrowException();
+            }
+
             try {
                 var player = new Player((PlayerTag)data.PlaceTag, (string)conn.Session.Get("username"));
                 game.AddPlayer(player);

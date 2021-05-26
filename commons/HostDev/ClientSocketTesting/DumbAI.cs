@@ -101,12 +101,35 @@ namespace ClientSocketTesting {
                     Game.AddPlayer(new Player((PlayerTag)serializer.PlaceTag, serializer.Username));
                 }
             }
+            else if(signalName == LobbySignalUserSittedOutSerializer.SIGNAL_USER_SITTED_OUT) {
+                var serializer = new LobbySignalUserSittedOutSerializer(signalData);
+                serializer.Validate();
+
+                var player = Game.GetPlayerAt((PlayerTag)serializer.PlaceTag);
+                Game.RemovePlayer(player);
+            }
             else if(signalName == PutCardSignalSerializer.SIGNAL_USER_PUT_CARD) {
                 var serializer = new PutCardSignalSerializer(signalData);
                 serializer.Validate();
 
                 if (serializer.Username != Username) {
                     Game.CurrentGame.NextCard(new Card((CardFigure)serializer.CardFigure, (CardColor)serializer.CardColor, (PlayerTag)serializer.OwnerPosition));
+                }
+            }
+            // Następna licytacja
+            else if(signalName == LobbySignalGameStartedNextBiddingSerializer.SIGNAL_GAME_STARTED_NEXT_BIDDING) {
+                var serializer = new LobbySignalGameStartedNextBiddingSerializer(signalData);
+
+                Game.ClearPlayerHands();
+                MyCards.Clear();
+                if(GrandpaCards != null)
+                    GrandpaCards.Clear();
+                GrandpaCards = null;
+                SendGetHandRequest = true;
+
+                if(Game.GameState != GameState.BIDDING) {
+                    Game.GameState = GameState.BIDDING;
+                    Game.StartBidding();
                 }
             }
         }
@@ -139,7 +162,7 @@ namespace ClientSocketTesting {
             PerformServerAction("get-table-info", null, LoadGameCallback, null);
         }
         protected void LoadGameCallback(Request request, ActionsSerializer response, object additionalData) {
-            Game = new Match();
+            Game = new Match(enableCardsShufflingAndDistributing:false);
             MyCards.Clear();
 
             var rs = new GetTableInfoActionResponseSerializer(response.Actions[0].ActionData);
@@ -285,6 +308,7 @@ namespace ClientSocketTesting {
                         };
 
                         PerformServerAction("put-card", data.GetApiObject(), PutCardCallback, MyCards[i]);
+                        break;
                     }
                 }
             }
@@ -292,7 +316,7 @@ namespace ClientSocketTesting {
                 Game.CurrentBidding.Declarer == Position
                 && ((int)Game.CurrentGame.CurrentPlayer + 2) % 4 == (int)Position
             ) {
-                for (int i = 0; i < GrandpaCards.Count; i++) {
+                for (int i = 0; GrandpaCards != null && i < GrandpaCards.Count; i++) {
                     if (Game.CheckNextCard(
                         (PlayerTag)(((int)Position + 2) % 4),
                         GrandpaCards[i].Color,
@@ -305,6 +329,7 @@ namespace ClientSocketTesting {
                         };
 
                         PerformServerAction("put-card", data.GetApiObject(), PutCardCallback, GrandpaCards[i]);
+                        break;
                     }
                 }
             }

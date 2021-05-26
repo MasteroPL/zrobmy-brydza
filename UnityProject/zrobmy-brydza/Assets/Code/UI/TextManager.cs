@@ -6,9 +6,9 @@ using Assets.Code.Models;
 
 public class TextManager : MonoBehaviour
 {
-    Points NS;
-    Points WE;
-    string space;
+    [SerializeField] GameObject NS;
+    [SerializeField] GameObject WE;
+    string space = "\n____________\n\n";
     InputField ChatField;
     void Start()
     {
@@ -50,13 +50,13 @@ public class TextManager : MonoBehaviour
             testEW.Add("10|50");
             testEW.Add("40|10");*/
 
-            string[] ShownTexts = CalculateShownText(CurrentGame.Match.History.NSHistory, CurrentGame.Match.History.WEHistory);
-            GameObject.Find("NSPoints").GetComponent<Text>().text = ShownTexts[0];
-            GameObject.Find("WEPoints").GetComponent<Text>().text = ShownTexts[1];
+            //string[] ShownTexts = CalculateShownText(CurrentGame.Match.History.NSHistory, CurrentGame.Match.History.WEHistory);
+            //GameObject.Find("NSPoints").GetComponent<Text>().text = ShownTexts[0];
+            //GameObject.Find("WEPoints").GetComponent<Text>().text = ShownTexts[1];
         } else
         {
-            GameObject.Find("NSPoints").GetComponent<Text>().text = "____________";
-            GameObject.Find("WEPoints").GetComponent<Text>().text = "____________";
+            //GameObject.Find("NSPoints").GetComponent<Text>().text = "____________";
+            //GameObject.Find("WEPoints").GetComponent<Text>().text = "____________";
         }
     }
 
@@ -179,7 +179,7 @@ public class TextManager : MonoBehaviour
     /// </summary>
     public void setNSPointsValue(string above, string below, string rounds)
     {
-        this.NS.setValue(above + this.space + below + this.space + rounds);
+        this.NS.GetComponent<Text>().text = above + this.space + below + this.space + rounds;
     }
 
     /// <summary> 
@@ -190,7 +190,7 @@ public class TextManager : MonoBehaviour
     /// </summary>
     public void setWEPointsValue(string above, string below, string rounds)
     {
-        this.WE.setValue(above + this.space + below + this.space + rounds);
+        this.WE.GetComponent<Text>().text = above + this.space + below + this.space + rounds;
     }
 
     /*public void PointsButton()
