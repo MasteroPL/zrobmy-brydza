@@ -132,8 +132,10 @@ namespace ServerSocket.Actions.PutCard
                 var bData = new LobbySignalGameFinishedSerializer() {
                     Signal = LobbySignalGameFinishedSerializer.SIGNAL_GAME_FINISHED,
                     Winner = (game.RoundsNS == 2) ? (short)0 : (short)1,
-                    PointsNE = game.PointsNS[0] + game.PointsNS[1],
-                    PointsWE = game.PointsWE[0] + game.PointsWE[1]
+                    PointsNS = game.PointsNS[0] + game.PointsNS[1],
+                    PointsWE = game.PointsWE[0] + game.PointsWE[1],
+                    RoundsNS = game.RoundsNS,
+                    RoundsWE = game.RoundsWE
                 };
                 var bWrapper = new StandardCommunicateSerializer() {
                     CommunicateType = StandardCommunicateSerializer.TYPE_LOBBY_SIGNAL,

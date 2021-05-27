@@ -124,7 +124,7 @@ public class GameManagerScript : MonoBehaviour
         var signalName = (string)signalData.GetValue("signal");
 
         // Nowy użytkownik dołączył do stołu
-        if(signalName == LobbySignalUserJoinedSerializer.SIGNAL_USER_JOINED) {
+        if (signalName == LobbySignalUserJoinedSerializer.SIGNAL_USER_JOINED) {
             var serializer = new LobbySignalUserJoinedSerializer(signalData);
             serializer.Validate();
 
@@ -132,7 +132,7 @@ public class GameManagerScript : MonoBehaviour
             LobbyUsers.Add(new LobbyUserData(serializer.Username));
         }
         // Użytkownik usiadł na wybranym miejscu
-        else if(signalName == LobbySignalUserSatSerializer.SIGNAL_USER_SAT) {
+        else if (signalName == LobbySignalUserSatSerializer.SIGNAL_USER_SAT) {
             var serializer = new LobbySignalUserSatSerializer(signalData);
             serializer.Validate();
 
@@ -145,13 +145,13 @@ public class GameManagerScript : MonoBehaviour
             this.UpdateTableCenter(Game);
         }
         // Użytkownik wstał/został wysadzony z wybranego miejsca
-        else if(signalName == LobbySignalUserSittedOutSerializer.SIGNAL_USER_SITTED_OUT) {
+        else if (signalName == LobbySignalUserSittedOutSerializer.SIGNAL_USER_SITTED_OUT) {
             var serializer = new LobbySignalUserSittedOutSerializer(signalData);
             serializer.Validate();
 
             var placeTag = (PlayerTag)serializer.PlaceTag;
             if (SeatManager.IsSeatTaken(placeTag)) {
-                if(SeatManager.PlayersNicknames[placeTag] == serializer.Username) {
+                if (SeatManager.PlayersNicknames[placeTag] == serializer.Username) {
                     var index = Game.Match.PlayerList.FindIndex(x => { return x.Tag == placeTag; });
                     SeatManager.SitOutPlayer(placeTag);
                 }
@@ -159,7 +159,7 @@ public class GameManagerScript : MonoBehaviour
             }
         }
         // Użytkownik wyszedł/został usunięty z lobby
-        else if(signalName == LobbySignalUserRemovedSerializer.SINGAL_USER_REMOVED) {
+        else if (signalName == LobbySignalUserRemovedSerializer.SINGAL_USER_REMOVED) {
             var serializer = new LobbySignalUserRemovedSerializer(signalData);
             serializer.Validate();
 
@@ -180,7 +180,7 @@ public class GameManagerScript : MonoBehaviour
             TextManager.AddMessage("Użytkownik " + serializer.Username + " odszedł od stołu.");
         }
         // start gry
-        else if(signalName == PlayerClickedGameStartSerializer.SIGNAL_PLAYER_READY) {
+        else if (signalName == PlayerClickedGameStartSerializer.SIGNAL_PLAYER_READY) {
             var serializer = new PlayerClickedGameStartSerializer(signalData);
             serializer.Validate();
 
@@ -192,9 +192,14 @@ public class GameManagerScript : MonoBehaviour
                 //var getHandRequestData = new ServerSocket.Actions.GetHand.RequestSerializer();
                 //getHandRequestData.PlayerTag = (int)UserData.Position;
                 //PerformServerAction("get-hand", getHandRequestData.GetApiObject(), this.GetHandCallback);
+
+                TextManager.setNSPointsValue("0", "0", "0");
+                TextManager.setWEPointsValue("0", "0", "0");
+
+                ClearContractLabelPaint();
             }
         }
-        else if(signalName == LobbySignalNewBidSerializer.SIGNAL_NEW_BID) {
+        else if (signalName == LobbySignalNewBidSerializer.SIGNAL_NEW_BID) {
             var serializer = new LobbySignalNewBidSerializer(signalData);
             serializer.Validate();
 
@@ -225,7 +230,7 @@ public class GameManagerScript : MonoBehaviour
                 }
             }
         }
-        else if(signalName == PutCardSignalSerializer.SIGNAL_USER_PUT_CARD)
+        else if (signalName == PutCardSignalSerializer.SIGNAL_USER_PUT_CARD)
         {
             var serializer = new PutCardSignalSerializer(signalData);
             serializer.Validate();
@@ -243,13 +248,13 @@ public class GameManagerScript : MonoBehaviour
                 }
             }
         }
-        else if(signalName == LobbySignalLobbyStateChangedSerializer.SIGNAL_LOBBY_STATE_CHANGED) {
+        else if (signalName == LobbySignalLobbyStateChangedSerializer.SIGNAL_LOBBY_STATE_CHANGED) {
             var serializer = new LobbySignalLobbyStateChangedSerializer(signalData);
             serializer.Validate();
 
             LobbyState = (LobbyState)serializer.LobbyState;
         }
-        else if(signalName == LobbySignalGameStartedNextBiddingSerializer.SIGNAL_GAME_STARTED_NEXT_BIDDING) {
+        else if (signalName == LobbySignalGameStartedNextBiddingSerializer.SIGNAL_GAME_STARTED_NEXT_BIDDING) {
             var serializer = new LobbySignalGameStartedNextBiddingSerializer(signalData);
             serializer.Validate();
 
@@ -261,6 +266,8 @@ public class GameManagerScript : MonoBehaviour
             if (CurrentGrandpaCards != null)
                 CurrentGrandpaCards.Clear();
             CurrentGrandpaCards = null;
+
+            ResetPlayersCards();
             // SendGetHandRequest = true;
 
             // TODO Rozpoczac licytacje
@@ -282,7 +289,7 @@ public class GameManagerScript : MonoBehaviour
 
             ClearContractLabelPaint();
         }
-        else if(signalName == ChatMessageSerializer.SIGNAL_CHAT_MESSAGE)
+        else if (signalName == ChatMessageSerializer.SIGNAL_CHAT_MESSAGE)
         {
             var serializer = new ChatMessageSerializer(signalData);
             serializer.Validate();
@@ -291,6 +298,36 @@ public class GameManagerScript : MonoBehaviour
             {
                 TextManager.AddMessage(serializer.Message);
             }
+        }
+        else if(signalName == LobbySignalGameFinishedSerializer.SIGNAL_GAME_FINISHED) {
+            var serializer = new LobbySignalGameFinishedSerializer(signalData);
+            serializer.Validate();
+
+            Game.Match.ClearPlayerHands();
+            if (MyCards != null)
+                MyCards.Clear();
+            MyCards = null;
+            if (CurrentGrandpaCards != null)
+                CurrentGrandpaCards.Clear();
+            CurrentGrandpaCards = null;
+
+            ResetPlayersCards();
+
+            Game.Match.GameState = GameState.GAME_FINISHED;
+
+            LobbyState = LobbyState.IDLE;
+
+            Game.Match.PointsNS[1] = serializer.PointsNS;
+            Game.Match.PointsNS[0] = 0;
+            Game.Match.PointsWE[1] = serializer.PointsWE;
+            Game.Match.PointsWE[0] = 0;
+            Game.Match.RoundsNS = serializer.RoundsNS;
+            Game.Match.RoundsWE = serializer.RoundsWE;
+
+            TextManager.setNSPointsValue(Game.Match.PointsNS[1].ToString(), Game.Match.PointsNS[0].ToString(), Game.Match.RoundsNS.ToString());
+            TextManager.setWEPointsValue(Game.Match.PointsWE[1].ToString(), Game.Match.PointsWE[0].ToString(), Game.Match.RoundsWE.ToString());
+
+            ClearContractLabelPaint();
         }
     }
     private void OnServerSignalReceive(object sender, StandardResponseWrapperSerializer data) {
@@ -485,7 +522,7 @@ public class GameManagerScript : MonoBehaviour
         CheckCurrentPlayerLight();
 
         if (Game != null) {
-            if (SeatManager.AllFourPlayersPresent() && (Game.Match.GameState == GameState.STARTING || LobbyState == LobbyState.IDLE)) {
+            if (SeatManager.AllFourPlayersPresent() && (LobbyState == LobbyState.IDLE)) {
                 if (LobbyOwner) {
                     StartButton.gameObject.SetActive(true);
                     GameStoppedDialog.gameObject.SetActive(false);
@@ -836,7 +873,7 @@ public class GameManagerScript : MonoBehaviour
 
         var data = new ServerSocket.Actions.StartGame.ResponseSerializer(response.Actions[0].ActionData);
         data.Validate();
-        if (Game.Match.GameState == GameState.STARTING) {
+        if (Game.Match.GameState == GameState.STARTING || Game.Match.GameState == GameState.GAME_FINISHED) {
             try {
                 LobbyState = LobbyState.IN_GAME;
                 Game.Match.Start();
@@ -850,6 +887,10 @@ public class GameManagerScript : MonoBehaviour
 
         var getHandRequestData = new ServerSocket.Actions.GetHand.RequestSerializer();
         getHandRequestData.PlayerTag = (int)UserData.Position;
+        TextManager.setNSPointsValue("0", "0", "0");
+        TextManager.setWEPointsValue("0", "0", "0");
+
+        ClearContractLabelPaint();
         PerformServerAction("get-hand", getHandRequestData.GetApiObject(), this.GetHandCallback);
     }
 
@@ -1051,6 +1092,10 @@ public class GameManagerScript : MonoBehaviour
                 cardObject.transform.localPosition = new Vector3(-1000, 0, cardObject.transform.localPosition.z);
             }
         }
+        DestroyHiddenCards(HiddenCardsOfPlayerN);
+        DestroyHiddenCards(HiddenCardsOfPlayerS);
+        DestroyHiddenCards(HiddenCardsOfPlayerE);
+        DestroyHiddenCards(HiddenCardsOfPlayerW);
     }
 
     /// <summary>
@@ -1308,23 +1353,25 @@ public class GameManagerScript : MonoBehaviour
             tmp = GameObject.Find(tmpCardName);
             tmp.transform.position = new Vector3(-100, 0, 0);
         }
+        if (Game.Match.GameState == GameState.PLAYING) {
 
-        Text TeamTakenHandsCounterLabelText = TeamTakenHandsCounterLabel.GetComponent<Text>();
-        int NSTaken = Game.CalculateTeamTricks(PlayerTag.N, PlayerTag.S);
-        int EWTaken = Game.CalculateTeamTricks(PlayerTag.E, PlayerTag.W);
+            Text TeamTakenHandsCounterLabelText = TeamTakenHandsCounterLabel.GetComponent<Text>();
+            int NSTaken = Game.CalculateTeamTricks(PlayerTag.N, PlayerTag.S);
+            int EWTaken = Game.CalculateTeamTricks(PlayerTag.E, PlayerTag.W);
 
-        TeamTakenHandsCounterLabelText.text = "NS : " + NSTaken.ToString() + "\n";
-        TeamTakenHandsCounterLabelText.text += "EW : " + EWTaken.ToString();
+            TeamTakenHandsCounterLabelText.text = "NS : " + NSTaken.ToString() + "\n";
+            TeamTakenHandsCounterLabelText.text += "EW : " + EWTaken.ToString();
 
-        if (Game.Match.CurrentGame.Declarer == PlayerTag.N || Game.Match.CurrentGame.Declarer == PlayerTag.S) {
-            PaintContractLabel(NSTaken, EWTaken);
-        }
-        else if (Game.Match.CurrentGame.Declarer == PlayerTag.E || Game.Match.CurrentGame.Declarer == PlayerTag.W) {
-            PaintContractLabel(EWTaken, NSTaken);
-        }
+            if (Game.Match.CurrentGame.Declarer == PlayerTag.N || Game.Match.CurrentGame.Declarer == PlayerTag.S) {
+                PaintContractLabel(NSTaken, EWTaken);
+            }
+            else if (Game.Match.CurrentGame.Declarer == PlayerTag.E || Game.Match.CurrentGame.Declarer == PlayerTag.W) {
+                PaintContractLabel(EWTaken, NSTaken);
+            }
 
-        if (GameConfig.DevMode) {
-            UserData.Position = lastTrick.Winner; // for dev mode
+            if (GameConfig.DevMode) {
+                UserData.Position = lastTrick.Winner; // for dev mode
+            }
         }
 
         IgnoreCommunication = false;
@@ -1411,6 +1458,10 @@ public class GameManagerScript : MonoBehaviour
         catch (GameManagerLib.Exceptions.WrongGameStateException e)
         {
             // TODO
+        }
+
+        if(Game.Match.GameState != GameState.PLAYING) {
+            ClearContractLabelPaint();
         }
     }
 

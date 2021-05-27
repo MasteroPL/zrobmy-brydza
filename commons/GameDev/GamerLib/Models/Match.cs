@@ -146,6 +146,12 @@ namespace GameManagerLib.Models
                 this.GameState = GameState.BIDDING;
                 if (this.StartBidding())
                 {
+                    this.PointsNS[0] = 0;
+                    this.PointsNS[1] = 0;
+                    this.PointsWE[0] = 0;
+                    this.PointsWE[1] = 0;
+                    this.RoundsWE = 0;
+                    this.RoundsNS = 0;
                     return true;
                 }
                 else
@@ -636,7 +642,7 @@ namespace GameManagerLib.Models
 
         public bool CheckStart()
         {
-            if (this.GameState == GameState.STARTING)
+            if ((this.GameState == GameState.STARTING || this.GameState == GameState.GAME_FINISHED) && PlayerList.Count == 4)
             {
                 this.GameState = GameState.BIDDING;
                 if (this.StartBidding())
@@ -657,7 +663,7 @@ namespace GameManagerLib.Models
 
         public bool IsGameReadyToStart()
         {
-            return GameState == GameState.STARTING && PlayerList.Count == 4;
+            return (GameState == GameState.STARTING || GameState == GameState.GAME_FINISHED) && PlayerList.Count == 4;
         }
 
         public bool CheckAddBid(Contract Contract)
