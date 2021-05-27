@@ -22,11 +22,17 @@ namespace ServerSocket.Serializers {
         [SerializerField(apiName: "winner", required: true)]
         public short Winner;
 
-        [SerializerField(apiName: "points_ne", required: true)]
-        public int PointsNE;
+        [SerializerField(apiName: "points_ns", required: true)]
+        public int PointsNS;
 
         [SerializerField(apiName: "points_we", required: true)]
         public int PointsWE;
+
+        [SerializerField(apiName: "rounds_ns", required: true)]
+        public int RoundsNS;
+
+        [SerializerField(apiName: "rounds_we", required: true)]
+        public int RoundsWE;
 
         public LobbySignalGameFinishedSerializer() : base() { }
         public LobbySignalGameFinishedSerializer(JObject data) : base(data) { }

@@ -23,12 +23,12 @@ namespace ServerSocket.Actions.StartGame {
             Lobby lobby = (Lobby)conn.Session.Get("joined-lobby");
             Match game = lobby.Game;
 
-            if(lobby.LobbyState != LobbyState.IDLE) {
+            if(lobby.LobbyState != LobbyState.IDLE && game.GameState != GameState.STARTING && game.GameState != GameState.GAME_FINISHED) {
                 data.AddError(null, "WRONG_LOBBY_STATE", "Nie można rozpocząć gry w tym momencie");
                 data.ThrowException();
             }
 
-            if (game.GameState == GameState.STARTING) {
+            if (game.GameState == GameState.STARTING || game.GameState == GameState.GAME_FINISHED) {
                 // Przypadek rozpoczęcia gry
                 try {
                     game.Start();

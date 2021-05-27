@@ -132,6 +132,18 @@ namespace ClientSocketTesting {
                     Game.StartBidding();
                 }
             }
+            else if(signalName == LobbySignalGameFinishedSerializer.SIGNAL_GAME_FINISHED) {
+                var serializer = new LobbySignalGameFinishedSerializer(signalData);
+
+                Game.ClearPlayerHands();
+                if (MyCards != null)
+                    MyCards.Clear();
+                if (GrandpaCards != null)
+                    GrandpaCards.Clear();
+                GrandpaCards = null;
+
+                Game.GameState = GameState.GAME_FINISHED;
+            }
         }
         private void OnServerSignalReceive(object sender, StandardResponseWrapperSerializer data) {
             switch (data.CommunicateType) {
