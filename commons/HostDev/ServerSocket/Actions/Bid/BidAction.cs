@@ -69,6 +69,29 @@ namespace ServerSocket.Actions.Bid
             };
             lobby.Broadcast(broadcastWrapper.GetApiObject());
 
+            // Broadcast o przepasowaniu całej licytacji, nowe rozdanie
+            if(game.CurrentBidding.IsEnd() && game.CurrentBidding.HighestContract.ContractColor == ContractColor.NONE) {
+                game.GameState = GameState.BIDDING;
+                game.StartBidding();
+
+                var bData = new LobbySignalGameStartedNextBiddingSerializer() {
+                    Signal = LobbySignalGameStartedNextBiddingSerializer.SIGNAL_GAME_STARTED_NEXT_BIDDING,
+
+                    PointsNSAboveLine = game.PointsNS[1],
+                    PointsNSBelowLine = game.PointsNS[0],
+                    PointsWEAboveLine = game.PointsWE[1],
+                    PointsWEBelowLine = game.PointsWE[0],
+
+                    RoundsNS = game.RoundsNS,
+                    RoundsWE = game.RoundsWE
+                };
+                var bWrapper = new StandardCommunicateSerializer() {
+                    CommunicateType = StandardCommunicateSerializer.TYPE_LOBBY_SIGNAL,
+                    Data = bData.GetApiObject()
+                };
+                lobby.Broadcast(bWrapper.GetApiObject());
+            }
+
             return resp;
         }
     }

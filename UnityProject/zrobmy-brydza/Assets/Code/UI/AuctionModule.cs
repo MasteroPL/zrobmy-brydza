@@ -117,7 +117,14 @@ public class AuctionModule : MonoBehaviour
         XButton.onClick.AddListener(() => { AuctionState.DeclareX(); });
         XXButton.onClick.AddListener(() => { AuctionState.DeclareXX(); });
         OKButton.onClick.AddListener(SendBidRequest);
-        PassButton.onClick.AddListener(SendBidRequest);
+        PassButton.onClick.AddListener(() => {
+            AuctionState.ContractCache.ContractHeight = ContractHeight.NONE;
+            AuctionState.ContractCache.ContractColor = ContractColor.NONE;
+            AuctionState.ContractCache.XEnabled = false;
+            AuctionState.ContractCache.XXEnabled = false;
+
+            SendBidRequest();
+        });
     }
 
     public void SendBidRequest() {

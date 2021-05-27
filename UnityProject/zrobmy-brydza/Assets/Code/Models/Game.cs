@@ -17,7 +17,7 @@ namespace Assets.Code.Models
         public Game(GameManagerScript GameManagerScript)
         {
             this.GameManagerScript = GameManagerScript;
-            Match = new Match();
+            Match = new Match(enableCardsShufflingAndDistributing:false);
             this.GameManagerScript.UpdateTableCenter(this);
         }
 

@@ -34,8 +34,9 @@ namespace GameManagerLib.Models
             null, null, null, null
         };
         public bool EnableCardsShufflingAndDistributing = true;
+        public bool EnableAutoStartNextBidding = true;
 
-        public Match(bool enableCardsShufflingAndDistributing = true) {
+        public Match(bool enableCardsShufflingAndDistributing = true, bool enableAutoStartNextBidding = true) {
             this.PlayerList = new List<Player>();
             this.BiddingList = new List<Bidding>();
             this.GameList = new List<GameInfo>();
@@ -48,6 +49,7 @@ namespace GameManagerLib.Models
             this.PointsWE[1] = 0;
             this.History = new PointsHistory();
             this.EnableCardsShufflingAndDistributing = enableCardsShufflingAndDistributing;
+            this.EnableAutoStartNextBidding = enableAutoStartNextBidding;
         }
 
         public Player GetPlayerAt(PlayerTag placeTag) {
@@ -258,8 +260,10 @@ namespace GameManagerLib.Models
                     }
                     else
                     {
-                        this.GameState = GameState.BIDDING;
-                        StartBidding();
+                        if (EnableAutoStartNextBidding) {
+                            this.GameState = GameState.BIDDING;
+                            StartBidding();
+                        }
                     }
                     return true;
 

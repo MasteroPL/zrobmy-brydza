@@ -49,7 +49,8 @@ namespace ServerSocket.Models {
             Password = password;
             LobbyState = LobbyState.IDLE;
 
-            Game = new Match();
+            // Rozpoczynanie nowego rozdania po przepasowaniu licytacji nie zostanie wywołane automatycznie, a zamiast tego zostanie wywołane w BidAction
+            Game = new Match(enableAutoStartNextBidding: false);
         }
         ~Lobby() {
             Dispose();
