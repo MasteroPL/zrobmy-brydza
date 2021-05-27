@@ -1026,6 +1026,24 @@ public class GameManagerScript : MonoBehaviour
     }
 
     /// <summary>
+    /// Resets all card prefabs data (card isn't possessed by anyone and initially is in deck)
+    /// </summary>
+    private void ResetPlayersCards()
+    {
+        foreach(int cardHeight in System.Enum.GetValues(typeof(CardFigure)))
+        {
+            foreach(int cardColor in System.Enum.GetValues(typeof(CardColor)))
+            {
+                string cardName = CalculateCardName((CardFigure)cardHeight, (CardColor)cardColor);
+                GameObject cardObject = GameObject.Find(cardName);
+                cardObject.GetComponent<Card>().PlayerID = PlayerTag.NOBODY;
+                cardObject.GetComponent<Card>().CurrentState = CardState.IN_DECK;
+                cardObject.transform.localPosition = new Vector3(-1000, 0, cardObject.transform.localPosition.z);
+            }
+        }
+    }
+
+    /// <summary>
     /// Metoda rozdaje karty graczowi
     /// </summary>
     /// <param name="PlayerIdentifier">Identyfikator gracza, któremu rozdawane są karty</param>
@@ -1058,6 +1076,75 @@ public class GameManagerScript : MonoBehaviour
             SpriteRenderer sr = card.GetComponent<SpriteRenderer>();
             sr.sortingOrder = i + 1;
         }
+    }
+
+    /// <summary>
+    /// Calculates Unity object name for card according to given figure and color
+    /// </summary>
+    /// <param name="Figure">Figure of card which name we want to get to know</param>
+    /// <param name="Color">Color of card which name we want to get to know</param>
+    /// <returns>Calculated card name if given data are correct, otherwise returns an empty string</returns>
+    private string CalculateCardName(CardFigure Figure, CardColor Color)
+    {
+        char color = ' ', figure = ' ';
+        bool errorOccurred = false;
+        switch (Color)
+        {
+            case CardColor.CLUB:
+                color = 'C';
+                break;
+            case CardColor.DIAMOND:
+                color = 'D';
+                break;
+            case CardColor.HEART:
+                color = 'H';
+                break;
+            case CardColor.SPADE:
+                color = 'S';
+                break;
+            default:
+                errorOccurred = true;
+                break;
+        }
+
+        if ((int)Figure < 2)
+        {
+            errorOccurred = true;
+        }
+        else if ((int)Figure > 9)
+        {
+            switch (Figure)
+            {
+                case CardFigure.ACE:
+                    figure = 'A';
+                    break;
+                case CardFigure.KING:
+                    figure = 'K';
+                    break;
+                case CardFigure.QUEEN:
+                    figure = 'Q';
+                    break;
+                case CardFigure.JACK:
+                    figure = 'J';
+                    break;
+                case CardFigure.TEN:
+                    figure = 'T';
+                    break;
+                default:
+                    errorOccurred = true;
+                    break;
+            }
+        }
+        else
+        {
+            figure = ((int)Figure).ToString()[0];
+        }
+
+        if (!errorOccurred)
+        {
+            return "CARD_" + figure + color;
+        }
+        return "";
     }
 
     private string CalculateCardName(GameManagerLib.Models.Card card)
