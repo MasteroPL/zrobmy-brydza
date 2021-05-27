@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 using GetTableInfoSerializer = ServerSocket.Actions.GetTableInfo.ResponseSerializer;
 using SitActionRequestSerializer = ServerSocket.Actions.Sit.RequestSerializer;
 using SitPlayerOutActionRequestSerializer = ServerSocket.Actions.SitPlayerOut.RequestSerializer;
+using ChatSendMessageRequestSerializer = ServerSocket.Actions.SendMessage.RequestSerializer;
+
+using ChatSendMessageResponseSerializer = ServerSocket.Actions.SendMessage.ResponseSerializer;
 using System.Threading;
 
 namespace ClientSocketTesting
@@ -21,12 +24,55 @@ namespace ClientSocketTesting
 	{
 		static bool Authorized = false;
 
+		static void OnSignalMacius(object sender, StandardResponseWrapperSerializer signal)
+        {
+			var signalName = (string)signal.Data.GetValue("signal");
+			//Console.WriteLine("Macius received signal with name = {0}", signalName);
+			if (signalName == "NEW_MESSAGE")
+			{
+				string message = (string)signal.Data.GetValue("message");
+				Console.WriteLine("Macius received signal : {0}", message);
+			}
+		}
+		static void OnSignalPawelek(object sender, StandardResponseWrapperSerializer signal)
+		{
+			var signalName = (string)signal.Data.GetValue("signal");
+			//Console.WriteLine("Pawelek received signal with name = {0}", signalName);
+			if (signalName == "NEW_MESSAGE")
+			{
+				string message = (string)signal.Data.GetValue("message");
+				Console.WriteLine("Pawelek received signal : {0}", message);
+			}
+		}
+		static void OnSignalMarcin(object sender, StandardResponseWrapperSerializer signal)
+		{
+			var signalName = (string)signal.Data.GetValue("signal");
+			//Console.WriteLine("Marcin received signal with name = {0}", signalName);
+			if (signalName == "NEW_MESSAGE")
+			{
+				string message = (string)signal.Data.GetValue("message");
+				Console.WriteLine("Marcin received signal : {0}", message);
+			}
+		}
+
 		static ClientSocket ConnectToLobbyAndSit(string username, PlayerTag position)
 		{
 			var clientSocket = new ClientSocket("127.0.0.1");
 			clientSocket.RequestResponseReceived += OnRequestResponse;
-			clientSocket.SignalReceived += OnSignal;
 
+            /*switch (username)
+            {
+				case "Macius":
+					clientSocket.SignalReceived += OnSignalMacius;
+					break;
+				case "Marcin":
+					clientSocket.SignalReceived += OnSignalMarcin;
+					break;
+				case "Pawelek":
+					clientSocket.SignalReceived += OnSignalPawelek;
+					break;
+			}*/
+			clientSocket.SignalReceived += OnSignal;
 
 			var authData = new AuthData()
 			{
@@ -61,9 +107,24 @@ namespace ClientSocketTesting
 			return clientSocket;
 		}
 
+		static void SendChatMessage(ClientSocket clientSocket, string username, string message)
+        {
+			//Console.WriteLine("User: [{0}] | Action : send-message", username);
+			var chatAction = new ChatSendMessageRequestSerializer();
+			chatAction.Message = message;
+
+			var sendChatMessageActionRequestData = WrapRequestData("send-message", chatAction.GetApiObject());
+			var sendChatMessageActionRequest = clientSocket.SendRequest(sendChatMessageActionRequestData.GetApiObject());
+
+			while (sendChatMessageActionRequest.RequestState != RequestState.RESPONSE_RECEIVED)
+			{
+				clientSocket.UpdateCommunication();
+			}
+        }
+
 		static void OnRequestResponse(object sender, Request request)
 		{
-			Console.WriteLine(request.ResponseData);
+			//Console.WriteLine(request.ResponseData);
 		}
 		static void OnSignal(object sender, StandardResponseWrapperSerializer signal)
 		{
@@ -86,27 +147,43 @@ namespace ClientSocketTesting
 
 		static void Main(string[] args)
 		{
-			Program2.Main2(args);
-			return;
+			//Program2.Main2(args);
+			//return;
 
 			ClientSocket MaciusSocket = null, PawelekSocket = null, MarcinSocket = null;
 
 			int counter = 0;
+			string messageToSend = "F";
 
             while (true)
             {
-				if (MaciusSocket == null)MaciusSocket = ConnectToLobbyAndSit("Macius", PlayerTag.N);
-                else MaciusSocket.UpdateCommunication();
+				if (MaciusSocket == null) MaciusSocket = ConnectToLobbyAndSit("Macius", PlayerTag.N);
+				else 
+				{
+					MaciusSocket.UpdateCommunication();
+					//Console.WriteLine("Macius is sending");
+					//SendChatMessage(MaciusSocket, "Macius", messageToSend);
+				};
 
 				Thread.Sleep(1000);
 
 				if (PawelekSocket == null) PawelekSocket = ConnectToLobbyAndSit("Pawełek", PlayerTag.W);
-				else PawelekSocket.UpdateCommunication();
+				else
+				{
+					//Console.WriteLine("Pawelek is sending 'F'");
+					PawelekSocket.UpdateCommunication();
+					//SendChatMessage(PawelekSocket, "Pawelek", messageToSend);
+				}
 
 				Thread.Sleep(1000);
 
 				if (MarcinSocket == null) MarcinSocket = ConnectToLobbyAndSit("Marcin", PlayerTag.E);
-				else MarcinSocket.UpdateCommunication();
+				else
+				{
+					//Console.WriteLine("Marcin is sending 'F'");
+					MarcinSocket.UpdateCommunication();
+					//SendChatMessage(MarcinSocket, "Marcin", messageToSend);
+				}
 
 				Thread.Sleep(1000);
 			}

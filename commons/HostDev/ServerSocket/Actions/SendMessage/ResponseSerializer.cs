@@ -2,7 +2,7 @@
 using EasyHosting.Models.Serialization;
 using Newtonsoft.Json.Linq;
 
-namespace ServerSocket.Actions.SendChat {
+namespace ServerSocket.Actions.SendMessage {
     public class ResponseSerializer : BaseSerializer {
         [SerializerField(apiName: "status")]
         public string Status;

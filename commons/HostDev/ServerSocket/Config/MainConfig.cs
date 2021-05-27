@@ -13,6 +13,7 @@ using System.Text;
 using ServerSocket.Actions.GetHand;
 using ServerSocket.Actions.PutCard;
 using ServerSocket.Actions.RetrieveTableData;
+using ServerSocket.Actions.SendMessage;
 
 namespace EasyHosting.Models.Server.Config {
     public static class MainConfig {
@@ -26,7 +27,8 @@ namespace EasyHosting.Models.Server.Config {
             { "get-hand", new GetHandAction() },
             { "bid", new BidAction() },
             { "put-card", new PutCardAction() },
-            { "retrieve-table-data", new RetrieveTableDataAction() }
+            { "retrieve-table-data", new RetrieveTableDataAction() },
+            { "send-message", new SendMessageAction() }
         };
 
         private static BridgeServerSocket ServerSocket = null;

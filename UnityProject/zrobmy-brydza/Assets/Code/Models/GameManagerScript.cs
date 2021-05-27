@@ -282,6 +282,16 @@ public class GameManagerScript : MonoBehaviour
 
             ClearContractLabelPaint();
         }
+        else if(signalName == ChatMessageSerializer.SIGNAL_CHAT_MESSAGE)
+        {
+            var serializer = new ChatMessageSerializer(signalData);
+            serializer.Validate();
+
+            if (serializer.Username != UserData.Username)
+            {
+                TextManager.AddMessage(serializer.Message);
+            }
+        }
     }
     private void OnServerSignalReceive(object sender, StandardResponseWrapperSerializer data) {
         //Debug.Log(data.CommunicateType);

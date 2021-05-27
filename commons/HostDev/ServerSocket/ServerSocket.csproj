@@ -65,9 +65,9 @@
     <Compile Include="Actions\RetrieveTableData\RequestSerializer.cs" />
     <Compile Include="Actions\RetrieveTableData\ResponseSerializer.cs" />
     <Compile Include="Actions\RetrieveTableData\RetrieveTableDataAction.cs" />
-    <Compile Include="Actions\SendChat\RequestSerializer.cs" />
-    <Compile Include="Actions\SendChat\ResponseSerializer.cs" />
-    <Compile Include="Actions\SendChat\SendChatAction.cs" />
+    <Compile Include="Actions\SendMessage\RequestSerializer.cs" />
+    <Compile Include="Actions\SendMessage\ResponseSerializer.cs" />
+    <Compile Include="Actions\SendMessage\SendMessageAction.cs" />
     <Compile Include="Actions\GetHand\GetHandAction.cs" />
     <Compile Include="Actions\GetHand\RequestSerializer.cs" />
     <Compile Include="Actions\GetHand\ResponseSerializer.cs" />

@@ -3,13 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Assets.Code.Models;
+using EasyHosting.Models.Actions;
+using Newtonsoft.Json.Linq;
+using EasyHosting.Models.Client;
+using Assets.Code.UI;
+using System;
+using Assets.Code.Models.Exceptions;
 
 public class TextManager : MonoBehaviour
 {
     [SerializeField] GameObject NS;
     [SerializeField] GameObject WE;
+    [SerializeField] GameObject ChatContent;
+    [SerializeField] GameObject InputField;
+    [SerializeField] GameManagerScript GameManager;
+
     string space = "\n____________\n\n";
-    InputField ChatField;
+
     void Start()
     {
     }
@@ -231,7 +241,48 @@ public class TextManager : MonoBehaviour
     /// </summary>
     public void AddMessage(string message)
     {
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/Chat/ChatViewport/ChatContent").GetComponent<Text>().text += message + "\n";
-        GameObject.Find("/Canvas/InfoCanvas/InfoTable/Body/Chat/ChatInputField/Text").GetComponent<Text>().text = "";
+        ChatContent.GetComponent<Text>().text += message + "\n";
+        InputField.GetComponent<Text>().text = "";
+    }
+
+    public ActionsSerializer WrapRequestData(string actionName, JObject data)
+    {
+        var result = new ActionsSerializer();
+        result.Actions = new ActionSerializer[1];
+        var tmp = new ActionSerializer();
+
+        tmp.ActionName = actionName;
+        tmp.ActionData = data;
+
+        result.Actions[0] = tmp;
+
+        return result;
+    }
+
+    /// <summary>
+    /// Metoda typu "Callback" uruchamiana po wysłaniu wiadomości do innych graczy
+    /// </summary>
+    /// <param name="request">Zapytanie wysłania wiadomości</param>
+    /// <param name="response">Odpowiedź na wysłane żądanie</param>
+    /// <param name="additionalData">Informacje dodatkowe</param>
+    private void SendMessageCallback(Request request, ActionsSerializer response, object additionalData)
+    {
+        if (((string)response.Actions[0].ActionData.GetValue("status")).CompareTo("OK") != 0)
+        {
+            return;
+        }
+        string message = (string)additionalData;
+        AddMessage(UserData.Username + ": " + message);
+    }
+
+    /// <summary>
+    /// Wysyła podaną jako argument wiadomość do pozostałych graczy
+    /// </summary>
+    /// <param name="message">Wiadomość do innych graczy</param>
+    public void SendMessage(string message)
+    {
+        var sendMessageRequestData = new ServerSocket.Actions.SendMessage.RequestSerializer();
+        sendMessageRequestData.Message = message;
+        GameManager.PerformServerAction("send-message", sendMessageRequestData.GetApiObject(), SendMessageCallback, message);
     }
 }
