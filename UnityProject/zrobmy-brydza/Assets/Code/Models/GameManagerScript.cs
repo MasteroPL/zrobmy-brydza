@@ -103,9 +103,47 @@ public class GameManagerScript : MonoBehaviour
 
     public List<GameManagerLib.Models.Card> MyCards = null;
     public List<GameManagerLib.Models.Card> CurrentGrandpaCards = null;
+    public List<GameManagerLib.Models.Card> CurrentDeclarerCards = null;
 
     // lista graczy obecnych w lobby
     List<LobbyUserData> LobbyUsers;
+
+    public bool PlayingAsGrandpa {
+        get {
+            var match = Game.Match;
+            if (match.GameState != GameState.PLAYING) return false;
+
+            if (((((int)match.CurrentGame.Declarer) + 2) % 4 == (int)UserData.Position)){
+                return true;
+            }
+            return false;
+        }
+    }
+    public bool GrandpaCardsVisible {
+        get {
+            var match = Game.Match;
+            if (match.GameState == GameState.PLAYING) {
+                if (match.CurrentGame.currentTrick.CardList.Count > 0
+                    || match.CurrentGame.TrickList.Count > 0
+                ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
+    public bool DeclarerCardsVisible {
+        get {
+            var match = Game.Match;
+            // Karty rozgrywającego są widoczne tylko dla jego dziadka
+            if (!PlayingAsGrandpa) return false;
+
+            // Widoczne wtedy kiedy widoczne stają się karty dziadka
+            return GrandpaCardsVisible;
+        }
+    }
 
     public static ActionsSerializer WrapRequestData(string actionName, JObject data) {
         var result = new ActionsSerializer();
@@ -266,6 +304,9 @@ public class GameManagerScript : MonoBehaviour
             if (CurrentGrandpaCards != null)
                 CurrentGrandpaCards.Clear();
             CurrentGrandpaCards = null;
+            if (CurrentDeclarerCards != null)
+                CurrentDeclarerCards.Clear();
+            CurrentDeclarerCards = null;
 
             ResetPlayersCards();
             // SendGetHandRequest = true;
@@ -310,6 +351,9 @@ public class GameManagerScript : MonoBehaviour
             if (CurrentGrandpaCards != null)
                 CurrentGrandpaCards.Clear();
             CurrentGrandpaCards = null;
+            if (CurrentDeclarerCards != null)
+                CurrentDeclarerCards.Clear();
+            CurrentDeclarerCards = null;
 
             ResetPlayersCards();
 
@@ -514,6 +558,12 @@ public class GameManagerScript : MonoBehaviour
                         && CurrentGrandpaCards == null
                     ) {
                         this.FetchGrandpaCards();
+                    }
+                    else if (CurrentDeclarerCards == null && DeclarerCardsVisible) {
+                        var getHandRequestData = new ServerSocket.Actions.GetHand.RequestSerializer() {
+                            PlayerTag = (int)Game.Match.CurrentGame.Declarer
+                        };
+                        PerformServerAction("get-hand", getHandRequestData.GetApiObject(), this.GetDeclarerHandCallback, Game.Match.CurrentGame.Declarer);
                     }
                     break;
             }
@@ -816,6 +866,43 @@ public class GameManagerScript : MonoBehaviour
         }
     }
 
+    public void GetDeclarerHandCallback(Request request, ActionsSerializer response, object additionalData) {
+        if (((string)response.Actions[0].ActionData.GetValue("status")).CompareTo("OK") != 0) {
+            return;
+        }
+        PlayerTag declarer = (PlayerTag)additionalData;
+
+        var data = new ServerSocket.Actions.GetHand.ResponseSerializer(response.Actions[0].ActionData);
+        data.Validate();
+        Debug.Log("GetHandCallback...");
+
+        if (data.Status == "OK") {
+            try {
+                if (CurrentDeclarerCards != null) CurrentDeclarerCards.Clear();
+                CurrentDeclarerCards = new List<GameManagerLib.Models.Card>();
+                GameManagerLib.Models.Card card;
+                var player = Game.Match.GetPlayerAt(declarer);
+                for (int i = 0; i < data.Cards.Length; i++) {
+                    card = new GameManagerLib.Models.Card(
+                                (CardFigure)data.Cards[i].Figure,
+                                (CardColor)data.Cards[i].Color,
+                                declarer,
+                                (CardState)data.Cards[i].State
+                            );
+
+                    player.Hand[i] = card;
+                    CurrentDeclarerCards.Add(card);
+                }
+
+                this.ShowPlayerCards(declarer, player.Hand);
+            } catch (Exception e) {
+                Debug.Log(e.Message);
+                // jakaś obsługa jeśli musi być?
+            }
+        }
+    }
+
+
     public void FetchGrandpaCards()
     {
         int grandId = ((int)Game.Match.CurrentGame.Declarer + 2) % 4;
@@ -855,7 +942,7 @@ public class GameManagerScript : MonoBehaviour
                     CurrentGrandpaCards.Add(card);
                 }
 
-                this.ShowGrandCards(grandpa.Tag, grandpa.Hand);
+                this.ShowPlayerCards(grandpa.Tag, grandpa.Hand);
             }
             catch (Exception e)
             {
@@ -932,9 +1019,9 @@ public class GameManagerScript : MonoBehaviour
         }
     }
 
-    public void ShowGrandCards(PlayerTag grand, GameManagerLib.Models.Card[] grandHand)
+    public void ShowPlayerCards(PlayerTag player, GameManagerLib.Models.Card[] playerHand)
     {
-        switch (grand)
+        switch (player)
         {
             case PlayerTag.N:
                 DestroyHiddenCards(HiddenCardsOfPlayerN);
@@ -949,7 +1036,7 @@ public class GameManagerScript : MonoBehaviour
                 DestroyHiddenCards(HiddenCardsOfPlayerW);
                 break;
         }
-        GiveCardsToPlayer(grand, grandHand);
+        GiveCardsToPlayer(player, playerHand);
     }
 
     private void DestroyHiddenCards(List<GameObject> cards)
@@ -958,6 +1045,7 @@ public class GameManagerScript : MonoBehaviour
         {
             Destroy(cards[i]);
         }
+        cards.Clear();
     }
 
     private void GiveHiddenCardsToPlayers(PlayerTag MyPosition)
@@ -1278,23 +1366,23 @@ public class GameManagerScript : MonoBehaviour
 
         string cardName = CalculateCardObjectName(Figure, Color);
 
-        int grandId = ((int)Game.Match.CurrentGame.Declarer + 2) % 4;
-
-        if (Player.Tag != UserData.Position && Player.Tag != (PlayerTag)grandId) {
-            switch (Player.Tag) {
-                case PlayerTag.N:
-                    HiddenCardsOfPlayerN[12 - Game.Match.CurrentGame.TrickList.Count].transform.localPosition = new Vector3(-100, 0, 0);
-                    break;
-                case PlayerTag.E:
-                    HiddenCardsOfPlayerE[12 - Game.Match.CurrentGame.TrickList.Count].transform.localPosition = new Vector3(-100, 0, 0);
-                    break;
-                case PlayerTag.S:
-                    HiddenCardsOfPlayerS[12 - Game.Match.CurrentGame.TrickList.Count].transform.localPosition = new Vector3(-100, 0, 0);
-                    break;
-                case PlayerTag.W:
-                    HiddenCardsOfPlayerW[12 - Game.Match.CurrentGame.TrickList.Count].transform.localPosition = new Vector3(-100, 0, 0);
-                    break;
-            }
+        switch (Player.Tag) {
+            case PlayerTag.N:
+                if (HiddenCardsOfPlayerN.Count == 0) break;
+                HiddenCardsOfPlayerN[12 - Game.Match.CurrentGame.TrickList.Count].transform.localPosition = new Vector3(-100, 0, 0);
+                break;
+            case PlayerTag.E:
+                if (HiddenCardsOfPlayerE.Count == 0) break;
+                HiddenCardsOfPlayerE[12 - Game.Match.CurrentGame.TrickList.Count].transform.localPosition = new Vector3(-100, 0, 0);
+                break;
+            case PlayerTag.S:
+                if (HiddenCardsOfPlayerS.Count == 0) break;
+                HiddenCardsOfPlayerS[12 - Game.Match.CurrentGame.TrickList.Count].transform.localPosition = new Vector3(-100, 0, 0);
+                break;
+            case PlayerTag.W:
+                if (HiddenCardsOfPlayerW.Count == 0) break;
+                HiddenCardsOfPlayerW[12 - Game.Match.CurrentGame.TrickList.Count].transform.localPosition = new Vector3(-100, 0, 0);
+                break;
         }
 
         //Debug.Log("Putting card on table from player " + PlayerName);
@@ -1432,6 +1520,9 @@ public class GameManagerScript : MonoBehaviour
 
     public void putCard(Card card) // Card jako klasa podpięta pod obiekt Unity -> "Card" używane w Game.Match to "GameManagerLib.Models.Card"
     {
+        // Tak na wszelki wypadek, bo niedowierzam kodowi Radka i Marcina
+        if (PlayingAsGrandpa) return;
+
         bool canUserPutCard = Game.Match.CheckNextCard(card.PlayerID, card.Color, card.Figure);
         Debug.Log(canUserPutCard);
         if (canUserPutCard)
