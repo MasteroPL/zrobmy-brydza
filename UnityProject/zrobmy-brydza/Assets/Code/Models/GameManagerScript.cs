@@ -240,7 +240,7 @@ public class GameManagerScript : MonoBehaviour
             {
                 try
                 {
-                    PutCardOnTable((CardFigure)serializer.CardFigure, (CardColor)serializer.CardColor, serializer.Username);
+                    PutCardOnTable((CardFigure)serializer.CardFigure, (CardColor)serializer.CardColor, (PlayerTag)serializer.OwnerPosition);
                 }
                 catch (WrongCardException)
                 {
@@ -1265,11 +1265,11 @@ public class GameManagerScript : MonoBehaviour
         return "";
     }
 
-    public void PutCardOnTable(CardFigure Figure, CardColor Color, string PlayerName, GameManagerLib.Models.Card cardOrigin = null)
+    public void PutCardOnTable(CardFigure Figure, CardColor Color, PlayerTag ownerTag, GameManagerLib.Models.Card cardOrigin = null)
     {
         // ten kawałek jest tylko po to by przechodziła walidacja w GamerLib -> dostajemy sygnał od serwera który ma ZAWSZE rację
         GameManagerLib.Models.Card card;
-        var Player = Game.Match.GetPlayerByUsername(PlayerName);
+        var Player = Game.Match.GetPlayerAt(ownerTag);
 
         if (cardOrigin == null)
             card = new GameManagerLib.Models.Card(Figure, Color, Player.Tag, CardState.ON_HAND);
@@ -1452,8 +1452,7 @@ public class GameManagerScript : MonoBehaviour
         data.Validate();
         try
         {
-            var player = Game.Match.GetPlayerAt((PlayerTag)data.OwnerPosition);
-            PutCardOnTable((CardFigure)data.CardFigure, (CardColor)data.CardColor, player.Name, cardOrigin);
+            PutCardOnTable((CardFigure)data.CardFigure, (CardColor)data.CardColor, (PlayerTag)data.OwnerPosition, cardOrigin);
         }
         catch (GameManagerLib.Exceptions.WrongGameStateException e)
         {

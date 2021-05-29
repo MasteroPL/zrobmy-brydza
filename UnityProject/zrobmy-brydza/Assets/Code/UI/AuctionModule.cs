@@ -175,6 +175,7 @@ public class AuctionModule : MonoBehaviour
         {
             if (MainModule.Match.GameState == GameState.BIDDING)
             {
+                AuctionDialog.enabled = true;
                 if (MainModule.Match.CurrentBidding.CurrentPlayer == UserData.Position)
                 {
                     AuctionDialog.enabled = true;  // showing dialog
@@ -216,6 +217,9 @@ public class AuctionModule : MonoBehaviour
                     //}
                     AuctionDialog.enabled = false;
                 }
+            }
+            else {
+                AuctionDialog.enabled = false;
             }
         }
     }
