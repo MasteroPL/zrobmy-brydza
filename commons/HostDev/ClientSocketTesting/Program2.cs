@@ -55,58 +55,58 @@ namespace ClientSocketTesting {
 
 			MaciusSocket = new ClientSocket("127.0.0.1");
 			PawelekSocket = new ClientSocket("127.0.0.1");
-			MarcinSocket = new ClientSocket("127.0.0.1");
-			//Marcin2_0Socket = new ClientSocket("127.0.0.1");
+			//MarcinSocket = new ClientSocket("127.0.0.1");
+            Marcin2_0Socket = new ClientSocket("127.0.0.1");
 
-			MaciusSocket.RequestResponseReceived += OnRequestResponseMacius;
-			MaciusSocket.SignalReceived += OnSignalMacius;
-			PawelekSocket.RequestResponseReceived += OnRequestResponsePawelek;
-			PawelekSocket.SignalReceived += OnSignalPawelek;
-			MarcinSocket.RequestResponseReceived += OnRequestResponseMarcin;
-			MarcinSocket.SignalReceived += OnSignalMarcin;
-			//Marcin2_0Socket.RequestResponseReceived += OnRequestResponseMarcin2_0;
-			//Marcin2_0Socket.SignalReceived += OnSignalMarcin2_0;
+            MaciusSocket.RequestResponseReceived += OnRequestResponseMacius;
+            MaciusSocket.SignalReceived += OnSignalMacius;
+            PawelekSocket.RequestResponseReceived += OnRequestResponsePawelek;
+            PawelekSocket.SignalReceived += OnSignalPawelek;
+            //MarcinSocket.RequestResponseReceived += OnRequestResponseMarcin;
+            //MarcinSocket.SignalReceived += OnSignalMarcin;
+            Marcin2_0Socket.RequestResponseReceived += OnRequestResponseMarcin2_0;
+            Marcin2_0Socket.SignalReceived += OnSignalMarcin2_0;
 
-			DumbAI MaciusAI = new DumbAI() {
-				ClientSocket = MaciusSocket,
-				Position = PlayerTag.N,
-				Username = "Macius"
-			};
-			DumbAI PawelekAI = new DumbAI() {
-				ClientSocket = PawelekSocket,
-				Position = PlayerTag.W,
-				Username = "Pawelek"
-			};
-			DumbAI MarcinAI = new DumbAI() {
-				ClientSocket = MarcinSocket,
-				Position = PlayerTag.E,
-				Username = "Marcin"
-			};
-			//DumbAI Marcin2_0AI = new DumbAIMarcin2_0() {
-			//	ClientSocket = Marcin2_0Socket,
-			//	Position = PlayerTag.S,
-			//	Username = "The_real_marcin"
-			//};
+            DumbAI MaciusAI = new DumbAI() {
+                ClientSocket = MaciusSocket,
+                Position = PlayerTag.N,
+                Username = "Macius"
+            };
+            DumbAI PawelekAI = new DumbAI() {
+                ClientSocket = PawelekSocket,
+                Position = PlayerTag.W,
+                Username = "Pawelek"
+            };
+            //DumbAI MarcinAI = new DumbAI() {
+            //    ClientSocket = MarcinSocket,
+            //    Position = PlayerTag.E,
+            //    Username = "Marcin"
+            //};
+            DumbAI Marcin2_0AI = new DumbAIMarcin2_0() {
+                ClientSocket = Marcin2_0Socket,
+                Position = PlayerTag.S,
+                Username = "The_real_marcin"
+            };
 
-			MaciusAI.Init();
+            MaciusAI.Init();
 			PawelekAI.Init();
-			MarcinAI.Init();
-			//Marcin2_0AI.Init();
+			//MarcinAI.Init();
+			Marcin2_0AI.Init();
 
-			//Marcin2_0AI.Authorize();
+			Marcin2_0AI.Authorize();
 			MaciusAI.Authorize();
 			PawelekAI.Authorize();
-			MarcinAI.Authorize();
+			//MarcinAI.Authorize();
 
 			MaciusAI.LoadGame();
 			PawelekAI.LoadGame();
-			MarcinAI.LoadGame();
-			//Marcin2_0AI.LoadGame();
+			//MarcinAI.LoadGame();
+			Marcin2_0AI.LoadGame();
 
 			MaciusAI.Sit();
 			PawelekAI.Sit();
-			MarcinAI.Sit();
-			//Marcin2_0AI.Sit();
+			//MarcinAI.Sit();
+			Marcin2_0AI.Sit();
 
 			Console.WriteLine("> Inicjalne ładowanie zakończone");
 
@@ -115,10 +115,10 @@ namespace ClientSocketTesting {
 				Thread.Sleep(500);
 				PawelekAI.Play();
 				Thread.Sleep(500);
-				MarcinAI.Play();
-				Thread.Sleep(500);
-				//Marcin2_0AI.Play();
+				//MarcinAI.Play();
 				//Thread.Sleep(500);
+				Marcin2_0AI.Play();
+				Thread.Sleep(500);
 			}
 		}
 	}
