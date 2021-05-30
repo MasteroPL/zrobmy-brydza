@@ -108,6 +108,9 @@ public class GameManagerScript : MonoBehaviour
     // lista graczy obecnych w lobby
     List<LobbyUserData> LobbyUsers;
 
+    [SerializeField] GameObject LeftPlayerCardsCanvas;
+    [SerializeField] GameObject RightPlayerCardsCanvas;
+
     public bool PlayingAsGrandpa {
         get {
             var match = Game.Match;
@@ -1118,6 +1121,17 @@ public class GameManagerScript : MonoBehaviour
                         case PlayerTag.W:
                             HiddenCardsOfPlayerW.Add(card);
                             break;
+                    }
+                    // adding parent components for cards => better responsivity
+                    if ((int)MyPosition == (((int)player + 1) % 4) )
+                    {
+                        card.transform.localPosition = new Vector3(LeftPlayerCardsCanvas.transform.position.x, coordinates[i][1], 0);
+                        card.transform.parent = LeftPlayerCardsCanvas.transform;
+                    }
+                    else if ((int)MyPosition == (((int)player + 3) % 4) )
+                    {
+                        card.transform.localPosition = new Vector3(RightPlayerCardsCanvas.transform.position.x, coordinates[i][1], 0);
+                        card.transform.parent = RightPlayerCardsCanvas.transform;
                     }
                 }
             }
