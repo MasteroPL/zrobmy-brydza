@@ -701,6 +701,19 @@ public class GameManagerScript : MonoBehaviour
             );
             Game.Match.AddBid(contract);
             AuctionModule.AddContractToList(contract);
+
+            if (Game.Match.CurrentBidding.IsEnd())
+            {
+                if (Game.Match.CurrentGame.Declarer == PlayerTag.N || Game.Match.CurrentGame.Declarer == PlayerTag.S)
+                {
+                    DeclaredContractLabel.GetComponent<Text>().text = "Contract:\nNS, " + Game.Match.CurrentBidding.HighestContract.ToString();
+                }
+                else if (Game.Match.CurrentGame.Declarer == PlayerTag.E || Game.Match.CurrentGame.Declarer == PlayerTag.W)
+                {
+                    DeclaredContractLabel.GetComponent<Text>().text = "Contract:\nEW, " + Game.Match.CurrentBidding.HighestContract.ToString();
+                }
+                TeamTakenHandsCounterLabel.GetComponent<Text>().text = "NS : 0\nEW : 0";
+            }
         } catch (WrongBidException) {
             // TODO: Pobierz całą licytację jeszcze raz
         }
