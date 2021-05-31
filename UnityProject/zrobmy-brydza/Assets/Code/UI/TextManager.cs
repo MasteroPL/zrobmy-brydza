@@ -17,11 +17,16 @@ public class TextManager : MonoBehaviour
     [SerializeField] GameObject ChatContent;
     [SerializeField] GameObject InputField;
     [SerializeField] GameManagerScript GameManager;
+    [SerializeField] GameObject MessageTemplate;
 
     string space = "\n____________\n\n";
 
     void Start()
     {
+        /*for(int i=0; i<15; i++)
+        {
+            AddMessage("Are you mad bro? That's not gonna work");
+        }*/
     }
 
     public static void ChatButton()
@@ -241,7 +246,22 @@ public class TextManager : MonoBehaviour
     /// </summary>
     public void AddMessage(string message)
     {
-        ChatContent.GetComponent<Text>().text += message + "\n";
+        float height = MessageTemplate.GetComponent<RectTransform>().rect.height;
+        ChatContent.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, (ChatContent.transform.childCount + 1) * height + 5 * ChatContent.transform.childCount );
+
+        GameObject ChatElement = Instantiate(MessageTemplate);
+        ChatElement.SetActive(true);
+        ChatElement.GetComponent<Text>().text = message;
+
+        ChatElement.transform.localPosition = new Vector3(
+                                                    ChatElement.transform.localPosition.x,
+                                                    ChatElement.transform.localPosition.y - (ChatContent.transform.childCount - 1) * (height + 5),
+                                                    ChatElement.transform.localPosition.z
+                                              );
+
+        ChatElement.transform.SetParent(ChatContent.transform, false);
+        //ListItems.Add(ListElement);
+        //ChatContent.GetComponent<Text>().text += message + "\n";
         InputField.GetComponent<Text>().text = "";
     }
 
