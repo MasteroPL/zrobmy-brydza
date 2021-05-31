@@ -254,6 +254,7 @@ public class GameManagerScript : MonoBehaviour
                         serializer.XX
                     );
                     Game.Match.AddBid(contract);
+                    AuctionModule.UpdateCurrentContractData(contract);
                     AuctionModule.AddContractToList(contract);
 
                     if (Game.Match.CurrentBidding.IsEnd()) {

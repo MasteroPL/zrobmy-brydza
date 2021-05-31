@@ -55,6 +55,11 @@ public class AuctionModule : MonoBehaviour
 
     private int PassCounter = 0;
 
+    public void UpdateCurrentContractData(Contract contract)
+    {
+        AuctionState.CurrentContract = new Contract(contract.ContractHeight, contract.ContractColor, contract.DeclaredBy, contract.XEnabled, contract.XXEnabled);
+    }
+
     public void InitAuctionModule(Game MainModule, PlayerTag StartingPlayer)
     {
         this.MainModule = MainModule;
@@ -226,7 +231,7 @@ public class AuctionModule : MonoBehaviour
 
     
 
-    private string UpdateContractDisplayedText()
+    private void UpdateContractDisplayedText()
     {
         string prefix = "Licytujesz : ";
         string displayedText = "";
@@ -243,8 +248,7 @@ public class AuctionModule : MonoBehaviour
             displayedText = AuctionState.ContractCache.ToString();
         }
         AuctionContractPreviewText.text = prefix + displayedText;
-        AuctionContractPreviewText.text += AuctionState.CurrentContract != null ? "\nAktualny kontrakt: " + AuctionState.CurrentContract.ToString() : "";
-        return displayedText;
+        //AuctionContractPreviewText.text += AuctionState.CurrentContract != null ? "\nAktualny kontrakt: " + AuctionState.CurrentContract.ToString() : "";
     }
 
     public void AddContractToList(Contract contract)
