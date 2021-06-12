@@ -30,6 +30,7 @@ namespace ClientSocketTesting
             this.CardsHistory = new AI.PlayedCards(C, D, H, S);
             this.Points = Count_Points();
             this.Find_Color();
+            this.Grandpa_hand = null;
         }
 
         public void Find_Color()
@@ -533,7 +534,7 @@ namespace ClientSocketTesting
         }
         // ROZGRYWKA
 
-        public void SetColorPriorityList(List<int> history, int atu, bool defense)
+        public void SetColorPriorityList( int atu, bool defense)
         {
             int[] ColorPoints = new int[4];
             for (int i = 0; i < ColorPoints.Length; i++)

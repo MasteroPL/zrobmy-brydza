@@ -33,6 +33,7 @@ namespace ClientSocketTesting
         public PlayerTag Position;
         public bool SendGetHandRequest = false;
         public AI AILogic = null;
+        bool playing = false;
 
 
         public void Init()
@@ -366,7 +367,7 @@ namespace ClientSocketTesting
         public virtual void Play()
         {
             ClientSocket.UpdateCommunication();
-
+            
             if (Game.GameState == GameState.STARTING)
             {
                 var data = new StartGameActionRequestSerializer()
@@ -384,9 +385,20 @@ namespace ClientSocketTesting
             switch (Game.GameState)
             {
                 case GameState.BIDDING:
+                    playing = false;
                     PlayBidding();
                     break;
                 case GameState.PLAYING:
+                    if (playing == false)
+                    {
+                        playing = true;
+                        bool defense = true;
+                        if((int)Game.CurrentGame.Declarer == (int)Position || (int)Game.CurrentGame.Declarer == ((int)Position + 2) %4)
+                        {
+                            defense = false;
+                        }
+                        AILogic.SetColorPriorityList((int)Game.CurrentGame.ContractColor + 1, defense);
+                    }
                     PlayPlaying();
                     break;
             }
@@ -434,7 +446,60 @@ namespace ClientSocketTesting
         }
         protected virtual void PlayPlaying()
         {
-            Console.WriteLine("Gram!");
+
+            if (Game.CurrentBidding.Declarer == Position && AILogic.Grandpa_hand == null)
+            {
+                GetGrandpaHand();
+            }
+
+            if (
+                ((int)Game.CurrentBidding.Declarer + 2) % 4 != (int)Position
+                && Game.CurrentGame.CurrentPlayer == Position)
+            {
+
+                var trick = Game.CurrentGame.currentTrick.CardList;
+                List<int> newTrick = new List<int>();
+                foreach (var t in trick)
+                {
+                    newTrick.Add((int)t.Color + 1 + (int)t.Figure * 10);
+                }
+                
+                int card = AILogic.PutCard(newTrick, (int)Game.CurrentGame.ContractColor + 1, AILogic.AI_hand);
+   
+
+                var data = new PutCardActionRequestSerializer()
+                {
+                    CardOwnerPosition = (int)Position,
+                    Color = card % 10 - 1,
+                    Figure = card / 10
+                };
+                Card NormalCard = new Card((CardFigure)data.Figure, (CardColor)data.Figure, Position);
+                PerformServerAction("put-card", data.GetApiObject(), PutCardCallback, NormalCard);
+
+            }
+            else if (
+                Game.CurrentBidding.Declarer == Position
+                && ((int)Game.CurrentGame.CurrentPlayer + 2) % 4 == (int)Position)
+            {
+
+                var trick = Game.CurrentGame.currentTrick.CardList;
+                List<int> newTrick = new List<int>();
+                foreach (var t in trick)
+                {
+                    newTrick.Add((int)t.Color + 1 + (int)t.Figure * 10);
+                }
+
+                int card = AILogic.PutCard(newTrick, (int)Game.CurrentGame.ContractColor + 1, AILogic.Grandpa_hand);
+
+                var data = new PutCardActionRequestSerializer()
+                {
+                    CardOwnerPosition = ((int)Position + 2) % 4,
+                    Color = card % 10 - 1,
+                    Figure = card / 10
+                };
+                Card NormalCard = new Card((CardFigure)data.Figure, (CardColor)data.Figure, (PlayerTag) (((int)Position + 2) % 4 ));
+                PerformServerAction("put-card", data.GetApiObject(), PutCardCallback, NormalCard);
+            }
         }
         protected void PutCardCallback(Request request, ActionsSerializer response, object additionalData)
         {
