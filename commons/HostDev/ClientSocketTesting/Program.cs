@@ -147,7 +147,7 @@ namespace ClientSocketTesting
 
 		static void Main(string[] args)
 		{
-			Program2.Main2(args);
+			Program3.Main3(args);
 			return;
 
 			ClientSocket MaciusSocket = null, PawelekSocket = null, MarcinSocket = null;

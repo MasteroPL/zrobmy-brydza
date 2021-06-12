@@ -63,7 +63,7 @@ namespace ClientSocketTesting
 			return result;
 		}
 
-		public static void Main2(string[] args)
+		public static void Main3(string[] args)
 		{
 			ClientSocket MaciusSocket = null, PawelekSocket = null, MarcinSocket = null, Marcin2_0Socket;
 
@@ -81,24 +81,24 @@ namespace ClientSocketTesting
 			Marcin2_0Socket.RequestResponseReceived += OnRequestResponseMarcin2_0;
 			Marcin2_0Socket.SignalReceived += OnSignalMarcin2_0;
 
-			DumbAI MaciusAI = new DumbAI()
+			UserAI MaciusAI = new UserAI()
 			{
 				ClientSocket = MaciusSocket,
 				Position = PlayerTag.N,
 				Username = "Macius"
 			};
-			DumbAI PawelekAI = new DumbAI()
+			UserAI PawelekAI = new UserAI()
 			{
 				ClientSocket = PawelekSocket,
 				Position = PlayerTag.W,
 				Username = "Pawelek"
 			};
-			DumbAI MarcinAI = new DumbAI() {
+			UserAI MarcinAI = new UserAI() {
 			    ClientSocket = MarcinSocket,
 			    Position = PlayerTag.E,
 			    Username = "Marcin"
 			};
-			DumbAI Marcin2_0AI = new DumbAIMarcin2_0()
+			UserAI Marcin2_0AI = new UserAI()
 			{
 				ClientSocket = Marcin2_0Socket,
 				Position = PlayerTag.S,
@@ -125,7 +125,27 @@ namespace ClientSocketTesting
 			MarcinAI.Sit();
 			Marcin2_0AI.Sit();
 
+			MaciusAI.LoadGame();
+			PawelekAI.LoadGame();
+			MarcinAI.LoadGame();
+			Marcin2_0AI.LoadGame();
+
 			Console.WriteLine("> Inicjalne ładowanie zakończone");
+			Thread.Sleep(500);
+			Console.WriteLine(MaciusAI.Game.GameState);
+			Console.WriteLine(MaciusAI.Game.PlayerList.Count);
+
+			Console.WriteLine(Marcin2_0AI.Game.GameState);
+			Console.WriteLine(Marcin2_0AI.Game.PlayerList.Count);
+
+			Marcin2_0AI.Game.Start();
+			Console.WriteLine(Marcin2_0AI.Game.GameState);
+
+
+			MaciusAI.LoadGame();
+			PawelekAI.LoadGame();
+			MarcinAI.LoadGame();
+			Marcin2_0AI.LoadGame();
 
 			while (true)
 			{

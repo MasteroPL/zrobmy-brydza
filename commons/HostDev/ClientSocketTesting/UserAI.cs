@@ -21,6 +21,7 @@ using PutCardActionRequestSerializer = ServerSocket.Actions.PutCard.RequestSeria
 using PutCardActionResponseSerializer = ServerSocket.Actions.PutCard.ResponseSerializer;
 using EasyHosting.Models.Client.Serializers;
 using GameManagerLib.Exceptions;
+using StartGameActionRequestSerializer = ServerSocket.Actions.StartGame.RequestSerializer;
 
 namespace ClientSocketTesting
 {
@@ -300,7 +301,7 @@ namespace ClientSocketTesting
                     S.Add(card.Figure);
                 }
 
-                AILogic.AI_hand = new AI.Hand(C, D, H, S);
+                AILogic = new AI(C, D, H, S);
             }
         }
 
@@ -366,11 +367,20 @@ namespace ClientSocketTesting
         {
             ClientSocket.UpdateCommunication();
 
+            if (Game.GameState == GameState.STARTING)
+            {
+                var data = new StartGameActionRequestSerializer()
+                {
+                    Username = Username,
+                    PlaceTag = (int)Position
+                };
+                PerformServerAction("start-game", data.GetApiObject(), null, null);
+            }
+
             if (SendGetHandRequest)
             {
                 GetHand();
             }
-
             switch (Game.GameState)
             {
                 case GameState.BIDDING:
@@ -385,6 +395,7 @@ namespace ClientSocketTesting
         {
             if (Game.CurrentBidding.CurrentPlayer == Position)
             {
+                
                 var history = Game.CurrentBidding.ContractList;
 
                 List<int> AI_history = new List<int>();
@@ -395,12 +406,24 @@ namespace ClientSocketTesting
                     AI_history.Add(AI_bid);
                 }
 
-                AILogic.Bid(AI_history);
+                int newBid = AILogic.Bid(AI_history);
+                int h;
+                int c;
 
+                if (newBid == 0)
+                {
+                    h = -1;
+                    c = -1;
+                }
+                else
+                {
+                    h = newBid / 10;
+                    c = newBid % 10 - 1;
+                }
                 var data = new BidActionRequestSerializer()
                 {
-                    Height = (int)ContractHeight.NONE,
-                    Color = (int)ContractColor.NONE,
+                    Height = h,
+                    Color = c,
                     X = false,
                     XX = false
                 };
@@ -411,56 +434,7 @@ namespace ClientSocketTesting
         }
         protected virtual void PlayPlaying()
         {
-
-            if (
-                ((int)Game.CurrentBidding.Declarer + 2) % 4 != (int)Position
-                && Game.CurrentGame.CurrentPlayer == Position)
-            {
-                for (int i = 0; i < MyCards.Count; i++)
-                {
-                    if (Game.CheckNextCard(
-                        Position,
-                        MyCards[i].Color,
-                        MyCards[i].Figure
-                    ))
-                    {
-                        var data = new PutCardActionRequestSerializer()
-                        {
-                            CardOwnerPosition = (int)Position,
-                            Color = (int)MyCards[i].Color,
-                            Figure = (int)MyCards[i].Figure
-                        };
-
-                        PerformServerAction("put-card", data.GetApiObject(), PutCardCallback, MyCards[i]);
-                        break;
-                    }
-                }
-            }
-            else if (
-                Game.CurrentBidding.Declarer == Position
-                && ((int)Game.CurrentGame.CurrentPlayer + 2) % 4 == (int)Position
-            )
-            {
-                for (int i = 0; GrandpaCards != null && i < GrandpaCards.Count; i++)
-                {
-                    if (Game.CheckNextCard(
-                        (PlayerTag)(((int)Position + 2) % 4),
-                        GrandpaCards[i].Color,
-                        GrandpaCards[i].Figure
-                    ))
-                    {
-                        var data = new PutCardActionRequestSerializer()
-                        {
-                            CardOwnerPosition = ((int)Position + 2) % 4,
-                            Color = (int)GrandpaCards[i].Color,
-                            Figure = (int)GrandpaCards[i].Figure
-                        };
-
-                        PerformServerAction("put-card", data.GetApiObject(), PutCardCallback, GrandpaCards[i]);
-                        break;
-                    }
-                }
-            }
+            Console.WriteLine("Gram!");
         }
         protected void PutCardCallback(Request request, ActionsSerializer response, object additionalData)
         {
