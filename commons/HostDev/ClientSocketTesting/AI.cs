@@ -845,7 +845,7 @@ namespace ClientSocketTesting
         }
         public int FindHigherThan(int hisCard, List<int> cards, int color)
         {
-            int max = FindHighest(cards, color);
+            int max = FindHighest(cards, color) / 10;
 
             if (max < hisCard)
             {
