@@ -534,7 +534,7 @@ namespace ClientSocketTesting
         }
         // ROZGRYWKA
 
-        public void SetColorPriorityList( int atu, bool defense)
+        public void SetColorPriorityList(int atu, bool defense)
         {
             int[] ColorPoints = new int[4];
             for (int i = 0; i < ColorPoints.Length; i++)
@@ -673,7 +673,7 @@ namespace ClientSocketTesting
 
                 if (cards.Count == 0)
                 {
-                    if ((atu == 0 | getList(AI_Hand, atu).Count == 0) & trick[0] != highestCard)
+                    if (atu == 0 | getList(AI_Hand, atu).Count == 0 | trick[0] == highestCard)
                     {
                         return AI_Hand.DropAndRemoveCard(atu);
                     }
@@ -924,32 +924,67 @@ namespace ClientSocketTesting
 
             public int DropAndRemoveCard(int atu)
             {
-
+                if (atu == 4)
+                {
+                    if (this.C.Count == 0 & this.D.Count == 0 & this.H.Count == 0)
+                    {
+                        int min = FindLowest(S);
+                        this.RemoveCard(min * 10 + 4);
+                        return min * 10 + 4;
+                    }
+                }
+                if (atu == 3)
+                {
+                    if (this.C.Count == 0 & this.D.Count == 0 & this.S.Count == 0)
+                    {
+                        int min = FindLowest(H);
+                        this.RemoveCard(min * 10 + 3);
+                        return min * 10 + 3;
+                    }
+                }
+                if (atu == 2)
+                {
+                    if (this.C.Count == 0 & this.S.Count == 0 & this.H.Count == 0)
+                    {
+                        int min = FindLowest(D);
+                        this.RemoveCard(min * 10 + 2);
+                        return min * 10 + 2;
+                    }
+                }
+                if (atu == 1)
+                {
+                    if (this.S.Count == 0 & this.D.Count == 0 & this.H.Count == 0)
+                    {
+                        int min = FindLowest(C);
+                        this.RemoveCard(min * 10 + 1);
+                        return min * 10 + 1;
+                    }
+                }
                 if ((C.Count >= D.Count | atu == 2) & (C.Count >= H.Count | atu == 3) & (C.Count >= S.Count | atu == 4))
                 {
                     int min = FindLowest(C);
-                    this.RemoveCard(min);
+                    this.RemoveCard(min * 10 + 1);
                     return min * 10 + 1;
                 }
 
                 if ((D.Count > C.Count | atu == 1) & (D.Count >= H.Count | atu == 3) & (D.Count >= S.Count | atu == 4))
                 {
                     int min = FindLowest(D);
-                    this.RemoveCard(min);
+                    this.RemoveCard(min * 10 + 2);
                     return min * 10 + 2;
                 }
 
                 if ((H.Count > C.Count | atu == 1) & (H.Count > D.Count | atu == 2) & (H.Count >= S.Count | atu == 4))
                 {
                     int min = FindLowest(H);
-                    this.RemoveCard(min);
+                    this.RemoveCard(min * 10 + 3);
                     return min * 10 + 3;
                 }
 
                 if ((S.Count > C.Count | atu == 1) & (S.Count > D.Count | atu == 2) & (S.Count > H.Count | atu == 3))
                 {
                     int min = FindLowest(S);
-                    this.RemoveCard(min);
+                    this.RemoveCard(min * 10 + 4);
                     return min * 10 + 4;
                 }
                 return 0;
