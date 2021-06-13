@@ -301,9 +301,38 @@ namespace ClientSocketTesting
                 {
                     S.Add(card.Figure);
                 }
-
+                
                 AILogic = new AI(C, D, H, S);
             }
+            //printy
+            Console.Write("C: ");
+            foreach (int c in C)
+            {
+                Console.Write(c);
+                Console.Write(" ");
+            }
+
+            Console.Write("D: ");
+            foreach (int d in D)
+            {
+                Console.Write(d);
+                Console.Write(" ");
+            }
+
+            Console.Write("H: ");
+            foreach (int h in H)
+            {
+                Console.Write(h);
+                Console.Write(" ");
+            }
+
+            Console.Write("S: ");
+            foreach (int s in S)
+            {
+                Console.Write(s);
+                Console.Write(" ");
+            }
+            //koniec
         }
 
         public void GetGrandpaHand()
@@ -446,7 +475,8 @@ namespace ClientSocketTesting
         }
         protected virtual void PlayPlaying()
         {
-
+            Console.WriteLine(Position);
+            Console.WriteLine(Game.CurrentGame.CurrentPlayer);
             if (Game.CurrentBidding.Declarer == Position && AILogic.Grandpa_hand == null)
             {
                 GetGrandpaHand();
@@ -456,7 +486,7 @@ namespace ClientSocketTesting
                 ((int)Game.CurrentBidding.Declarer + 2) % 4 != (int)Position
                 && Game.CurrentGame.CurrentPlayer == Position)
             {
-
+                Console.WriteLine(Position);
                 var trick = Game.CurrentGame.currentTrick.CardList;
                 List<int> newTrick = new List<int>();
                 foreach (var t in trick)
@@ -473,7 +503,7 @@ namespace ClientSocketTesting
                     Color = card % 10 - 1,
                     Figure = card / 10
                 };
-                Card NormalCard = new Card((CardFigure)data.Figure, (CardColor)data.Figure, Position);
+                Card NormalCard = new Card((CardFigure)data.Figure, (CardColor)data.Color, Position);
                 PerformServerAction("put-card", data.GetApiObject(), PutCardCallback, NormalCard);
 
             }
@@ -497,7 +527,7 @@ namespace ClientSocketTesting
                     Color = card % 10 - 1,
                     Figure = card / 10
                 };
-                Card NormalCard = new Card((CardFigure)data.Figure, (CardColor)data.Figure, (PlayerTag) (((int)Position + 2) % 4 ));
+                Card NormalCard = new Card((CardFigure)data.Figure, (CardColor)data.Color, (PlayerTag) (((int)Position + 2) % 4 ));
                 PerformServerAction("put-card", data.GetApiObject(), PutCardCallback, NormalCard);
             }
         }

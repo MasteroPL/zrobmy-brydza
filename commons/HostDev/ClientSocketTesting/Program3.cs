@@ -132,15 +132,8 @@ namespace ClientSocketTesting
 
 			Console.WriteLine("> Inicjalne ładowanie zakończone");
 			Thread.Sleep(500);
-			Console.WriteLine(MaciusAI.Game.GameState);
-			Console.WriteLine(MaciusAI.Game.PlayerList.Count);
-
-			Console.WriteLine(Marcin2_0AI.Game.GameState);
-			Console.WriteLine(Marcin2_0AI.Game.PlayerList.Count);
 
 			Marcin2_0AI.Game.Start();
-			Console.WriteLine(Marcin2_0AI.Game.GameState);
-
 
 			MaciusAI.LoadGame();
 			PawelekAI.LoadGame();

@@ -609,7 +609,11 @@ namespace ClientSocketTesting
         }
 
         public int PutCard(List<int> trick, int atu, Hand AI_Hand)
-        {
+        {   
+            if(atu == 5)
+            {
+                atu = 0;
+            }
 
             if (trick.Count == 0)
             {
@@ -703,7 +707,7 @@ namespace ClientSocketTesting
                 }
 
                 int card = FindHighest(cards, color);
-                if (card - 30 >= trick[0] & trick[1] % 10 != atu & card > trick[1]) //TODO wszytskie karty np poszedł król dama walet
+                if (card - 30 >= trick[0] & trick[1] % 10 != atu & card > trick[1]) 
                 {
                     AI_Hand.RemoveCard(card);
                     return card;
@@ -795,9 +799,14 @@ namespace ClientSocketTesting
             }
             return 0;
         }
-
+        // zwraca niskie
         public List<int> getList(Hand hand, int color)
         {
+            if(color == 0 | color == 5)
+            {
+                List<int> empty = new List<int>();
+                return empty;
+            }
             if (color == 1)
             {
                 return hand.C;
