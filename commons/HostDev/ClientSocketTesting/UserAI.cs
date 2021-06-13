@@ -145,6 +145,8 @@ namespace ClientSocketTesting
 
                 AILogic = null;
 
+                SendGetHandRequest = true;
+
                 if (Game.GameState != GameState.BIDDING)
                 {
                     Game.GameState = GameState.BIDDING;
@@ -304,35 +306,6 @@ namespace ClientSocketTesting
                 
                 AILogic = new AI(C, D, H, S);
             }
-            //printy
-            Console.Write("C: ");
-            foreach (int c in C)
-            {
-                Console.Write(c);
-                Console.Write(" ");
-            }
-
-            Console.Write("D: ");
-            foreach (int d in D)
-            {
-                Console.Write(d);
-                Console.Write(" ");
-            }
-
-            Console.Write("H: ");
-            foreach (int h in H)
-            {
-                Console.Write(h);
-                Console.Write(" ");
-            }
-
-            Console.Write("S: ");
-            foreach (int s in S)
-            {
-                Console.Write(s);
-                Console.Write(" ");
-            }
-            //koniec
         }
 
         public void GetGrandpaHand()
@@ -406,7 +379,6 @@ namespace ClientSocketTesting
                 };
                 PerformServerAction("start-game", data.GetApiObject(), null, null);
             }
-
             if (SendGetHandRequest)
             {
                 GetHand();

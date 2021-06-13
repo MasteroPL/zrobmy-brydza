@@ -63,9 +63,9 @@ namespace ClientSocketTesting
         public int Bid(List<int> history)
         {
             int bid = AI_Bid(history);
-            while (bid > 75)
+            if (bid > 45)
             {
-                bid = bid - 10;
+                return 0;
             }
             return bid;
         }
@@ -94,7 +94,7 @@ namespace ClientSocketTesting
 
                 if ((history_length >= 2 && history[history_length - 2] == 0) | history_length < 2)
                 {
-                    if (this.Points >= 18)
+                    if (this.Points >= 20)
                     {
                         bid = 20 + this.Colors5;
 
@@ -140,7 +140,7 @@ namespace ClientSocketTesting
                             bid = bid + 10;
                             if (bid == 20 && highest_bid < 20)
                             {
-                                return 1;
+                                return 15;
                             }
                             if (bid > highest_bid)
                             {
@@ -271,7 +271,7 @@ namespace ClientSocketTesting
                         {
                             if (this.AI_hand.H.Count >= 3)
                             {
-                                if (this.Points == 16)
+                                if (this.Points > 16)
                                 {
                                     bid = 43;
                                 }
@@ -289,7 +289,7 @@ namespace ClientSocketTesting
                         {
                             if (this.AI_hand.S.Count >= 3)
                             {
-                                if (this.Points == 16)
+                                if (this.Points > 16)
                                 {
                                     bid = 44;
                                 }
