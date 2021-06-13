@@ -754,7 +754,7 @@ namespace ClientSocketTesting
                     {
                         if (trick[winner] % 10 == atu)
                         {
-                            List<int>  atuCards = getList(AI_Hand, atu)
+                            List<int> atuCards = getList(AI_Hand, atu);
                             int atuCard = FindHigherThan(trick[1], atuCards, atu);
                             if (atuCard == -1)
                             {
