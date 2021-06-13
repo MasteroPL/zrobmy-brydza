@@ -27,7 +27,7 @@ namespace ClientSocketTesting
         public AI(List<int> C, List<int> D, List<int> H, List<int> S)
         {
             this.AI_hand = new Hand(C, D, H, S);
-            this.CardsHistory = new AI.PlayedCards(C, D, H, S);
+            this.CardsHistory = new AI.PlayedCards();
             this.Points = Count_Points();
             this.Find_Color();
             this.Grandpa_hand = null;
@@ -626,7 +626,8 @@ namespace ClientSocketTesting
                 }
                 int color = ColorPriorityList[index];
                 List<int> cards = getList(AI_Hand, ColorPriorityList[index]);
-                if (FindHighest(cards, color) == this.CardsHistory.HighestCard(ColorPriorityList[index]))
+                int highestCard = this.CardsHistory.HighestCard(ColorPriorityList[index]);
+                if (cards.Contains(highestCard))
                 {
                     int card = FindHighest(cards, color);
                     AI_Hand.RemoveCard(card);
@@ -645,10 +646,12 @@ namespace ClientSocketTesting
                 int color = trick[0] % 10;
                 List<int> cards = getList(AI_Hand, color);
                 int highestCard = this.CardsHistory.HighestCard(color);
+                int card;
                 if (cards.Contains(highestCard))
                 {
-                    AI_Hand.RemoveCard(highestCard);
-                    return highestCard;
+                    card = FindHighest(cards, color);
+                    AI_Hand.RemoveCard(card);
+                    return card;
                 }
 
                 if (cards.Count == 0)
@@ -665,7 +668,7 @@ namespace ClientSocketTesting
                         return atuCard;
                     }
                 }
-                int card = FindLowest(cards, color);
+                card = FindLowest(cards, color);
                 AI_Hand.RemoveCard(card);
                 return card;
             }
@@ -677,7 +680,7 @@ namespace ClientSocketTesting
 
                 if (cards.Count == 0)
                 {
-                    if (atu == 0 | getList(AI_Hand, atu).Count == 0 | trick[0] == highestCard)
+                    if (atu == 0 | getList(AI_Hand, atu).Count == 0 | trick[0] / 10 == highestCard)
                     {
                         return AI_Hand.DropAndRemoveCard(atu);
                     }
@@ -692,7 +695,7 @@ namespace ClientSocketTesting
                         }
                         else
                         {
-                            atuCard = FindHigherThan(trick[1], cards, atu);
+                            atuCard = FindHigherThan(trick[1], atuCards, atu);
                             if (atuCard == -1)
                             {
                                 return AI_Hand.DropAndRemoveCard(atu);
@@ -751,7 +754,8 @@ namespace ClientSocketTesting
                     {
                         if (trick[winner] % 10 == atu)
                         {
-                            int atuCard = FindHigherThan(trick[1], cards, atu);
+                            List<int>  atuCards = getList(AI_Hand, atu)
+                            int atuCard = FindHigherThan(trick[1], atuCards, atu);
                             if (atuCard == -1)
                             {
                                 return AI_Hand.DropAndRemoveCard(atu);
@@ -1018,21 +1022,45 @@ namespace ClientSocketTesting
             public List<int> D;
             public List<int> H;
             public List<int> S;
-            public PlayedCards(List<int> C, List<int> D, List<int> H, List<int> S)
+            public PlayedCards()
             {
-                this.C = C;
-                this.D = D;
-                this.H = H;
-                this.S = S;
+                this.C = new List<int>();
+                this.D = new List<int>();
+                this.H = new List<int>();
+                this.S = new List<int>();
                 Cards = new List<List<int>>();
+                Cards.Append(this.C);
+                Cards.Append(this.D);
+                Cards.Append(this.H);
+                Cards.Append(this.S);
             }
 
-            public void AddTrick(int C, int D, int H, int S)
+            public void AddTrick(List<int> cards)
             {
-                this.C.Append(C);
-                this.D.Append(D);
-                this.H.Append(H);
-                this.S.Append(S);
+                int color;
+                int figure;
+                foreach(var card in cards)
+                {
+                    color = card % 10;
+                    figure = card / 10;
+                    if(color == 1)
+                    {
+                        C.Add(figure);
+                    }
+                    if (color == 2)
+                    {
+                        D.Add(figure);
+                    }
+                    if (color == 3)
+                    {
+                        H.Add(figure);
+                    }
+                    if (color == 4)
+                    {
+                        S.Add(figure);
+                    }
+                }
+
                 Cards = new List<List<int>>();
                 Cards.Append(this.C);
                 Cards.Append(this.D);
@@ -1045,7 +1073,7 @@ namespace ClientSocketTesting
                 int i = 14;
                 if (Cards.Count == 0)
                 {
-                    return i * 10 + color;
+                    return i;
                 }
 
                 while (Cards[color - 1].Contains(i))
@@ -1053,7 +1081,7 @@ namespace ClientSocketTesting
                     i--;
                 }
 
-                return i * 10 + color;
+                return i;
             }
         }
     }

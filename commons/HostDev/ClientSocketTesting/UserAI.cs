@@ -446,9 +446,21 @@ namespace ClientSocketTesting
             }
         }
         protected virtual void PlayPlaying()
-        {
-            Console.WriteLine(Position);
-            Console.WriteLine(Game.CurrentGame.CurrentPlayer);
+        {   
+            if(Game.CurrentGame.TrickList.Count > 0)
+            {
+                var lastTrick = Game.CurrentGame.TrickList[Game.CurrentGame.TrickList.Count - 1].CardList;
+
+                List<int> cardToSend = new List<int>();
+
+                foreach( var card in lastTrick)
+                {
+                    cardToSend.Add(((int)card.Figure) * 10 + (int)card.Color +1 );
+                }
+
+                AILogic.CardsHistory.AddTrick(cardToSend);
+            }
+            
             if (Game.CurrentBidding.Declarer == Position && AILogic.Grandpa_hand == null)
             {
                 GetGrandpaHand();
