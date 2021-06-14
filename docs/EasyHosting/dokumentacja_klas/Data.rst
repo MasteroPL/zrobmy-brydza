@@ -26,12 +26,6 @@ Pola
 	
 
 
-.. csharpdocsproperty:: System.String ChujCiWDupe
-    :access: public
-	
-	
-
-
 Wydarzenia
 ==========
 

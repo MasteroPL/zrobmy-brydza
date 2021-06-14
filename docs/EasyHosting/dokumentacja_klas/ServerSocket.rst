@@ -6,16 +6,17 @@ ServerSocket
     :access: public
     :baseclass: System.Object
 	
-	
+	Klasa definiująca podstawowe funkcjonalności gniazda serwera, tj. przechwytywanie połączeń, rozpoznawanie połączeń zautoryzowanych, wymaganie autoryzacji. Wymaga nadpisania AuthorizeConnection oraz HandleRequest
 
 Konstruktory
 ============
 
-.. csharpdocsconstructor:: ServerSocket(System.Net.IPAddress ipAddress=null, System.Int32 port=33564, System.Int32 secondsForAuthorization=10)
+.. csharpdocsconstructor:: ServerSocket(System.Net.IPAddress ipAddress=null, System.Int32 port=33564, System.Int32 secondsForAuthorization=10, System.Int32 secondsAllowedIdle=10)
     :access: public
     :param(1): 
     :param(2): 
     :param(3): 
+    :param(4): 
 	
 	
 
@@ -87,6 +88,30 @@ Metody
 	
 
 
+.. csharpdocsmethod:: Newtonsoft.Json.Linq.JObject GetAuthorizationResponseSuccessful()
+    :access: protected
+	
+	
+
+
+.. csharpdocsmethod:: Newtonsoft.Json.Linq.JObject GetAuthorizationResponseFailed()
+    :access: protected
+	
+	
+
+
+.. csharpdocsmethod:: Newtonsoft.Json.Linq.JObject GetDisconnectedSignal()
+    :access: protected
+	
+	
+
+
+.. csharpdocsmethod:: Newtonsoft.Json.Linq.JObject GetAuthorizationTimeoutSignal()
+    :access: protected
+	
+	
+
+
 .. csharpdocsmethod:: System.Void Start()
     :access: public
 	
@@ -99,10 +124,26 @@ Metody
 	
 
 
+.. csharpdocsmethod:: System.Boolean DisconnectClient(EasyHosting.Models.Server.ClientConnection clientToDisconnect)
+    :access: public
+    :param(1): Klient do odłączenia
+	
+	Odłącza klienta od serwera
+
+
+.. csharpdocsmethod:: System.Boolean ClientConnected(EasyHosting.Models.Server.ClientConnection client, System.Boolean searchDependingOnStatus=False, EasyHosting.Models.Server.ConnectionStatus connectionStatus=ANY)
+    :access: public
+    :param(1): Klient do sprawdzenia
+    :param(2): Jeśli true, użyty zostanie dodatkowy filtr, sprwadzający tylko klientów zautoryzowanych lub tylko niezautoryzacowanych
+    :param(3): Jeśli searchDependingOnStatus = true, po jakim statusie powinniśmy wyszukiwać połączenia
+	
+	Sprawdza, czy klient jest połączony z serwerem
+
+
 .. csharpdocsmethod:: System.Boolean AuthorizeConnection(EasyHosting.Models.Server.ClientConnection conn, Newtonsoft.Json.Linq.JObject requestData)
     :access: protected
     :param(1): Połączenie z którego przyszły dane autoryzacyjne
-    :param(2): 
+    :param(2): Dane przychodzące od klienta
 	
 	Metoda wywoływana po uzyskaniu pierwszego strumienia danych z 
 	niezautoryzowanego połączenia. Powinna zwalidować poprawność 
@@ -139,13 +180,13 @@ Własności
 .. csharpdocsproperty:: System.Net.IPAddress IpAddress
     :access: public
 	
-	
+	Określa na jakim adresie IP nasłuchuje gniazdo
 
 
 .. csharpdocsproperty:: System.Int32 Port
     :access: public
 	
-	
+	Określa port na którym nasłuchuje gniazdo
 
 
 Pola
@@ -163,7 +204,19 @@ Pola
 	
 
 
+.. csharpdocsproperty:: System.Collections.Generic.List<Newtonsoft.Json.Linq.JObject> ClientsToDisconnect
+    :access: private
+	
+	
+
+
 .. csharpdocsproperty:: System.TimeSpan TimeForAuthorization
+    :access: protected
+	
+	Określa po jakim czasie bez poprawnej autoryzacji połączenie z klientem zostanie zamknięte przez gniazdo
+
+
+.. csharpdocsproperty:: System.TimeSpan MaxIdleTime
     :access: protected
 	
 	
@@ -189,12 +242,6 @@ Pola
 
 .. csharpdocsproperty:: System.Int32 _Port
     :access: private
-	
-	
-
-
-.. csharpdocsproperty:: Newtonsoft.Json.Linq.JObject AuthorizationSuccessfulResponse
-    :access: protected
 	
 	
 

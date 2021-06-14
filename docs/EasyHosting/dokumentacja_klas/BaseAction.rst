@@ -192,7 +192,7 @@ Wydarzenia
 .. csharpdocsproperty:: System.EventHandler<Newtonsoft.Json.Linq.JObject> InvokedThis
     :access: public event
 	
-Wydarzenie wywoływane kiedy ta akcja zostanie wywołana
+	Wydarzenie wywoływane kiedy ta akcja zostanie wywołana
 
 
 .. csharpdocsproperty:: System.EventHandler<Newtonsoft.Json.Linq.JObject> Finished

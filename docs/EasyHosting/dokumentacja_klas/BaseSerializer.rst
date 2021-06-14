@@ -6,7 +6,7 @@ BaseSerializer
     :access: public
     :baseclass: System.Object
 	
-	
+	Bazowa klasa dla serializatorów danych wysyłanych i odpowiedzi dla klientów
 
 Konstruktory
 ============
@@ -40,6 +40,19 @@ Metody
 	
 
 
+.. csharpdocsmethod:: System.Collections.Generic.List<Newtonsoft.Json.Linq.JObject> get_GlobalErrors()
+    :access: public
+	
+	
+
+
+.. csharpdocsmethod:: System.Void set_GlobalErrors(System.Collections.Generic.List<Newtonsoft.Json.Linq.JObject> value)
+    :access: private
+    :param(1): 
+	
+	
+
+
 .. csharpdocsmethod:: System.Collections.Generic.Dictionary<System.String, EasyHosting.Models.Actions.BaseAction> get_Errors()
     :access: public
 	
@@ -53,7 +66,7 @@ Metody
 	
 
 
-.. csharpdocsmethod:: System.Void AddError(System.Reflection.FieldInfo field, EasyHosting.Meta.Validators.ValidationError error)
+.. csharpdocsmethod:: System.Void _AddError(System.Reflection.FieldInfo field, EasyHosting.Meta.Validators.ValidationError error)
     :access: private
     :param(1): 
     :param(2): 
@@ -78,7 +91,7 @@ Metody
 	Dodaje błąd do listy błędów dla wybranego pola
 
 
-.. csharpdocsmethod:: System.Void AddErrors(System.Reflection.FieldInfo field, System.Collections.Generic.IEnumerable<Newtonsoft.Json.Linq.JObject> errors)
+.. csharpdocsmethod:: System.Void _AddErrors(System.Reflection.FieldInfo field, System.Collections.Generic.IEnumerable<Newtonsoft.Json.Linq.JObject> errors)
     :access: private
     :param(1): 
     :param(2): 
@@ -97,6 +110,12 @@ Metody
 .. csharpdocsmethod:: System.Void AddErrors(System.Collections.Generic.Dictionary<System.String, EasyHosting.Models.Actions.BaseAction> errors)
     :access: protected
     :param(1): 
+	
+	
+
+
+.. csharpdocsmethod:: Newtonsoft.Json.Linq.JObject GetErrors()
+    :access: public
 	
 	
 
@@ -142,6 +161,12 @@ Własności
 	Przechowuje oryginalny obiekt JSONa przekazany do serializatora
 
 
+.. csharpdocsproperty:: System.Collections.Generic.List<Newtonsoft.Json.Linq.JObject> GlobalErrors
+    :access: public
+	
+	
+
+
 .. csharpdocsproperty:: System.Collections.Generic.Dictionary<System.String, EasyHosting.Models.Actions.BaseAction> Errors
     :access: public
 	
@@ -150,6 +175,12 @@ Własności
 
 Pola
 ====
+
+.. csharpdocsproperty:: System.Collections.Generic.List<Newtonsoft.Json.Linq.JObject> _GlobalErrors
+    :access: private
+	
+	
+
 
 .. csharpdocsproperty:: System.Collections.Generic.Dictionary<System.String, EasyHosting.Models.Actions.BaseAction> _Errors
     :access: private

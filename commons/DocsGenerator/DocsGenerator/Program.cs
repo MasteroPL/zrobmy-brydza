@@ -11,6 +11,10 @@ namespace DocsGenerator {
             var docs = new XMLDocs();
             docs.ProcessXML("_source\\EasyHosting.xml");
             docs.WriteToFiles();
+
+            var docs2 = new XMLDocs();
+            docs2.ProcessXML("_source\\ServerSocket.xml");
+            docs2.WriteToFiles();
         }
     }
 }

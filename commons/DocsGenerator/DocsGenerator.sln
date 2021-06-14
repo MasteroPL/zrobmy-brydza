@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocsGenerator", "DocsGenera
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyHosting", "..\HostDev\EasyHosting\EasyHosting.csproj", "{19979202-6322-4703-A7B7-5A28540E3C98}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerSocket", "..\HostDev\ServerSocket\ServerSocket.csproj", "{6A99B9EF-3465-47D8-AAA2-72F67774EE9E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{19979202-6322-4703-A7B7-5A28540E3C98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19979202-6322-4703-A7B7-5A28540E3C98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19979202-6322-4703-A7B7-5A28540E3C98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A99B9EF-3465-47D8-AAA2-72F67774EE9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A99B9EF-3465-47D8-AAA2-72F67774EE9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A99B9EF-3465-47D8-AAA2-72F67774EE9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A99B9EF-3465-47D8-AAA2-72F67774EE9E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

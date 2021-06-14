@@ -156,7 +156,7 @@ class DefinitionReader:
 
         index = self.pointer
         if self.text_length > index and self.source_text[index] not in self.CHARS_ALLOWED_TYPE_ENDER:
-            raise self.FormatError("Invalid last character (not whitespace, neither allowed for type)")
+            raise self.FormatError("Invalid last character (not whitespace, neither allowed for type) source: " + self.source_text)
 
         if len(parts) == 1:
             result.name = parts[0]

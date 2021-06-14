@@ -22,6 +22,26 @@ Konstruktory
 Metody
 ======
 
+.. csharpdocsmethod:: System.Void add_BeforeDispose(System.EventHandler value)
+    :access: public
+    :param(1): 
+	
+	
+
+
+.. csharpdocsmethod:: System.Void remove_BeforeDispose(System.EventHandler value)
+    :access: public
+    :param(1): 
+	
+	
+
+
+.. csharpdocsmethod:: System.Boolean get_Disposed()
+    :access: public
+	
+	
+
+
 .. csharpdocsmethod:: EasyHosting.Models.Server.ServerSocket get_ServerSocket()
     :access: public
 	
@@ -93,9 +113,9 @@ Metody
 
 .. csharpdocsmethod:: System.Void WriteData(Newtonsoft.Json.Linq.JObject data)
     :access: public
-    :param(1): 
+    :param(1): Dane do wpisania
 	
-	
+	Wpisuje dane do strumienia komunikacji z klientem
 
 
 .. csharpdocsmethod:: System.Void AddCommunicate(Newtonsoft.Json.Linq.JObject communicate)
@@ -117,47 +137,71 @@ Metody
 	
 
 
+.. csharpdocsmethod:: System.Void Dispose()
+    :access: public
+	
+	
+
+
 Własności
 =========
+
+.. csharpdocsproperty:: System.Boolean Disposed
+    :access: public
+	
+	
+
 
 .. csharpdocsproperty:: EasyHosting.Models.Server.ServerSocket ServerSocket
     :access: public
 	
-	
+	ServerSocket z którym klient jest połączony
 
 
 .. csharpdocsproperty:: EasyHosting.Models.Server.Session Session
     :access: public
 	
-	
+	Sesja przypisana do klienta
 
 
 .. csharpdocsproperty:: Newtonsoft.Json.Bson.BsonDataWriter BsonWriter
     :access: protected
 	
-	
+	Prefedefiniowany BsonWriter do serializacji binarnej komunikacji z klientem
 
 
 .. csharpdocsproperty:: Newtonsoft.Json.Bson.BsonDataReader BsonReader
     :access: protected
 	
-	
+	Predefiniowany BsonReader do deserializacji binarnej komunikacji z klientem
 
 
 .. csharpdocsproperty:: System.Net.Sockets.TcpClient TcpClient
     :access: public
 	
-	
+	Fizyczne połączenie klienta
 
 
 .. csharpdocsproperty:: System.Boolean DataAvailable
     :access: public
 	
-	
+	Określa czy klient nadał jakieś dane
 
 
 Pola
 ====
+
+.. csharpdocsproperty:: System.EventHandler BeforeDispose
+    :access: private
+	
+	
+
+
+.. csharpdocsproperty:: System.Boolean _Disposed
+    :access: private
+	
+	
+
 
 .. csharpdocsproperty:: System.Collections.Generic.LinkedList<Newtonsoft.Json.Linq.JObject> CommunicatesQueue
     :access: private
@@ -201,6 +245,12 @@ Pola
 	
 
 
+.. csharpdocsproperty:: System.DateTime LastActivateAt
+    :access: public
+	
+	
+
+
 .. csharpdocsproperty:: System.Net.Sockets.TcpClient _TcpClient
     :access: private
 	
@@ -209,4 +259,10 @@ Pola
 
 Wydarzenia
 ==========
+
+.. csharpdocsproperty:: System.EventHandler BeforeDispose
+    :access: public event
+	
+	
+
 

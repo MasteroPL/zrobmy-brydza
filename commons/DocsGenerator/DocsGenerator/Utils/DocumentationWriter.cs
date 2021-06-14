@@ -34,7 +34,7 @@ namespace DocsGenerator.Utils {
             }
 
             foreach (var classDef in assemblyDef.ClassDefs.Values) {
-                if (classDef.TypeDef.Name == "<>c")
+                if (classDef.TypeDef.Name.Contains("<>c"))
                     continue;
 
                 filePath = Path.Combine(destDir, classDef.TypeDef.Name + ".rst");

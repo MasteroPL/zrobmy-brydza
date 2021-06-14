@@ -26,7 +26,7 @@ namespace ServerSocket.Actions.PutCard
             Lobby lobby = (Lobby)conn.Session.Get("joined-lobby");
             Match game = lobby.Game;
 
-            if(lobby.LobbyState != LobbyState.IN_GAME) {
+            if (lobby.LobbyState != LobbyState.IN_GAME) {
                 data.AddError(null, "INVALID_LOBBY_STATE", "Nie można wyłożyć karty w tym stanie lobby");
                 data.ThrowException();
             }
@@ -37,6 +37,7 @@ namespace ServerSocket.Actions.PutCard
             }
 
             var username = conn.Session.Get<string>("username");
+            Console.WriteLine(username + "> Card attempt: " + data.CardOwnerPosition + " " + data.Figure + " " + ((CardColor)data.Color).ToString());
             if (!conn.Session.Has("player")) {
                 data.AddError(null, "INVALID_USER", "Podany użytkownik nie jest uczestnikiem rozgrywki");
                 data.ThrowException();

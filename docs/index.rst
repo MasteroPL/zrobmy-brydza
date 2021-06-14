@@ -11,6 +11,12 @@ Zróbmy Brydża! - Dokumentacja
 
 .. toctree::
    :maxdepth: 2
+   :caption: Bilbioteka BridgeServerSocket
+
+   BridgeServerSocket/dokumentacja_klas/_index
+
+.. toctree::
+   :maxdepth: 2
    :caption: Biblioteka GamerLib
 
    Biblioteka GamerLib/test

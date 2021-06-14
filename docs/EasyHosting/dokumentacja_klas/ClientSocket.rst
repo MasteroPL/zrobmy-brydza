@@ -11,17 +11,58 @@ ClientSocket
 Konstruktory
 ============
 
-.. csharpdocsconstructor:: ClientSocket(System.String ipAddress, System.Int32 port=33564, System.UInt32 bufferSize=16384)
+.. csharpdocsconstructor:: ClientSocket(System.String ipAddress, System.Int32 port=33564)
     :access: public
     :param(1): 
     :param(2): 
-    :param(3): 
 	
 	
 
 
 Metody
 ======
+
+.. csharpdocsmethod:: System.Void add_RequestSent(System.EventHandler<Newtonsoft.Json.Linq.JObject> value)
+    :access: public
+    :param(1): 
+	
+	
+
+
+.. csharpdocsmethod:: System.Void remove_RequestSent(System.EventHandler<Newtonsoft.Json.Linq.JObject> value)
+    :access: public
+    :param(1): 
+	
+	
+
+
+.. csharpdocsmethod:: System.Void add_RequestResponseReceived(System.EventHandler<Newtonsoft.Json.Linq.JObject> value)
+    :access: public
+    :param(1): 
+	
+	
+
+
+.. csharpdocsmethod:: System.Void remove_RequestResponseReceived(System.EventHandler<Newtonsoft.Json.Linq.JObject> value)
+    :access: public
+    :param(1): 
+	
+	
+
+
+.. csharpdocsmethod:: System.Void add_SignalReceived(System.EventHandler<Newtonsoft.Json.Linq.JObject> value)
+    :access: public
+    :param(1): 
+	
+	
+
+
+.. csharpdocsmethod:: System.Void remove_SignalReceived(System.EventHandler<Newtonsoft.Json.Linq.JObject> value)
+    :access: public
+    :param(1): 
+	
+	
+
 
 .. csharpdocsmethod:: System.Boolean get_Initialized()
     :access: public
@@ -43,19 +84,6 @@ Metody
 
 
 .. csharpdocsmethod:: System.Void set_TcpClient(System.Net.Sockets.TcpClient value)
-    :access: private
-    :param(1): 
-	
-	
-
-
-.. csharpdocsmethod:: System.UInt32 get_BufferSize()
-    :access: public
-	
-	
-
-
-.. csharpdocsmethod:: System.Void set_BufferSize(System.UInt32 value)
     :access: private
     :param(1): 
 	
@@ -101,15 +129,8 @@ Metody
 	
 
 
-.. csharpdocsmethod:: EasyHosting.Models.ConnectionState get_ConnectionState()
+.. csharpdocsmethod:: System.Int64 get_CurrentRequestId()
     :access: public
-	
-	
-
-
-.. csharpdocsmethod:: System.Void set_ConnectionState(EasyHosting.Models.ConnectionState value)
-    :access: protected
-    :param(1): 
 	
 	
 
@@ -132,9 +153,29 @@ Metody
 	
 
 
-.. csharpdocsmethod:: Newtonsoft.Json.Linq.JObject Send(System.Object data)
+.. csharpdocsmethod:: EasyHosting.Models.Client.Request SendRequest(Newtonsoft.Json.Linq.JObject requestData)
+    :access: public
+    :param(1): Dane zapytania do wysłania, metoda obudowuje je dodatkowo odpowiednimi meta-danymi zapytania
+	
+	Tworzy i wysyła zapytanie do serwera. Na odpowiedź na zapytanie należy nasłuchiwać na event'cie RequestResponseReceived
+
+
+.. csharpdocsmethod:: System.Void WriteData(Newtonsoft.Json.Linq.JObject data)
     :access: public
     :param(1): 
+	
+	Wypisuje dane na strumień wyjściowy do serwera
+
+
+.. csharpdocsmethod:: System.Void ProcessReceivedData(Newtonsoft.Json.Linq.JObject data)
+    :access: protected
+    :param(1): Dane do przetworzenia
+	
+	Przetwarza dane otrzymane od serwera, określa czy są odpowiedzią na zapytanie, czy sygnałem od serwera
+
+
+.. csharpdocsmethod:: System.Void UpdateCommunication()
+    :access: public
 	
 	
 
@@ -152,12 +193,6 @@ Własności
     :access: public
 	
 	
-
-
-.. csharpdocsproperty:: System.UInt32 BufferSize
-    :access: public
-	
-	Zdefiniowany rozmiar bufora nadającego i odbierającego
 
 
 .. csharpdocsproperty:: System.String IpAddress
@@ -178,7 +213,7 @@ Własności
 	
 
 
-.. csharpdocsproperty:: EasyHosting.Models.ConnectionState ConnectionState
+.. csharpdocsproperty:: System.Int64 CurrentRequestId
     :access: public
 	
 	
@@ -199,6 +234,30 @@ Własności
 Pola
 ====
 
+.. csharpdocsproperty:: System.EventHandler<Newtonsoft.Json.Linq.JObject> RequestSent
+    :access: private
+	
+	
+
+
+.. csharpdocsproperty:: System.EventHandler<Newtonsoft.Json.Linq.JObject> RequestResponseReceived
+    :access: private
+	
+	
+
+
+.. csharpdocsproperty:: System.EventHandler<Newtonsoft.Json.Linq.JObject> SignalReceived
+    :access: private
+	
+	
+
+
+.. csharpdocsproperty:: System.Collections.Generic.Dictionary<System.String, EasyHosting.Models.Actions.BaseAction> OnGoingRequests
+    :access: protected
+	
+	
+
+
 .. csharpdocsproperty:: Newtonsoft.Json.JsonSerializer JsonSerializer
     :access: private
 	
@@ -212,12 +271,6 @@ Pola
 
 
 .. csharpdocsproperty:: System.Net.Sockets.TcpClient _TcpClient
-    :access: private
-	
-	
-
-
-.. csharpdocsproperty:: System.UInt32 _BufferSize
     :access: private
 	
 	
@@ -241,6 +294,12 @@ Pola
 	
 
 
+.. csharpdocsproperty:: System.Int64 _CurrentRequestId
+    :access: protected
+	
+	
+
+
 .. csharpdocsproperty:: Newtonsoft.Json.Bson.BsonDataWriter _BsonWriter
     :access: private
 	
@@ -255,4 +314,22 @@ Pola
 
 Wydarzenia
 ==========
+
+.. csharpdocsproperty:: System.EventHandler<Newtonsoft.Json.Linq.JObject> RequestSent
+    :access: public event
+	
+	
+
+
+.. csharpdocsproperty:: System.EventHandler<Newtonsoft.Json.Linq.JObject> RequestResponseReceived
+    :access: public event
+	
+	
+
+
+.. csharpdocsproperty:: System.EventHandler<Newtonsoft.Json.Linq.JObject> SignalReceived
+    :access: public event
+	
+	
+
 

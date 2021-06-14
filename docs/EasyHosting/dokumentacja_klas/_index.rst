@@ -13,6 +13,7 @@ Dokumentacja klas
     ClientConnection
     ServerNetworkSocketException
     ServerSocket
+    ConnectionStatus
     Session
     ErrorResponseSerializer
     ErrorSerializer
@@ -20,9 +21,18 @@ Dokumentacja klas
     UserAuthorizationSerializer
     BaseSerializer
     InvalidInputDataException
+    JsonValidationException
     SerializationException
+    StandardCommunicateSerializer
+    StandardRequestSerializer
     ClientNetworkSocketException
     ClientSocket
+    Request
+    RequestState
+    RequestException
+    RequestStateException
+    StandardRequestWrapperSerializer
+    StandardResponseWrapperSerializer
     ActionException
     ActionFinishEventArgs
     ActionInvokeEventArgs

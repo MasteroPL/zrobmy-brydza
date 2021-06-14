@@ -359,6 +359,11 @@
             </param>
             <returns>Bezpośrednia odpowiedź z wywołania akcji</returns>
         </member>
+        <member name="F:EasyHosting.Models.Actions.ActionsResponseSerializer.Identifier">
+            <summary>
+            Identyfikator zapytania, przepisywany z danych akcji przychodzących. Służy do rozpoznawania i przyporządkowywania zapytań do odpowiedzi po stronie klienckiej
+            </summary>
+        </member>
         <member name="T:EasyHosting.Models.Actions.BaseAction">
             <summary>
             Klasa do definiowania jednostkowych czynności, wywoływanych przez API
@@ -370,7 +375,7 @@
             </summary>
         </member>
         <member name="E:EasyHosting.Models.Actions.BaseAction.InvokedThis">
-            <summary>.,
+            <summary>
             Wydarzenie wywoływane kiedy ta akcja zostanie wywołana
             </summary>
         </member>
@@ -423,9 +428,85 @@
             Określa, czy TcpClient został zainicjalizowany
             </summary>
         </member>
-        <member name="P:EasyHosting.Models.Client.ClientSocket.BufferSize">
+        <member name="M:EasyHosting.Models.Client.ClientSocket.SendRequest(Newtonsoft.Json.Linq.JObject)">
             <summary>
-            Zdefiniowany rozmiar bufora nadającego i odbierającego
+            Tworzy i wysyła zapytanie do serwera. Na odpowiedź na zapytanie należy nasłuchiwać na event'cie RequestResponseReceived
+            </summary>
+            <param name="requestData">Dane zapytania do wysłania, metoda obudowuje je dodatkowo odpowiednimi meta-danymi zapytania</param>
+        </member>
+        <member name="M:EasyHosting.Models.Client.ClientSocket.WriteData(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Wypisuje dane na strumień wyjściowy do serwera
+            </summary>
+            <param name="data"></param>
+        </member>
+        <member name="M:EasyHosting.Models.Client.ClientSocket.ProcessReceivedData(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Przetwarza dane otrzymane od serwera, określa czy są odpowiedzią na zapytanie, czy sygnałem od serwera
+            </summary>
+            <param name="data">Dane do przetworzenia</param>
+        </member>
+        <member name="M:EasyHosting.Models.Client.ClientSocket.UpdateCommunication">
+            <summary>
+            Sprawdza, czy serwer nadał komunikację do klienta, przetwarza komunikację od serwera, jeśli została nadana
+            </summary>
+        </member>
+        <member name="P:EasyHosting.Models.Client.Request.ParentSocket">
+            <summary>
+            Socket klienta, za pośrednictwem którego zostało wysłane zapytanie
+            </summary>
+        </member>
+        <member name="P:EasyHosting.Models.Client.Request.SentAt">
+            <summary>
+            Określa moment czasowy, w którym zapytanie zostało wysłane. Jest ustawione tylko jeśli zapytanie ma status SENT lub RESPONSE_RECEIVED
+            </summary>
+        </member>
+        <member name="P:EasyHosting.Models.Client.Request.ResponseReceivedAt">
+            <summary>
+            Określa moment czasowy, w którym przypisana została odpowiedź na wysłane zapytanie. Jest ustawione tylko jeżeli zapytanie ma status RESPONSE_RECEIVED
+            </summary>
+        </member>
+        <member name="M:EasyHosting.Models.Client.Request.Send">
+            <summary>
+            Wysyła zapytanie do serwera
+            </summary>
+            <exception cref="T:EasyHosting.Models.Client.RequestStateException">Rzucany, jeśli zapytanie zostało już wysłane i następuje ponowna próba wysłania zapytania</exception>
+        </member>
+        <member name="M:EasyHosting.Models.Client.Request.AttachResponse(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Przypina odpowiedź dla zapytania
+            </summary>
+            <param name="response">Odpowiedź do przypięcia</param>
+            <exception cref="T:EasyHosting.Models.Client.RequestStateException">Rzucany, jeżeli zapytanie nie jest w stanie "SENT" przy próbie przypięcia odpowiedzi</exception>
+        </member>
+        <member name="F:EasyHosting.Models.Client.Serializers.StandardRequestWrapperSerializer.RequestCode">
+            <summary>
+            Kod (identyfikator) zapytania, zwracany w odpowiedzi do zapytania od serwera
+            </summary>
+        </member>
+        <member name="F:EasyHosting.Models.Client.Serializers.StandardRequestWrapperSerializer.Data">
+            <summary>
+            Dane zapytania
+            </summary>
+        </member>
+        <member name="F:EasyHosting.Models.Client.Serializers.StandardResponseWrapperSerializer.CommunicateType">
+            <summary>
+            Określa typ komunikatu
+            </summary>
+        </member>
+        <member name="F:EasyHosting.Models.Client.Serializers.StandardResponseWrapperSerializer.RequestCode">
+            <summary>
+            Jeżeli zapytania przychodzące refiniowało kod zapytania, powinien on zostać zwrotnie przekazany w komunikacie wychodzącym
+            </summary>
+        </member>
+        <member name="F:EasyHosting.Models.Client.Serializers.StandardResponseWrapperSerializer.Data">
+            <summary>
+            Określa dane komunikatu
+            </summary>
+        </member>
+        <member name="T:EasyHosting.Models.Serialization.BaseSerializer">
+            <summary>
+            Bazowa klasa dla serializatorów danych wysyłanych i odpowiedzi dla klientów
             </summary>
         </member>
         <member name="P:EasyHosting.Models.Serialization.BaseSerializer.DataOrigin">
@@ -469,10 +550,87 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:EasyHosting.Models.Serialization.StandardCommunicateSerializer">
+            <summary>
+            Serializator definiujący standardowy komunikat od serwera (dowolna odpowiedź lub wysyłana informacja)
+            </summary>
+        </member>
+        <member name="F:EasyHosting.Models.Serialization.StandardCommunicateSerializer.CommunicateType">
+            <summary>
+            Określa typ komunikatu
+            </summary>
+        </member>
+        <member name="F:EasyHosting.Models.Serialization.StandardCommunicateSerializer.RequestCode">
+            <summary>
+            Jeżeli zapytania przychodzące refiniowało kod zapytania, powinien on zostać zwrotnie przekazany w komunikacie wychodzącym
+            </summary>
+        </member>
+        <member name="F:EasyHosting.Models.Serialization.StandardCommunicateSerializer.Data">
+            <summary>
+            Określa dane komunikatu
+            </summary>
+        </member>
+        <member name="T:EasyHosting.Models.Serialization.StandardRequestSerializer">
+            <summary>
+            Serializator do inicjalnej walidacji danych przychodzących (przed przekazaniem do menadżera akcji)
+            </summary>
+        </member>
+        <member name="F:EasyHosting.Models.Serialization.StandardRequestSerializer.RequestCode">
+            <summary>
+            Jeżeli zapytanie przychodzące definiuje kod zapytania, zostanie on zwrócony w odpowiedzi (wyniku zapytania)
+            </summary>
+        </member>
+        <member name="F:EasyHosting.Models.Serialization.StandardRequestSerializer.Data">
+            <summary>
+            Dane zapytania
+            </summary>
+        </member>
         <member name="F:EasyHosting.Models.Server.ClientConnection.CommunicatesQueue">
             <summary>
             Komunikaty typu "PUSH", czyli wysałane z serwera do użytkownika. Nie są to odpowiedzi do zapytań
             </summary>
+        </member>
+        <member name="P:EasyHosting.Models.Server.ClientConnection.ServerSocket">
+            <summary>
+            ServerSocket z którym klient jest połączony
+            </summary>
+        </member>
+        <member name="P:EasyHosting.Models.Server.ClientConnection.Session">
+            <summary>
+            Sesja przypisana do klienta
+            </summary>
+        </member>
+        <member name="P:EasyHosting.Models.Server.ClientConnection.BsonWriter">
+            <summary>
+            Prefedefiniowany BsonWriter do serializacji binarnej komunikacji z klientem
+            </summary>
+        </member>
+        <member name="P:EasyHosting.Models.Server.ClientConnection.BsonReader">
+            <summary>
+            Predefiniowany BsonReader do deserializacji binarnej komunikacji z klientem
+            </summary>
+        </member>
+        <member name="P:EasyHosting.Models.Server.ClientConnection.TcpClient">
+            <summary>
+            Fizyczne połączenie klienta
+            </summary>
+        </member>
+        <member name="P:EasyHosting.Models.Server.ClientConnection.DataAvailable">
+            <summary>
+            Określa czy klient nadał jakieś dane
+            </summary>
+        </member>
+        <member name="M:EasyHosting.Models.Server.ClientConnection.GetData">
+            <summary>
+            Pobiera dane od klienta
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:EasyHosting.Models.Server.ClientConnection.WriteData(Newtonsoft.Json.Linq.JObject)">
+            <summary>
+            Wpisuje dane do strumienia komunikacji z klientem
+            </summary>
+            <param name="data">Dane do wpisania</param>
         </member>
         <member name="M:EasyHosting.Models.Server.ClientConnection.AddCommunicate(Newtonsoft.Json.Linq.JObject)">
             <summary>
@@ -487,6 +645,21 @@
             Powinna być wywoływana tylko przez bazową klasę "ServerSocket"
             </summary>
         </member>
+        <member name="M:EasyHosting.Models.Server.ClientConnection.Flush">
+            <summary>
+            Fizyczna wysyłka danych po ich wpisaniu do strumienia
+            </summary>
+        </member>
+        <member name="T:EasyHosting.Models.Server.ServerSocket">
+            <summary>
+            Klasa definiująca podstawowe funkcjonalności gniazda serwera, tj. przechwytywanie połączeń, rozpoznawanie połączeń zautoryzowanych, wymaganie autoryzacji. Wymaga nadpisania AuthorizeConnection oraz HandleRequest
+            </summary>
+        </member>
+        <member name="F:EasyHosting.Models.Server.ServerSocket.TimeForAuthorization">
+            <summary>
+            Określa po jakim czasie bez poprawnej autoryzacji połączenie z klientem zostanie zamknięte przez gniazdo
+            </summary>
+        </member>
         <member name="P:EasyHosting.Models.Server.ServerSocket.Initialized">
             <summary>
             Określa, czy TcpListener został zainicjalizowany i nasłuchuje połączeń
@@ -497,6 +670,62 @@
             Zainicjalizowany TcpListener
             </summary>
         </member>
+        <member name="P:EasyHosting.Models.Server.ServerSocket.IpAddress">
+            <summary>
+            Określa na jakim adresie IP nasłuchuje gniazdo
+            </summary>
+        </member>
+        <member name="P:EasyHosting.Models.Server.ServerSocket.Port">
+            <summary>
+            Określa port na którym nasłuchuje gniazdo
+            </summary>
+        </member>
+        <member name="M:EasyHosting.Models.Server.ServerSocket.GetAuthorizationResponseSuccessful">
+            <summary>
+            Określa jaka odpowiedź ma być zwrócona do klienta w przypadku udanej autoryzacji
+            </summary>
+            <returns>Obiekt JSON do przekazania do klienta</returns>
+        </member>
+        <member name="M:EasyHosting.Models.Server.ServerSocket.GetAuthorizationResponseFailed">
+            <summary>
+            Określa jaka odpowiedź ma być zwrócona do klienta w przypadku nieudanej autoryzacji
+            </summary>
+            <returns>Obiekt JSON do przekazania do klienta</returns>
+        </member>
+        <member name="M:EasyHosting.Models.Server.ServerSocket.GetDisconnectedSignal">
+            <summary>
+            Treść komunikatu przy odłączeniu klienta od serwera
+            </summary>
+            <returns>Obiekt JSON do przekazania do klienta</returns>
+        </member>
+        <member name="M:EasyHosting.Models.Server.ServerSocket.GetAuthorizationTimeoutSignal">
+            <summary>
+            Treść komunikatu przy odłączeniu klienta od serwera przez zbyt długi czas autoryzacji
+            </summary>
+            <returns>Obiekt JSON do przekazania do klienta</returns>
+        </member>
+        <member name="M:EasyHosting.Models.Server.ServerSocket.Start">
+            <summary>
+            Uruchamia socket
+            </summary>
+        </member>
+        <member name="M:EasyHosting.Models.Server.ServerSocket.DisconnectClient(EasyHosting.Models.Server.ClientConnection)">
+            <summary>
+            Odłącza klienta od serwera
+            </summary>
+            <param name="clientToDisconnect">Klient do odłączenia</param>
+            <returns>True jeśli odłączenie poprawne, False jeśli klient już dodany do listy klientów do odłączenia</returns>
+            <exception cref="T:System.ArgumentException">Rzucany jeśli klient nie jest połączony z serwerem</exception>
+        </member>
+        <member name="M:EasyHosting.Models.Server.ServerSocket.ClientConnected(EasyHosting.Models.Server.ClientConnection,System.Boolean,EasyHosting.Models.Server.ConnectionStatus)">
+            <summary>
+            Sprawdza, czy klient jest połączony z serwerem
+            </summary>
+            <param name="client">Klient do sprawdzenia</param>
+            <param name="searchDependingOnStatus">Jeśli true, użyty zostanie dodatkowy filtr, sprwadzający tylko klientów zautoryzowanych lub tylko niezautoryzacowanych</param>
+            <param name="connectionStatus">Jeśli searchDependingOnStatus = true, po jakim statusie powinniśmy wyszukiwać połączenia</param>
+            <returns></returns>
+        </member>
         <member name="M:EasyHosting.Models.Server.ServerSocket.AuthorizeConnection(EasyHosting.Models.Server.ClientConnection,Newtonsoft.Json.Linq.JObject)">
             <summary>
             Metoda wywoływana po uzyskaniu pierwszego strumienia danych z 
@@ -506,6 +735,7 @@
             "false" w przeciwnym przypadku
             </summary>
             <param name="conn">Połączenie z którego przyszły dane autoryzacyjne</param>
+            <param name="requestData">Dane przychodzące od klienta</param>
             <returns>True - autoryzacja poprawna; False - autoryzacja odrzucona</returns>
         </member>
         <member name="M:EasyHosting.Models.Server.ServerSocket.HandleRequest(EasyHosting.Models.Server.ClientConnection,Newtonsoft.Json.Linq.JObject)">
@@ -517,6 +747,43 @@
             <param name="conn">Połączenie klienta</param>
             <param name="requestData">Dane przychodzące od klienta</param>
             <returns>Odpowiedź dla klienta w formacie JObject</returns>
+        </member>
+        <member name="M:EasyHosting.Models.Server.Session.Set(System.String,System.Object)">
+            <summary>
+            Ustawia wartość w sesji
+            </summary>
+            <param name="name">Nazwa wartości do ustawienia</param>
+            <param name="value">Wartość do ustawienia</param>
+        </member>
+        <member name="M:EasyHosting.Models.Server.Session.Get(System.String)">
+            <summary>
+            Pobiera wartość z sesji
+            </summary>
+            <param name="name">Nazwa wartości do pobrania</param>
+            <returns>Wartość przypisana do podanej nazwy lub NULL jeśli brak przypisanej wartości</returns>
+        </member>
+        <member name="M:EasyHosting.Models.Server.Session.Get``1(System.String)">
+            <summary>
+            Pobiera wartość sesji i castuje ją na podany typ (jeśli jest to możliwe)
+            </summary>
+            <typeparam name="T">Typ na który obiekt w sesji powinien zostać scastowany</typeparam>
+            <param name="name">Nazwa do wyszukania</param>
+            <returns>Wartość przypisana do podanej nazwy</returns>
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">Wyjątek wyrzucany jeśli podana nazwa nie jest zapisana w sesji</exception>
+        </member>
+        <member name="M:EasyHosting.Models.Server.Session.Has(System.String)">
+            <summary>
+            Określa czy wartość o podanej nazwie jest zapisana w sesji
+            </summary>
+            <param name="name">Nazwa do sprawdzenia</param>
+            <returns>True jeśli zapisana w sesji, False w przeciwnym wypadku</returns>
+        </member>
+        <member name="M:EasyHosting.Models.Server.Session.Remove(System.String)">
+            <summary>
+            Usuwa wartość z sesji
+            </summary>
+            <param name="name">Nazwa wartości do usunięcia</param>
+            <returns>True, jeśli wartość była w sesji, False w przeciwnym wypadku</returns>
         </member>
     </members>
 </doc>

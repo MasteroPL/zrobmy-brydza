@@ -42,6 +42,12 @@ Własności
 	Przechowuje oryginalny obiekt JSONa przekazany do serializatora
 
 
+.. csharpdocsproperty:: System.Collections.Generic.List<Newtonsoft.Json.Linq.JObject> GlobalErrors
+    :access: public
+	
+	
+
+
 .. csharpdocsproperty:: System.Collections.Generic.Dictionary<System.String, EasyHosting.Models.Actions.BaseAction> Errors
     :access: public
 	
